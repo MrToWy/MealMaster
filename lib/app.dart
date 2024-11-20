@@ -1,8 +1,6 @@
-import 'package:english_words/english_words.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:mealmaster/shared/app_router.dart';
-import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -11,10 +9,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Meal Master',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-      ),
+      themeMode: ThemeMode.system,
+      theme: FlexThemeData.light(scheme: FlexScheme.materialHc),
+      darkTheme: FlexThemeData.dark(scheme: FlexScheme.materialHc),
       routerConfig: router,
     );
   }
