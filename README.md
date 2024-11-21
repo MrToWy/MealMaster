@@ -20,3 +20,14 @@ samples, guidance on mobile development, and a full API reference.
 1. Create a tag (e.g. 0.0.1)
 2. Push the tag
 3. GitHub will create a new apk + release automatically
+
+
+# Database
+We are using isar (recommended by the creator of Hive - another very popular db framework).
+Documentation -> https://isar.dev/de/
+
+## Initial setup (already done)
+```shell 
+flutter pub add isar isar_flutter_libs
+flutter pub add -d isar_generator build_runner
+```
