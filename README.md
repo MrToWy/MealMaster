@@ -14,3 +14,9 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+## New release
+1. Create a tag (e.g. 0.0.1)
+2. Push the tag
+3. GitHub will create a new apk + release automatically
