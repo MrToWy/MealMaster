@@ -1,0 +1,82 @@
+erDiagram
+
+User {
+ int Id
+ string Name
+ double weight
+ double size
+
+}
+
+Diet {
+ int id
+ string name
+}
+
+Allergy {
+ int id
+ string name
+}
+
+
+
+  Recipe {
+    int Id
+    bool HasAllIngredients
+    int CookingDuration
+    int difficulty
+  }
+
+ RecipeStep {
+ int Id
+ int OrderPosition
+ string Description
+
+}
+
+  Ingredients {
+    int Id
+    string Name
+    string Unit
+  }
+
+
+MealPlan {
+ int id
+ Date StartDate
+ Date EndDate
+}
+
+MealPlanEntry {
+ int id
+ Date Day
+
+}
+
+Storage_Ingredients {
+ double Count
+}
+
+Recipe_Ingredients {
+ double Count
+}
+
+ShoppingListEntry(nicht_in_db) {
+ double Count
+}
+
+ShoppingList(nicht_in_db) ||--|| ShoppingListEntry(nicht_in_db) : Entries
+ShoppingListEntry(nicht_in_db) ||--|| Ingredients : Entries
+
+Storage ||--|| Storage_Ingredients : Entries
+
+Storage_Ingredients ||--|| Ingredients : Entries
+
+  User ||--|| Diet : Diet
+ User ||--o{ Allergy : Allergies
+
+  Recipe }|--|{ Recipe_Ingredients : Ingredients
+Recipe_Ingredients }|--|{ Ingredients : Ingredients
+  Recipe }|--|{ RecipeStep : Steps
+MealPlanEntry ||--|| Recipe : Recipes
+MealPlan ||--|{ MealPlanEntry : Entries
