@@ -1,7 +1,13 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:mealmaster/common/widgets/navigation_menu.dart';
 import 'package:mealmaster/features/home/presentation/controller/edit_mode_controller.dart';
-import 'package:mealmaster/shared/app_router.dart';
+import 'package:mealmaster/features/home/presentation/home_screen.dart';
+import 'package:mealmaster/features/meal_plan/presentation/new_plan_screen.dart';
+import 'package:mealmaster/features/recipes/presentation/recipe_screen.dart';
+import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
+import 'package:mealmaster/features/splash_screen/splash_screen.dart';
+import 'package:mealmaster/features/user_profile/presentation/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
@@ -15,13 +21,22 @@ class MyApp extends StatelessWidget {
           create: (_) => EditModeProvider(),
         ),
       ],
-      child: MaterialApp.router(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Meal Master',
         themeMode: ThemeMode.system,
         theme: FlexThemeData.light(scheme: FlexScheme.materialHc),
         darkTheme: FlexThemeData.dark(scheme: FlexScheme.materialHc),
-        routerConfig: router,
+        initialRoute: '/navigation',
+        routes: {
+          '/navigation': (context) => NavigationMenu(),
+          '/splash': (context) => SplashScreen(),
+          '/home': (context) => HomeScreen(),
+          '/profile': (context) => ProfileScreen(),
+          '/shopping-list': (context) => ShoppingListScreen(),
+          '/new-plan': (context) => NewPlanScreen(),
+          '/recipe': (context) => RecipeScreen(),
+        },
       ),
     );
   }

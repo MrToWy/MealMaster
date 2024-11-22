@@ -39,6 +39,23 @@ class _NavigationMenuState extends State<NavigationMenu> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, size: 40),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                child: Text('Neuen Plan erstellen'),
+                onTap: () {
+                  Navigator.pushNamed(context, '/new-plan');
+                },
+              ),
+            ],
+            offset: const Offset(0, 56),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ],
       ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: NavigationBar(

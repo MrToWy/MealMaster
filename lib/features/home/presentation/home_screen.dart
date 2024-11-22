@@ -37,8 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      SizedBox(
-        height: 20,
+      Container(
+        padding: EdgeInsets.only(top: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
