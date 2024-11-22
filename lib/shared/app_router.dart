@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
-import 'package:mealmaster/features/dashboard/presentation/dashboard_screen.dart';
+import 'package:mealmaster/common/widgets/navigation_menu.dart';
+import 'package:mealmaster/features/home/presentation/home_screen.dart';
 import 'package:mealmaster/features/meal_plan/presentation/new_plan_screen.dart';
 import 'package:mealmaster/features/recipes/presentation/recipe_screen.dart';
 import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
@@ -7,7 +8,7 @@ import 'package:mealmaster/features/splash_screen/splash_screen.dart';
 import 'package:mealmaster/features/user_profile/presentation/profile_screen.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/splash',
+  initialLocation: '/navigation',
   routes: [
     GoRoute(
       path: '/splash',
@@ -15,9 +16,14 @@ final GoRouter router = GoRouter(
       builder: (context, state) => SplashScreen(),
     ),
     GoRoute(
-      path: '/dashboard',
-      name: 'dashboard',
-      builder: (context, state) => DashboardScreen(),
+      path: '/home',
+      name: 'home',
+      builder: (context, state) => HomeScreen(),
+    ),
+    GoRoute(
+      path: '/navigation',
+      name: 'navigation',
+      builder: (context, state) => NavigationMenu(),
     ),
     GoRoute(
       path: '/profile',
