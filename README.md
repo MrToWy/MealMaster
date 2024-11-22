@@ -20,3 +20,8 @@ samples, guidance on mobile development, and a full API reference.
 1. Create a tag (e.g. 0.0.1)
 2. Push the tag
 3. GitHub will create a new apk + release automatically
+
+# Database
+We are using Isar v3 (Community) for our database.
+Documentation: https://isar-community.dev/v3/de/
+
