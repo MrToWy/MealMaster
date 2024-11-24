@@ -25,3 +25,9 @@ samples, guidance on mobile development, and a full API reference.
 We are using Isar v3 (Community) for our database.
 Documentation: https://isar-community.dev/v3/de/
 
+## Change database tables
+1. Add a collection-class, or edit an existing one (e.g. lib/db/user.dart)
+2. Run the following command 
+```shell
+dart run build_runner build
+```
