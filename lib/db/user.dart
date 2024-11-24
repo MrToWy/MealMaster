@@ -1,12 +1,22 @@
 import 'package:isar/isar.dart';
+import 'package:mealmaster/db/allergy.dart';
+import 'package:mealmaster/db/db_entry.dart';
+
+import 'diet.dart';
 
 part 'user.g.dart';
 
 @collection
-class User {
-  Id id = Isar.autoIncrement; // Für auto-increment kannst du auch id = null zuweisen
-
+class User extends DbEntry {
   String? name;
 
-  int? age;
+  double? weight;
+
+  double? size;
+
+  @Backlink(to: 'user')
+  final diets = IsarLinks<Diet>();
+
+  @Backlink(to: 'user')
+  final allergies = IsarLinks<Allergy>();
 }

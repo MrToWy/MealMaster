@@ -27,7 +27,8 @@ Documentation: https://isar-community.dev/v3/de/
 
 ## Change database tables
 1. Add a collection-class, or edit an existing one (e.g. lib/db/user.dart)
-2. Run the following command 
+2. When adding a new class XYZ, add the code `part 'xyz.g.dart';`
+3. Run the following command 
 ```shell
 dart run build_runner build
 ```
