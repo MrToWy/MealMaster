@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:mealmaster/db/allergy.dart';
+import 'package:mealmaster/db/diet.dart';
 import 'package:mealmaster/db/user.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -22,7 +24,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
   Future<Isar> openIsar() async {
     final dir = await getApplicationDocumentsDirectory();
     return await Isar.open(
-      [UserSchema],
+      [UserSchema, DietSchema, AllergySchema],
       directory: dir.path,
     );
   }
@@ -34,6 +36,8 @@ class _DbTestScreenState extends State<DbTestScreen> {
     await isar.writeTxn(() async {
       await isar.users.put(newUser);
     });
+
+    await loadFirstUser();
   }
 
   Future<void> loadFirstUser() async {
@@ -42,6 +46,16 @@ class _DbTestScreenState extends State<DbTestScreen> {
     setState(() {
       displayedUsername = firstUser?.name ?? 'No user found';
     });
+  }
+
+  Future<void> deleteAllUsers() async {
+    final isar = await isarInstance;
+
+    await isar.writeTxn(() async {
+      await isar.users.clear();
+    });
+
+    await loadFirstUser();
   }
 
   @override
@@ -60,6 +74,11 @@ class _DbTestScreenState extends State<DbTestScreen> {
             ElevatedButton(
               onPressed: loadFirstUser,
               child: Text('Load First User'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: deleteAllUsers,
+              child: Text('Delete all User'),
             ),
             SizedBox(height: 20),
             Text(
