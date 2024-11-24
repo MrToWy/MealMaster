@@ -13,6 +13,8 @@ class DbTestScreen extends StatefulWidget {
 
 class _DbTestScreenState extends State<DbTestScreen> {
   String? displayedUsername;
+  String? allergies;
+  String? diets;
   late Future<Isar> isarInstance;
 
   @override
@@ -32,9 +34,13 @@ class _DbTestScreenState extends State<DbTestScreen> {
   Future<void> addUser() async {
     final isar = await isarInstance;
     final newUser = User()..name = 'Test User ${DateTime.now().millisecondsSinceEpoch}';
+    final allergy = Allergy()..name = "Nuts";
+    newUser.allergies.add(allergy);
 
     await isar.writeTxn(() async {
       await isar.users.put(newUser);
+      await isar.allergys.put(allergy);
+      await newUser.allergies.save();
     });
 
     await loadFirstUser();
@@ -45,6 +51,10 @@ class _DbTestScreenState extends State<DbTestScreen> {
     final firstUser = await isar.users.where().findFirst();
     setState(() {
       displayedUsername = firstUser?.name ?? 'No user found';
+      diets = firstUser?.diets.join(", ");
+      allergies = firstUser?.allergies
+          .map((allergy) => allergy.name)
+          .join(", ");
     });
   }
 
@@ -83,6 +93,14 @@ class _DbTestScreenState extends State<DbTestScreen> {
             SizedBox(height: 20),
             Text(
               displayedUsername ?? 'No user loaded',
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              (allergies?.isEmpty ?? true) ? 'No allergies' : "Allergies: ${allergies!}",
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              (diets?.isEmpty ?? true) ? 'No diets' : "Diets: ${diets!}",
               style: TextStyle(fontSize: 18),
             ),
           ],
