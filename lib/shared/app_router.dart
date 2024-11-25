@@ -6,10 +6,8 @@ import 'package:mealmaster/features/shopping_list/presentation/shopping_list_scr
 import 'package:mealmaster/features/splash_screen/splash_screen.dart';
 import 'package:mealmaster/features/user_profile/presentation/profile_screen.dart';
 
-import '../db/db-test.dart';
-
 final GoRouter router = GoRouter(
-  initialLocation: '/db',
+  initialLocation: '/splash',
   routes: [
     GoRoute(
       path: '/splash',
@@ -40,11 +38,6 @@ final GoRouter router = GoRouter(
       path: '/recipe',
       name: 'recipe',
       builder: (context, state) => RecipeScreen(),
-    ),
-    GoRoute(
-      path: '/db',
-      name: 'db',
-      builder: (context, state) => DbTestScreen(),
     ),
   ],
 );
