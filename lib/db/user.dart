@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:mealmaster/db/allergy.dart';
-import 'package:mealmaster/db/db_entry.dart';
+import 'package:mealmaster/db/base/db_entry.dart';
 
 import 'diet.dart';
 

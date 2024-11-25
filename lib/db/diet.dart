@@ -1,7 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:mealmaster/db/user.dart';
 
-import 'db_entry.dart';
+import 'base/db_entry.dart';
 
 part 'diet.g.dart';
 
