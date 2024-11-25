@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 sealed class AppTheme {
   static ThemeData light = FlexThemeData.light(
-    scheme: FlexScheme.materialHc,
+    scheme: FlexScheme.indigoM3,
   );
 
   static ThemeData dark = FlexThemeData.dark(
-    scheme: FlexScheme.materialHc,
+    scheme: FlexScheme.indigoM3,
   );
 }
