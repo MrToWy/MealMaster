@@ -1,6 +1,7 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:mealmaster/shared/app_router.dart';
+import 'shared/app_router.dart';
+import 'shared/theme.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,8 +11,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Meal Master',
       themeMode: ThemeMode.system,
-      theme: FlexThemeData.light(scheme: FlexScheme.materialHc),
-      darkTheme: FlexThemeData.dark(scheme: FlexScheme.materialHc),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       routerConfig: router,
     );
   }
