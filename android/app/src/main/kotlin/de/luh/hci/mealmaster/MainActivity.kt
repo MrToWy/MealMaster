@@ -1,4 +1,4 @@
-package com.example.mealmaster
+package de.luh.hci.mealmaster
 
 import io.flutter.embedding.android.FlutterActivity
 
