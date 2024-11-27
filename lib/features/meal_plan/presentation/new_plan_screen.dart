@@ -11,6 +11,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final int numberOfCards = 5;
 
     return Scaffold(
       body: SafeArea(
@@ -63,24 +64,25 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                           icon: Icon(Icons.info_outline))
                     ],
                   ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: 130,
-                        width: 130,
-                        child: Card.filled(),
+                  // TODO: Replace cards with actual images
+                  SizedBox(
+                    height: 400,
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10.0,
+                        crossAxisSpacing: 10.0,
+                        childAspectRatio: 1,
                       ),
-                      SizedBox(
-                        height: 130,
-                        width: 130,
-                        child: Card.filled(),
-                      ),
-                      SizedBox(
-                        height: 130,
-                        width: 130,
-                        child: Card.filled(),
-                      ),
-                    ],
+                      itemCount: numberOfCards,
+                      itemBuilder: (BuildContext context, int index) {
+                        return SizedBox(
+                          height: 130,
+                          width: 130,
+                          child: Card.filled(),
+                        );
+                      },
+                    ),
                   ),
                   SizedBox(height: 8),
                   FilledButton.icon(
