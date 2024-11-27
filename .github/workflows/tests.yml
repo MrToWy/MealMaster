@@ -17,6 +17,6 @@ jobs:
       - name: Check Code Format
         run: dart format . --set-exit-if-changed
       - name: Generate code
-        run: dart run build_runner build
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Analyze code
         run: dart analyze .
