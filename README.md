@@ -30,5 +30,5 @@ Documentation: https://isar-community.dev/v3/de/
 2. When adding a new class XYZ, add the code `part 'xyz.g.dart';`
 3. Run the following command 
 ```shell
-dart run build_runner build
+dart run build_runner build --delete-conflicting-outputs
 ```

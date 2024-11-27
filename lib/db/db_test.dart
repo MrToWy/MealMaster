@@ -5,7 +5,6 @@ import 'package:mealmaster/db/diet.dart';
 import 'package:mealmaster/db/user.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 class DbTestScreen extends StatefulWidget {
   @override
   State<DbTestScreen> createState() => _DbTestScreenState();
@@ -33,7 +32,8 @@ class _DbTestScreenState extends State<DbTestScreen> {
 
   Future<void> addUser() async {
     final isar = await isarInstance;
-    final newUser = User()..name = 'Test User ${DateTime.now().millisecondsSinceEpoch}';
+    final newUser = User()
+      ..name = 'Test User ${DateTime.now().millisecondsSinceEpoch}';
     final allergy = Allergy()..name = "Nuts";
     newUser.allergies.add(allergy);
 
@@ -52,9 +52,8 @@ class _DbTestScreenState extends State<DbTestScreen> {
     setState(() {
       displayedUsername = firstUser?.name ?? 'No user found';
       diets = firstUser?.diets.join(", ");
-      allergies = firstUser?.allergies
-          .map((allergy) => allergy.name)
-          .join(", ");
+      allergies =
+          firstUser?.allergies.map((allergy) => allergy.name).join(", ");
     });
   }
 
@@ -96,7 +95,9 @@ class _DbTestScreenState extends State<DbTestScreen> {
               style: TextStyle(fontSize: 18),
             ),
             Text(
-              (allergies?.isEmpty ?? true) ? 'No allergies' : "Allergies: ${allergies!}",
+              (allergies?.isEmpty ?? true)
+                  ? 'No allergies'
+                  : "Allergies: ${allergies!}",
               style: TextStyle(fontSize: 18),
             ),
             Text(

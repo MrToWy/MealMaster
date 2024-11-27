@@ -15,7 +15,6 @@ class Recipe extends DbEntry {
   final mealPlanEntry = IsarLinks<MealPlanEntry>();
 
   @Backlink(to: 'recipe')
-
   final ingredients = IsarLinks<RecipeIngredient>();
   @Backlink(to: 'recipe')
   final steps = IsarLinks<RecipeStep>();
