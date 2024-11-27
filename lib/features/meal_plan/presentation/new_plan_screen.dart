@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../common/widgets/info_dialog_button.dart';
+
 class NewPlanScreen extends StatefulWidget {
   const NewPlanScreen({super.key});
 
@@ -37,32 +39,9 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                         textAlign: TextAlign.start,
                       ),
                       SizedBox(width: 20),
-                      IconButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text("Zeige uns deine Vorräte"),
-                                  content: Text(
-                                    "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.",
-                                    style: textTheme.bodyLarge,
-                                    softWrap: true,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context)
-                                            .pop(); // Dialog schließen
-                                      },
-                                      child: Text("Schließen"),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          icon: Icon(Icons.info_outline))
+                      InfoDialogButton(
+                          infoText:
+                              "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.")
                     ],
                   ),
                   // TODO: Replace cards with actual images
