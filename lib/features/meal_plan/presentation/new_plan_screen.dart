@@ -45,7 +45,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                                 return AlertDialog(
                                   title: Text("Zeige uns deine Vorräte"),
                                   content: Text(
-                                    "Erstelle Fotos von deinen Vorräten wie zum Beispiel deinem Kühlschrank oder Vorratsschrank und MealMaster erstellt dir einen passenden Wochenplan.",
+                                    "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.",
                                     style: textTheme.bodyLarge,
                                     softWrap: true,
                                   ),
