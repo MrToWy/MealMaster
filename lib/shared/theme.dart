@@ -10,4 +10,3 @@ sealed class AppTheme {
     scheme: FlexScheme.indigoM3,
   );
 }
-
