@@ -52,7 +52,8 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                                   actions: [
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.of(context).pop(); // Dialog schließen
+                                        Navigator.of(context)
+                                            .pop(); // Dialog schließen
                                       },
                                       child: Text("Schließen"),
                                     ),
@@ -96,8 +97,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
               ),
               FilledButton(
                 onPressed: null,
-                child:
-                Text("Weiter"),
+                child: Text("Weiter"),
               ),
             ],
           ),
