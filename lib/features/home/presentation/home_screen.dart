@@ -42,13 +42,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const Text('reihenfolge ändern'),
+            const Text('Reihenfolge ändern'),
             Switch(
               value: context.watch<EditModeProvider>().inEditMode,
               onChanged: (value) {
                 context.read<EditModeProvider>().setEditMode(value);
               },
-              
             ),
           ],
         ),
