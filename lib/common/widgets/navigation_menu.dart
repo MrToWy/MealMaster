@@ -32,12 +32,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Hallo User!',
-          style: TextStyle(
-            fontSize: 50,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.headlineLarge,
         ),
         actions: [
           PopupMenuButton<String>(

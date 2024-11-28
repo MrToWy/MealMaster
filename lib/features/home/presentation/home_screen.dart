@@ -48,10 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (value) {
                 context.read<EditModeProvider>().setEditMode(value);
               },
-              activeColor: Colors.white,
-              activeTrackColor: Colors.grey,
-              inactiveThumbColor: Colors.white,
-              inactiveTrackColor: Colors.grey,
+              
             ),
           ],
         ),
