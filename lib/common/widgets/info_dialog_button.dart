@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class InfoDialogButton extends StatelessWidget {
   final String infoText;
+  final String title;
 
   const InfoDialogButton({
     super.key,
     required this.infoText,
+    required this.title,
   });
 
   @override
@@ -18,7 +20,7 @@ class InfoDialogButton extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Zeige uns deine Vorräte"),
+                title: Text(title),
                 content: Text(
                   infoText,
                   style: textTheme.bodyLarge,

@@ -40,8 +40,10 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                       ),
                       SizedBox(width: 20),
                       InfoDialogButton(
-                          infoText:
-                              "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.")
+                        infoText:
+                            "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.",
+                        title: "Zeige uns deine Vorräte",
+                      )
                     ],
                   ),
                   // TODO: Replace cards with actual images
