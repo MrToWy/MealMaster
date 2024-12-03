@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mealmaster/db/storage_ingredient.dart';
 import 'package:mealmaster/features/shopping_list/domain/shopping_list_repository.dart';
+//TODO: Clean Up and split into seperate Files
+//Missing Features add new Items and Change Items
 
 class ShoppingListScreen extends StatefulWidget {
   const ShoppingListScreen({super.key});
