@@ -23,6 +23,7 @@ dependencies:
     version: *isar_version
     hosted: https://pub.isar-community.dev/
   path_provider: ^2.1.5
+  expandable: ^5.0.1
 
 dev_dependencies:
   flutter_test:
