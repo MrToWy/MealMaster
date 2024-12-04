@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/common/widgets/base_scaffold.dart';
 
 import '../../../common/widgets/info_dialog_button.dart';
 
@@ -15,8 +16,10 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
     final textTheme = Theme.of(context).textTheme;
     final int numberOfCards = 5;
 
-    return Scaffold(
-      body: SafeArea(
+    return BaseScaffold(
+      title: 'Neuer Plan',
+      hasBackButton: true,
+      child: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(20),
           width: double.infinity,
@@ -26,11 +29,6 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Neuer Plan",
-                    style: textTheme.displayMedium,
-                  ),
-                  SizedBox(height: 20),
                   Row(
                     children: [
                       Text(
