@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:mealmaster/db/allergy.dart';
 import 'package:mealmaster/db/diet.dart';
+import 'package:mealmaster/db/example_image.dart';
 import 'package:mealmaster/db/user.dart';
+import 'package:mealmaster/shared/open_ai/api_client.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DbTestScreen extends StatefulWidget {
@@ -31,6 +33,20 @@ class _DbTestScreenState extends State<DbTestScreen> {
     );
   }
 
+  Future<void> callApi() async {
+    User? user = await loadFirstUser();
+
+    if(user == null){
+      return;
+    }
+
+    List<String> images = [];
+    images.add(ExampleImage.getFridge());
+
+    var test = await ApiClient.generateMealPlan(images, user);
+    test.toString();
+  }
+
   Future<void> addUser() async {
     final isar = await isarInstance;
     final newUser = User()
@@ -47,7 +63,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
     await loadFirstUser();
   }
 
-  Future<void> loadFirstUser() async {
+  Future<User?> loadFirstUser() async {
     final isar = await isarInstance;
     final firstUser = await isar.users.where().findFirst();
     setState(() {
@@ -57,6 +73,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
       allergies =
           firstUser?.allergies.map((allergy) => allergy.name).join(", ");
     });
+    return firstUser;
   }
 
   Future<void> deleteAllUsers() async {
@@ -77,6 +94,11 @@ class _DbTestScreenState extends State<DbTestScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            ElevatedButton(
+              onPressed: callApi,
+              child: Text('Call API'),
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: addUser,
               child: Text('Add New User'),
