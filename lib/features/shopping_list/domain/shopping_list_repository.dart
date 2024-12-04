@@ -8,6 +8,7 @@ abstract class ShoppingListRepository {
   addItemToShoppingList(ShoppingListItem item);
   removeItemFromShoppingList(ShoppingListItem item);
   addRecentItemToShoppingList(ShoppingListItem item);
+  editShoppingListItem(ShoppingListItem item);
 }
 
 class DemoShoppingListRepository implements ShoppingListRepository {
@@ -53,5 +54,11 @@ class DemoShoppingListRepository implements ShoppingListRepository {
   addRecentItemToShoppingList(ShoppingListItem item) {
     boughtList.remove(item);
     testList.add(item);
+  }
+
+  @override
+  editShoppingListItem(ShoppingListItem item) {
+    // TODO: implement editShoppingListItem
+    throw UnimplementedError();
   }
 }
