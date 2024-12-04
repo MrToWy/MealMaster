@@ -14,6 +14,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
   String? displayedUsername;
   String? allergies;
   String? diets;
+  String? apiKey;
   late Future<Isar> isarInstance;
 
   @override
@@ -52,6 +53,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
     setState(() {
       displayedUsername = firstUser?.name ?? 'No user found';
       diets = firstUser?.diets.join(", ");
+      apiKey = firstUser?.apiKey;
       allergies =
           firstUser?.allergies.map((allergy) => allergy.name).join(", ");
     });
@@ -102,6 +104,10 @@ class _DbTestScreenState extends State<DbTestScreen> {
             ),
             Text(
               (diets?.isEmpty ?? true) ? 'No diets' : "Diets: ${diets!}",
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              (apiKey?.isEmpty ?? true) ? 'No api key' : "Api Key: ${apiKey!}",
               style: TextStyle(fontSize: 18),
             ),
           ],
