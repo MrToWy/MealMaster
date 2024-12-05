@@ -32,7 +32,8 @@ class ApiClient {
           content: [
             Content(
               type: 'text',
-              value: 'Analyze these images and identify all ingredients with their approximate quantities.',
+              value:
+                  'Analyze these images and identify all ingredients with their approximate quantities.',
             ),
             ...images.map((image) => Content(
                   type: 'image_url',
@@ -83,7 +84,7 @@ class ApiClient {
       if (response != null) {
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
-        
+
         return (arguments['ingredients'] as List).map((ingredientData) {
           final ingredient = Ingredient()
             ..name = ingredientData['name']
@@ -91,7 +92,7 @@ class ApiClient {
 
           final storageIngredient = StorageIngredient()
             ..count = ingredientData['quantity'].toDouble();
-          
+
           storageIngredient.ingredient.add(ingredient);
           ingredient.storageIngredient.add(storageIngredient);
 
@@ -125,7 +126,8 @@ class ApiClient {
           content: [
             Content(
               type: 'text',
-              value: 'Generate a 5-day meal plan using these ingredients: ${ingredients.map((i) => "${i.ingredient.first.name}: ${i.count} ${i.ingredient.first.unit}").join(", ")}',
+              value:
+                  'Generate a 5-day meal plan using these ingredients: ${ingredients.map((i) => "${i.ingredient.first.name}: ${i.count} ${i.ingredient.first.unit}").join(", ")}',
             ),
           ],
         ),
@@ -199,11 +201,20 @@ class ApiClient {
                                     'description': 'Duration in minutes'
                                   }
                                 },
-                                'required': ['stepNumber', 'instruction', 'duration']
+                                'required': [
+                                  'stepNumber',
+                                  'instruction',
+                                  'duration'
+                                ]
                               }
                             }
                           },
-                          'required': ['name', 'description', 'ingredients', 'steps']
+                          'required': [
+                            'name',
+                            'description',
+                            'ingredients',
+                            'steps'
+                          ]
                         }
                       },
                       'required': ['dayNumber', 'recipe']
@@ -226,7 +237,7 @@ class ApiClient {
       if (response != null) {
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
-        
+
         // Create a new MealPlan object
         final mealPlan = MealPlan()
           ..startDate = DateTime.now()
@@ -235,13 +246,15 @@ class ApiClient {
         // Parse entries
         for (var entryData in arguments['mealPlan']['entries']) {
           final mealPlanEntry = MealPlanEntry()
-            ..day = DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
+            ..day =
+                DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
 
           final recipeData = entryData['recipe'];
           final recipe = Recipe()
             ..title = recipeData['name']
             ..description = recipeData['description']
-            ..cookingDuration = recipeData['steps'].fold<int>(0, (sum, step) => sum + step['duration']);
+            ..cookingDuration = recipeData['steps']
+                .fold<int>(0, (sum, step) => sum + step['duration']);
 
           // Parse ingredients
           for (var ingredientData in recipeData['ingredients']) {
