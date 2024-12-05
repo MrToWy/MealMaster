@@ -6,13 +6,14 @@ import 'package:mealmaster/shared/open_ai/request_body.dart';
 import '../../db/user.dart';
 
 class ApiClient {
-  static Future<Map<String, dynamic>?> generateMealPlan(List<String> images, User user) async {
+  static Future<Map<String, dynamic>?> generateMealPlan(
+      List<String> images, User user) async {
     if (images.isEmpty) {
       developer.log('No images provided', name: 'OpenAI');
       return null;
     }
 
-    if (user.apiKey == null){
+    if (user.apiKey == null) {
       developer.log('No api key provided', name: 'OpenAI');
       return null;
     }
@@ -99,7 +100,8 @@ class ApiClient {
                         },
                         'steps': {
                           'type': 'array',
-                          'description': 'Step-by-step instructions for the recipe',
+                          'description':
+                              'Step-by-step instructions for the recipe',
                           'items': {
                             'type': 'object',
                             'properties': {

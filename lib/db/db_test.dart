@@ -36,7 +36,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
   Future<void> callApi() async {
     User? user = await loadFirstUser();
 
-    if(user == null){
+    if (user == null) {
       return;
     }
 
