@@ -22,23 +22,36 @@ class ValidateItemsScreen extends StatelessWidget {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
-                "Folgende Zuaten wurden erkannt:",
+                "Folgende Zutaten wurden erkannt:",
                 style: textTheme.titleLarge,
                 textAlign: TextAlign.start,
               ),
+              SizedBox(height: 20),
               Expanded(
-                child: ListView.builder(
+                child: ListView.separated(
+                  separatorBuilder: (context, index) => Divider(),
                   itemCount: ingredients.length,
                   itemBuilder: (context, index) {
                     final storageIngredient = ingredients[index];
                     return DetectedIngredient(
                       name: storageIngredient.ingredient.value?.name ?? '',
-                      count: storageIngredient.count.toString(),
+                      count: storageIngredient.count ?? 0.0,
                       unit: storageIngredient.ingredient.value?.unit ?? '',
                     );
                   },
                 ),
               ),
+              SizedBox(height: 20),
+              Center(
+                child: Column(
+                  children: [
+                    IconButton(
+                        onPressed: () {}, iconSize: 40, icon: Icon(Icons.mic)),
+                    Text('Weitere Vorräte hinzufügen'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 60),
               Center(
                 child: FilledButton.icon(
                   icon: Icon(Icons.check),

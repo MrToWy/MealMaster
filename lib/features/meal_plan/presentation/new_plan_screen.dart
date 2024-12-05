@@ -14,18 +14,31 @@ class NewPlanScreen extends StatefulWidget {
 }
 
 class _NewPlanScreenState extends State<NewPlanScreen> {
+  // TODO: Remove this method and replace it with actual data
+  List<StorageIngredient> getTestData() {
+    final Ingredient ingredient = Ingredient()
+      ..name = "Eier"
+      ..unit = "Stück";
+
+    final StorageIngredient storageIngredient = StorageIngredient()
+      ..count = 3
+      ..ingredient.value = ingredient;
+
+    final Ingredient ingredient2 = Ingredient()
+      ..name = "Milch"
+      ..unit = "ml";
+
+    final StorageIngredient storageIngredient2 = StorageIngredient()
+      ..count = 200
+      ..ingredient.value = ingredient2;
+
+    return [storageIngredient, storageIngredient2];
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final int numberOfCards = 5;
-
-    final Ingredient ingredient = Ingredient()
-      ..name = "Test Ingredient"
-      ..unit = "Test Unit";
-
-    final StorageIngredient ingredient2 = StorageIngredient()
-      ..count = 3
-      ..ingredient.value = ingredient;
 
     return BaseScaffold(
       title: 'Neuer Plan',
@@ -88,7 +101,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return ValidateItemsScreen(
-                    ingredients: [ingredient2],
+                    ingredients: getTestData(),
                   );
                 }));
               },
