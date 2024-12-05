@@ -32,9 +32,9 @@ class ValidateItemsScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final storageIngredient = ingredients[index];
                     return DetectedIngredient(
-                      name: storageIngredient.ingredient.single.name ?? '',
+                      name: storageIngredient.ingredient.value?.name ?? '',
                       count: storageIngredient.count.toString(),
-                      unit: storageIngredient.ingredient.single.unit ?? '',
+                      unit: storageIngredient.ingredient.value?.unit ?? '',
                     );
                   },
                 ),

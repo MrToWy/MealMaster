@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/db/storage_ingredient.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
 import '../../../common/widgets/info_dialog_button.dart';
 import '../../../db/ingredient.dart';
+import '../../../db/storage_ingredient.dart';
 import 'validate_items_screen.dart';
 
 class NewPlanScreen extends StatefulWidget {
@@ -22,7 +22,10 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
     final Ingredient ingredient = Ingredient()
       ..name = "Test Ingredient"
       ..unit = "Test Unit";
-    ingredient.storageIngredient.add(StorageIngredient()..count = 1);
+
+    final StorageIngredient ingredient2 = StorageIngredient()
+      ..count = 3
+      ..ingredient.value = ingredient;
 
     return BaseScaffold(
       title: 'Neuer Plan',
@@ -85,7 +88,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return ValidateItemsScreen(
-                    ingredients: [ingredient.storageIngredient.single],
+                    ingredients: [ingredient2],
                   );
                 }));
               },
