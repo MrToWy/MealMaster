@@ -22,6 +22,7 @@ sealed class AppTheme {
     surfaceMode: FlexSurfaceMode.highSurfaceLowScaffold,
     blendLevel: 17,
     subThemesData: const FlexSubThemesData(
+      cardElevation: 10,
       interactionEffects: true,
       tintedDisabledControls: true,
       useMaterial3Typography: true,
@@ -31,7 +32,7 @@ sealed class AppTheme {
       inputDecoratorRadius: 8.0,
       inputDecoratorUnfocusedBorderIsColored: true,
       inputDecoratorFocusedBorderWidth: 1.5,
-      listTileSelectedSchemeColor: SchemeColor.primaryFixed,
+      listTileSelectedSchemeColor: SchemeColor.onPrimary,
       listTileIconSchemeColor: SchemeColor.primary,
       listTileTextSchemeColor: SchemeColor.primary,
       listTileTileSchemeColor: SchemeColor.transparent,
@@ -44,12 +45,12 @@ sealed class AppTheme {
     ),
     keyColors: const FlexKeyColors(
       useTertiary: true,
+      useExpressiveOnContainerColors: true,
     ),
-    tones: FlexSchemeVariant.material3Legacy.tones(Brightness.light),
+    tones: FlexSchemeVariant.highContrast.tones(Brightness.light),
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     materialTapTargetSize: MaterialTapTargetSize.padded,
   );
-
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
     colors: const FlexSchemeColor(
@@ -68,12 +69,13 @@ sealed class AppTheme {
       errorContainer: Color(0xFF93000A),
     ),
     surfaceMode: FlexSurfaceMode.highBackgroundLowScaffold,
-    blendLevel: 19,
+    blendLevel: 20,
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,
       blendOnColors: true,
-      scaffoldBackgroundSchemeColor: SchemeColor.surfaceContainerLow,
+      scaffoldBackgroundBaseColor: FlexScaffoldBaseColor.surfaceContainerLowest,
+      scaffoldBackgroundSchemeColor: SchemeColor.surfaceContainerHigh,
       useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       inputDecoratorIsFilled: true,
@@ -81,7 +83,7 @@ sealed class AppTheme {
       inputDecoratorRadius: 8.0,
       inputDecoratorUnfocusedBorderIsColored: true,
       inputDecoratorFocusedBorderWidth: 1.5,
-      listTileSelectedSchemeColor: SchemeColor.primaryFixed,
+      listTileSelectedSchemeColor: SchemeColor.onPrimary,
       listTileIconSchemeColor: SchemeColor.primary,
       listTileTextSchemeColor: SchemeColor.primary,
       listTileTileSchemeColor: SchemeColor.transparent,
@@ -95,7 +97,7 @@ sealed class AppTheme {
     keyColors: const FlexKeyColors(
       useTertiary: true,
     ),
-    tones: FlexSchemeVariant.material3Legacy.tones(Brightness.dark),
+    tones: FlexSchemeVariant.highContrast.tones(Brightness.dark),
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     materialTapTargetSize: MaterialTapTargetSize.padded,
   );
