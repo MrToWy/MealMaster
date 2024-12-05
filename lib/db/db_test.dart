@@ -43,7 +43,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
     List<String> images = [];
     images.add(ExampleImage.getFridge());
 
-    var test = await ApiClient.generateMealPlan(images, user);
+    var test = await ApiClient.generateStorageIngredients(images, user);
     test.toString();
   }
 
