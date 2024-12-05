@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Meal Master',
-        themeMode: ThemeMode.dark,
+        themeMode: ThemeMode.system,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         initialRoute: '/navigation',
