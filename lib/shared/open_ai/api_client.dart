@@ -2,11 +2,17 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'package:mealmaster/shared/open_ai/request_body.dart';
-
+import '../../db/ingredient.dart';
+import '../../db/meal_plan_entry.dart';
+import '../../db/recipe_ingredient.dart';
 import '../../db/user.dart';
+import '../../db/storage_ingredient.dart';
+import '../../db/meal_plan.dart';
+import '../../db/recipe.dart';
+import '../../db/recipe_step.dart';
 
 class ApiClient {
-  static Future<Map<String, dynamic>?> generateMealPlan(
+  static Future<List<StorageIngredient>?> generateStorageIngredients(
       List<String> images, User user) async {
     if (images.isEmpty) {
       developer.log('No images provided', name: 'OpenAI');
@@ -25,9 +31,9 @@ class ApiClient {
           role: 'user',
           content: [
             Content(
-                type: 'text',
-                value:
-                    'Analyse the ingredients inside the fridge and generate a meal plan for 5 days'),
+              type: 'text',
+              value: 'Analyze these images and identify all ingredients with their approximate quantities.',
+            ),
             ...images.map((image) => Content(
                   type: 'image_url',
                   value: {'url': "data:image/png;base64," + image},
@@ -37,101 +43,177 @@ class ApiClient {
       ],
       functions: [
         AiFunction(
-          name: 'generate_meal_plan',
-          description: 'Generates a meal plan with recipes in JSON format',
+          name: 'detect_ingredients',
+          description: 'Detects ingredients from images',
           parameters: {
             'type': 'object',
             'properties': {
-              'startDate': {
-                'type': 'string',
-                'format': 'date',
-                'description': 'Start date of the meal plan (today)'
-              },
-              'endDate': {
-                'type': 'string',
-                'format': 'date',
-                'description': 'End date of the meal plan (5 days from today)'
-              },
-              'entries': {
+              'ingredients': {
                 'type': 'array',
-                'description': 'Daily meal plan entries',
                 'items': {
                   'type': 'object',
                   'properties': {
-                    'day': {
+                    'name': {
                       'type': 'string',
-                      'format': 'date',
-                      'description': 'Date for this meal plan entry'
+                      'description': 'Name of the ingredient'
                     },
-                    'recipe': {
-                      'type': 'object',
-                      'properties': {
-                        'title': {
-                          'type': 'string',
-                          'description': 'Title of the recipe'
-                        },
-                        'cookingDuration': {
-                          'type': 'integer',
-                          'description': 'Cooking duration in minutes'
-                        },
-                        'difficulty': {
-                          'type': 'integer',
-                          'minimum': 1,
-                          'maximum': 3,
-                          'description': 'Difficulty level (1-3)'
-                        },
-                        'ingredients': {
-                          'type': 'array',
-                          'description': 'List of ingredients with quantities',
-                          'items': {
-                            'type': 'object',
-                            'properties': {
-                              'name': {
-                                'type': 'string',
-                                'description': 'Name of the ingredient'
-                              },
-                              'quantity': {
-                                'type': 'number',
-                                'description': 'Quantity of the ingredient'
-                              },
-                            },
-                            'required': ['name', 'quantity'],
-                          },
-                        },
-                        'steps': {
-                          'type': 'array',
-                          'description':
-                              'Step-by-step instructions for the recipe',
-                          'items': {
-                            'type': 'object',
-                            'properties': {
-                              'orderPosition': {
-                                'type': 'integer',
-                                'description': 'Order position of the step'
-                              },
-                              'description': {
-                                'type': 'string',
-                                'description': 'Description of the step'
-                              },
-                            },
-                            'required': ['orderPosition', 'description'],
-                          },
-                        },
-                      },
-                      'required': [
-                        'title',
-                        'cookingDuration',
-                        'difficulty',
-                        'ingredients',
-                        'steps'
-                      ],
+                    'quantity': {
+                      'type': 'number',
+                      'description': 'Quantity of the ingredient'
+                    },
+                    'unit': {
+                      'type': 'string',
+                      'description': 'Unit of measurement'
                     },
                   },
-                  'required': ['day', 'recipe'],
+                  'required': ['name', 'quantity', 'unit'],
                 },
               },
             },
-            'required': ['startDate', 'endDate', 'entries'],
+            'required': ['ingredients'],
+          },
+        ),
+      ],
+      functionCall: {'name': 'detect_ingredients'},
+      maxTokens: 300,
+    );
+
+    try {
+      final response = await _makeApiCall(requestBody, user.apiKey!);
+      if (response != null) {
+        final functionCall = response['choices'][0]['message']['function_call'];
+        final arguments = jsonDecode(functionCall['arguments']);
+        
+        return (arguments['ingredients'] as List).map((ingredientData) {
+          final ingredient = Ingredient()
+            ..name = ingredientData['name']
+            ..unit = ingredientData['unit'];
+
+          final storageIngredient = StorageIngredient()
+            ..count = ingredientData['quantity'].toDouble();
+          
+          storageIngredient.ingredient.add(ingredient);
+          ingredient.storageIngredient.add(storageIngredient);
+
+          return storageIngredient;
+        }).toList();
+      }
+      return null;
+    } catch (e) {
+      developer.log('Exception: $e', name: 'OpenAI');
+      return null;
+    }
+  }
+
+  static Future<MealPlan?> generateMealPlan(
+      List<StorageIngredient> ingredients, User user) async {
+    if (ingredients.isEmpty) {
+      developer.log('No ingredients provided', name: 'OpenAI');
+      return null;
+    }
+
+    if (user.apiKey == null) {
+      developer.log('No api key provided', name: 'OpenAI');
+      return null;
+    }
+
+    final requestBody = RequestBody(
+      model: 'gpt-4',
+      messages: [
+        Message(
+          role: 'user',
+          content: [
+            Content(
+              type: 'text',
+              value: 'Generate a 5-day meal plan using these ingredients: ${ingredients.map((i) => "${i.ingredient.first.name}: ${i.count} ${i.ingredient.first.unit}").join(", ")}',
+            ),
+          ],
+        ),
+      ],
+      functions: [
+        AiFunction(
+          name: 'generate_meal_plan',
+          description: 'Generates a meal plan with recipes',
+          parameters: {
+            'type': 'object',
+            'properties': {
+              'mealPlan': {
+                'type': 'object',
+                'properties': {
+                  'entries': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'object',
+                      'properties': {
+                        'dayNumber': {
+                          'type': 'integer',
+                          'description': 'Day number (1-5)'
+                        },
+                        'recipe': {
+                          'type': 'object',
+                          'properties': {
+                            'name': {
+                              'type': 'string',
+                              'description': 'Name of the recipe'
+                            },
+                            'description': {
+                              'type': 'string',
+                              'description': 'Brief description of the recipe'
+                            },
+                            'ingredients': {
+                              'type': 'array',
+                              'items': {
+                                'type': 'object',
+                                'properties': {
+                                  'name': {
+                                    'type': 'string',
+                                    'description': 'Name of the ingredient'
+                                  },
+                                  'quantity': {
+                                    'type': 'number',
+                                    'description': 'Amount needed'
+                                  },
+                                  'unit': {
+                                    'type': 'string',
+                                    'description': 'Unit of measurement'
+                                  }
+                                },
+                                'required': ['name', 'quantity', 'unit']
+                              }
+                            },
+                            'steps': {
+                              'type': 'array',
+                              'items': {
+                                'type': 'object',
+                                'properties': {
+                                  'stepNumber': {
+                                    'type': 'integer',
+                                    'description': 'Order of the step'
+                                  },
+                                  'instruction': {
+                                    'type': 'string',
+                                    'description': 'Step instruction'
+                                  },
+                                  'duration': {
+                                    'type': 'integer',
+                                    'description': 'Duration in minutes'
+                                  }
+                                },
+                                'required': ['stepNumber', 'instruction', 'duration']
+                              }
+                            }
+                          },
+                          'required': ['name', 'description', 'ingredients', 'steps']
+                        }
+                      },
+                      'required': ['dayNumber', 'recipe']
+                    }
+                  }
+                },
+                'required': ['entries']
+              }
+            },
+            'required': ['mealPlan']
           },
         ),
       ],
@@ -140,11 +222,81 @@ class ApiClient {
     );
 
     try {
+      final response = await _makeApiCall(requestBody, user.apiKey!);
+      if (response != null) {
+        final functionCall = response['choices'][0]['message']['function_call'];
+        final arguments = jsonDecode(functionCall['arguments']);
+        
+        // Create a new MealPlan object
+        final mealPlan = MealPlan()
+          ..startDate = DateTime.now()
+          ..endDate = DateTime.now().add(Duration(days: 5));
+
+        // Parse entries
+        for (var entryData in arguments['mealPlan']['entries']) {
+          final mealPlanEntry = MealPlanEntry()
+            ..day = DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
+
+          final recipeData = entryData['recipe'];
+          final recipe = Recipe()
+            ..title = recipeData['name']
+            ..description = recipeData['description']
+            ..cookingDuration = recipeData['steps'].fold<int>(0, (sum, step) => sum + step['duration']);
+
+          // Parse ingredients
+          for (var ingredientData in recipeData['ingredients']) {
+            // Create the Ingredient
+            // ToDo dont create it when it exists already
+            final ingredient = Ingredient()
+              ..name = ingredientData['name']
+              ..unit = ingredientData['unit'];
+
+            // Create the RecipeIngredient with the count
+            final recipeIngredient = RecipeIngredient()
+              ..count = ingredientData['quantity'].toDouble();
+
+            // Link everything together
+            recipeIngredient.recipe.add(recipe);
+            recipeIngredient.ingredients.add(ingredient);
+            ingredient.recipeIngredient.add(recipeIngredient);
+            recipe.ingredients.add(recipeIngredient);
+          }
+
+          // Parse steps
+          for (var stepData in recipeData['steps']) {
+            final recipeStep = RecipeStep()
+              ..orderPosition = stepData['stepNumber']
+              ..description = stepData['instruction'];
+
+            recipe.steps.add(recipeStep);
+          }
+
+          //mealPlanEntry.recipe.add(recipe); // ToDo: Add link to db class
+          mealPlan.entries.add(mealPlanEntry);
+        }
+
+        // Save mealPlan to the database
+        // await isar.writeTxn((isar) async {
+        //   await isar.mealPlans.put(mealPlan);
+        // });
+
+        return mealPlan;
+      }
+      return null;
+    } catch (e) {
+      developer.log('Exception: $e', name: 'OpenAI');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> _makeApiCall(
+      RequestBody requestBody, String apiKey) async {
+    try {
       final response = await http.post(
         Uri.parse('https://api.openai.com/v1/chat/completions'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer ${user.apiKey!}',
+          'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode(requestBody.toJson()),
       );

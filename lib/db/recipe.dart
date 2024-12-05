@@ -9,6 +9,8 @@ part 'recipe.g.dart';
 
 @collection
 class Recipe extends DbEntry {
+  String? title;
+  String? description;
   int? cookingDuration;
   int? difficulty;
 
