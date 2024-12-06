@@ -86,23 +86,22 @@ class ApiClient {
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
 
-        if(isar != null){
+        if (isar != null) {
           // First, fetch all existing ingredients outside the transaction
-          final existingIngredients = await isar.ingredients
-              .where()
-              .findAll();
+          final existingIngredients = await isar.ingredients.where().findAll();
 
           return await isar.writeTxn(() async {
             final ingredients = <StorageIngredient>[];
-            
+
             for (var ingredientData in arguments['ingredients']) {
               // Find matching ingredient from pre-fetched list
               Ingredient? ingredient = existingIngredients.firstWhere(
-                (i) => i.name == ingredientData['name'] && i.unit == ingredientData['unit'],
-                orElse: () => Ingredient()
-                  ..name = ingredientData['name']
-                  ..unit = ingredientData['unit']
-              );
+                  (i) =>
+                      i.name == ingredientData['name'] &&
+                      i.unit == ingredientData['unit'],
+                  orElse: () => Ingredient()
+                    ..name = ingredientData['name']
+                    ..unit = ingredientData['unit']);
 
               if (!existingIngredients.contains(ingredient)) {
                 await isar.ingredients.put(ingredient);
@@ -260,79 +259,77 @@ class ApiClient {
     try {
       final response = await _makeApiCall(requestBody, user.apiKey!);
       if (response != null) {
-        final existingIngredients = await isar.ingredients
-            .where()
-            .findAll();
+        final existingIngredients = await isar.ingredients.where().findAll();
 
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
 
         MealPlan mealPlan = await isar.writeTxn(() async {
-        // Create a new MealPlan object
-        final mealPlan = MealPlan()
-          ..startDate = DateTime.now()
-          ..endDate = DateTime.now().add(Duration(days: 5));
-        isar.mealPlans.put(mealPlan);
+          // Create a new MealPlan object
+          final mealPlan = MealPlan()
+            ..startDate = DateTime.now()
+            ..endDate = DateTime.now().add(Duration(days: 5));
+          isar.mealPlans.put(mealPlan);
 
-        // Parse entries
-        for (var entryData in arguments['mealPlan']['entries']) {
-          final mealPlanEntry = MealPlanEntry()
-            ..day = DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
+          // Parse entries
+          for (var entryData in arguments['mealPlan']['entries']) {
+            final mealPlanEntry = MealPlanEntry()
+              ..day = DateTime.now()
+                  .add(Duration(days: entryData['dayNumber'] - 1));
 
-          final recipeData = entryData['recipe'];
-          final recipe = Recipe()
-            ..title = recipeData['name']
-            ..description = recipeData['description']
-            ..cookingDuration = recipeData['steps']
-                .fold<int>(0, (int sum, dynamic step) => sum + step['duration'] as int);
+            final recipeData = entryData['recipe'];
+            final recipe = Recipe()
+              ..title = recipeData['name']
+              ..description = recipeData['description']
+              ..cookingDuration = recipeData['steps'].fold<int>(
+                  0, (int sum, dynamic step) => sum + step['duration'] as int);
 
-          await isar.mealPlanEntrys.put(mealPlanEntry);
-          await isar.recipes.put(recipe);
-          mealPlanEntry.recipe.add(recipe);
-          await mealPlanEntry.recipe.save();
-          mealPlanEntry.mealPlan.add(mealPlan);
-          await mealPlanEntry.mealPlan.save();
+            await isar.mealPlanEntrys.put(mealPlanEntry);
+            await isar.recipes.put(recipe);
+            mealPlanEntry.recipe.add(recipe);
+            await mealPlanEntry.recipe.save();
+            mealPlanEntry.mealPlan.add(mealPlan);
+            await mealPlanEntry.mealPlan.save();
 
+            // Parse ingredients
+            for (var ingredientData in recipeData['ingredients']) {
+              // Create the Ingredient
 
-          // Parse ingredients
-          for (var ingredientData in recipeData['ingredients']) {
-            // Create the Ingredient
+              Ingredient? ingredient = existingIngredients.firstWhere(
+                  (i) =>
+                      i.name == ingredientData['name'] &&
+                      i.unit == ingredientData['unit'],
+                  orElse: () => Ingredient()
+                    ..name = ingredientData['name']
+                    ..unit = ingredientData['unit']);
 
-            Ingredient? ingredient = existingIngredients.firstWhere(
-                    (i) => i.name == ingredientData['name'] && i.unit == ingredientData['unit'],
-                orElse: () => Ingredient()
-                  ..name = ingredientData['name']
-                  ..unit = ingredientData['unit']
-            );
+              // Create the RecipeIngredient with the count
+              final recipeIngredient = RecipeIngredient()
+                ..count = ingredientData['quantity'].toDouble();
 
-            // Create the RecipeIngredient with the count
-            final recipeIngredient = RecipeIngredient()
-              ..count = ingredientData['quantity'].toDouble();
+              if (ingredient.id == Isar.autoIncrement) {
+                await isar.ingredients.put(ingredient);
+              }
+              await isar.recipeIngredients.put(recipeIngredient);
 
-
-            if (ingredient.id == Isar.autoIncrement) {
-              await isar.ingredients.put(ingredient);
+              // Link everything together
+              recipeIngredient.recipe.add(recipe);
+              await recipeIngredient.recipe.save();
+              recipeIngredient.ingredients.add(ingredient);
+              await recipeIngredient.ingredients.save();
             }
-            await isar.recipeIngredients.put(recipeIngredient);
 
-            // Link everything together
-            recipeIngredient.recipe.add(recipe);
-            await recipeIngredient.recipe.save();
-            recipeIngredient.ingredients.add(ingredient);
-            await recipeIngredient.ingredients.save();
+            // Parse steps
+            for (var stepData in recipeData['steps']) {
+              final recipeStep = RecipeStep()
+                ..orderPosition = stepData['stepNumber']
+                ..description = stepData['instruction'];
+
+              await isar.recipeSteps.put(recipeStep);
+              recipe.steps.add(recipeStep);
+            }
+            await recipe.steps.save();
           }
-
-          // Parse steps
-          for (var stepData in recipeData['steps']) {
-            final recipeStep = RecipeStep()
-              ..orderPosition = stepData['stepNumber']
-              ..description = stepData['instruction'];
-
-            await isar.recipeSteps.put(recipeStep);
-            recipe.steps.add(recipeStep);
-          }
-          await recipe.steps.save();
-        }
 
           return mealPlan;
         });

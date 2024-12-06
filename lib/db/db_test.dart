@@ -35,7 +35,18 @@ class _DbTestScreenState extends State<DbTestScreen> {
   Future<Isar> openIsar() async {
     final dir = await getApplicationDocumentsDirectory();
     return await Isar.open(
-      [UserSchema, DietSchema, AllergySchema, IngredientSchema, MealPlanSchema, MealPlanEntrySchema, RecipeSchema, RecipeIngredientSchema, RecipeStepSchema, StorageIngredientSchema, ],
+      [
+        UserSchema,
+        DietSchema,
+        AllergySchema,
+        IngredientSchema,
+        MealPlanSchema,
+        MealPlanEntrySchema,
+        RecipeSchema,
+        RecipeIngredientSchema,
+        RecipeStepSchema,
+        StorageIngredientSchema,
+      ],
       directory: dir.path,
     );
   }
