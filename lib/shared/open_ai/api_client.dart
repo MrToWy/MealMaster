@@ -119,7 +119,6 @@ class ApiClient {
 
           return ingredients;
         });
-        return null;
       }
       return null;
     } catch (e) {
