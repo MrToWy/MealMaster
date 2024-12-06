@@ -40,7 +40,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
     );
   }
 
-  Future<void> callApi() async {
+  Future<void> callApiStorageIngredients() async {
     User? user = await loadFirstUser();
 
     if (user == null) {
@@ -53,8 +53,20 @@ class _DbTestScreenState extends State<DbTestScreen> {
     final isar = await isarInstance;
 
     var test = await ApiClient.generateStorageIngredients(images, user, isar);
-    var test2 = await ApiClient.generateMealPlan(test!, user);
     test.toString();
+  }
+
+  Future<void> callApiMealPlan() async {
+    User? user = await loadFirstUser();
+
+    if (user == null) {
+      return;
+    }
+
+    final isar = await isarInstance;
+    final storageItems = await isar.storageIngredients.where().findAll();
+
+    var test2 = await ApiClient.generateMealPlan(storageItems, user);
     test2.toString();
   }
 
@@ -106,8 +118,13 @@ class _DbTestScreenState extends State<DbTestScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: callApi,
-              child: Text('Call API'),
+              onPressed: callApiStorageIngredients,
+              child: Text('Get storage ingredients'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: callApiMealPlan,
+              child: Text('Get mealplan'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
