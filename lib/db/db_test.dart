@@ -70,7 +70,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
       value.ingredient.loadSync();
     }
 
-    var test2 = await ApiClient.generateMealPlan(storageItems, user);
+    var test2 = await ApiClient.generateMealPlan(storageItems, user, isar);
     test2.toString();
   }
 
