@@ -66,6 +66,10 @@ class _DbTestScreenState extends State<DbTestScreen> {
     final isar = await isarInstance;
     final storageItems = await isar.storageIngredients.where().findAll();
 
+    for (var value in storageItems) {
+      value.ingredient.loadSync();
+    }
+
     var test2 = await ApiClient.generateMealPlan(storageItems, user);
     test2.toString();
   }
