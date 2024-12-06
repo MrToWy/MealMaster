@@ -38,7 +38,7 @@ class ApiClient {
             ),
             ...images.map((image) => Content(
                   type: 'image_url',
-                  value: {'url': "data:image/png;base64," + image},
+                  value: {'url': "data:image/png;base64,$image"},
                 )),
           ],
         ),
@@ -86,42 +86,40 @@ class ApiClient {
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
 
-        if (isar != null) {
-          // First, fetch all existing ingredients outside the transaction
-          final existingIngredients = await isar.ingredients.where().findAll();
+        // First, fetch all existing ingredients outside the transaction
+        final existingIngredients = await isar.ingredients.where().findAll();
 
-          return await isar.writeTxn(() async {
-            final ingredients = <StorageIngredient>[];
+        return await isar.writeTxn(() async {
+          final ingredients = <StorageIngredient>[];
 
-            for (var ingredientData in arguments['ingredients']) {
-              // Find matching ingredient from pre-fetched list
-              Ingredient? ingredient = existingIngredients.firstWhere(
-                  (i) =>
-                      i.name == ingredientData['name'] &&
-                      i.unit == ingredientData['unit'],
-                  orElse: () => Ingredient()
-                    ..name = ingredientData['name']
-                    ..unit = ingredientData['unit']);
+          for (var ingredientData in arguments['ingredients']) {
+            // Find matching ingredient from pre-fetched list
+            Ingredient? ingredient = existingIngredients.firstWhere(
+                (i) =>
+                    i.name == ingredientData['name'] &&
+                    i.unit == ingredientData['unit'],
+                orElse: () => Ingredient()
+                  ..name = ingredientData['name']
+                  ..unit = ingredientData['unit']);
 
-              if (!existingIngredients.contains(ingredient)) {
-                await isar.ingredients.put(ingredient);
-              }
-
-              final storageIngredient = StorageIngredient()
-                ..count = ingredientData['quantity'].toDouble();
-              await isar.storageIngredients.put(storageIngredient);
-
-              // Establish bidirectional relationship
-              storageIngredient.ingredient.add(ingredient);
-              await storageIngredient.ingredient.save();
-
-              ingredients.add(storageIngredient);
+            if (!existingIngredients.contains(ingredient)) {
+              await isar.ingredients.put(ingredient);
             }
 
-            return ingredients;
-          });
-        }
-        return null;
+            final storageIngredient = StorageIngredient()
+              ..count = ingredientData['quantity'].toDouble();
+            await isar.storageIngredients.put(storageIngredient);
+
+            // Establish bidirectional relationship
+            storageIngredient.ingredient.add(ingredient);
+            await storageIngredient.ingredient.save();
+
+            ingredients.add(storageIngredient);
+          }
+
+          return ingredients;
+        });
+              return null;
       }
       return null;
     } catch (e) {
