@@ -14,10 +14,10 @@ class Recipe extends DbEntry {
   int? cookingDuration;
   int? difficulty;
 
-  final mealPlanEntry = IsarLinks<MealPlanEntry>();
-
   @Backlink(to: 'recipe')
   final ingredients = IsarLinks<RecipeIngredient>();
   @Backlink(to: 'recipe')
   final steps = IsarLinks<RecipeStep>();
+  @Backlink(to: 'recipe')
+  final mealPlanEntries = IsarLinks<MealPlanEntry>();
 }

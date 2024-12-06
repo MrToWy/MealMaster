@@ -45,12 +45,6 @@ const RecipeSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {
-    r'mealPlanEntry': LinkSchema(
-      id: -3046324625018578930,
-      name: r'mealPlanEntry',
-      target: r'MealPlanEntry',
-      single: false,
-    ),
     r'ingredients': LinkSchema(
       id: 7540457983369431380,
       name: r'ingredients',
@@ -62,6 +56,13 @@ const RecipeSchema = CollectionSchema(
       id: 2977181689599460031,
       name: r'steps',
       target: r'RecipeStep',
+      single: false,
+      linkName: r'recipe',
+    ),
+    r'mealPlanEntries': LinkSchema(
+      id: 1676032369974761968,
+      name: r'mealPlanEntries',
+      target: r'MealPlanEntry',
       single: false,
       linkName: r'recipe',
     )
@@ -146,16 +147,16 @@ Id _recipeGetId(Recipe object) {
 }
 
 List<IsarLinkBase<dynamic>> _recipeGetLinks(Recipe object) {
-  return [object.mealPlanEntry, object.ingredients, object.steps];
+  return [object.ingredients, object.steps, object.mealPlanEntries];
 }
 
 void _recipeAttach(IsarCollection<dynamic> col, Id id, Recipe object) {
   object.id = id;
-  object.mealPlanEntry
-      .attach(col, col.isar.collection<MealPlanEntry>(), r'mealPlanEntry', id);
   object.ingredients
       .attach(col, col.isar.collection<RecipeIngredient>(), r'ingredients', id);
   object.steps.attach(col, col.isar.collection<RecipeStep>(), r'steps', id);
+  object.mealPlanEntries.attach(
+      col, col.isar.collection<MealPlanEntry>(), r'mealPlanEntries', id);
 }
 
 extension RecipeQueryWhereSort on QueryBuilder<Recipe, Recipe, QWhere> {
@@ -722,66 +723,6 @@ extension RecipeQueryFilter on QueryBuilder<Recipe, Recipe, QFilterCondition> {
 extension RecipeQueryObject on QueryBuilder<Recipe, Recipe, QFilterCondition> {}
 
 extension RecipeQueryLinks on QueryBuilder<Recipe, Recipe, QFilterCondition> {
-  QueryBuilder<Recipe, Recipe, QAfterFilterCondition> mealPlanEntry(
-      FilterQuery<MealPlanEntry> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'mealPlanEntry');
-    });
-  }
-
-  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
-      mealPlanEntryLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlanEntry', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Recipe, Recipe, QAfterFilterCondition> mealPlanEntryIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlanEntry', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
-      mealPlanEntryIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlanEntry', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
-      mealPlanEntryLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlanEntry', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
-      mealPlanEntryLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlanEntry', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
-      mealPlanEntryLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'mealPlanEntry', lower, includeLower, upper, includeUpper);
-    });
-  }
-
   QueryBuilder<Recipe, Recipe, QAfterFilterCondition> ingredients(
       FilterQuery<RecipeIngredient> q) {
     return QueryBuilder.apply(this, (query) {
@@ -892,6 +833,67 @@ extension RecipeQueryLinks on QueryBuilder<Recipe, Recipe, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
           r'steps', lower, includeLower, upper, includeUpper);
+    });
+  }
+
+  QueryBuilder<Recipe, Recipe, QAfterFilterCondition> mealPlanEntries(
+      FilterQuery<MealPlanEntry> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'mealPlanEntries');
+    });
+  }
+
+  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
+      mealPlanEntriesLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'mealPlanEntries', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Recipe, Recipe, QAfterFilterCondition> mealPlanEntriesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'mealPlanEntries', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
+      mealPlanEntriesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'mealPlanEntries', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
+      mealPlanEntriesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'mealPlanEntries', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
+      mealPlanEntriesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'mealPlanEntries', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Recipe, Recipe, QAfterFilterCondition>
+      mealPlanEntriesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'mealPlanEntries', lower, includeLower, upper, includeUpper);
     });
   }
 }
