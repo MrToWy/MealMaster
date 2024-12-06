@@ -45,7 +45,7 @@ const IngredientSchema = CollectionSchema(
       id: -2335286330630169646,
       name: r'storageIngredient',
       target: r'StorageIngredient',
-      single: false,
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -631,57 +631,9 @@ extension IngredientQueryLinks
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'storageIngredient', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientIsEmpty() {
+      storageIngredientIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'storageIngredient', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'storageIngredient', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'storageIngredient', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'storageIngredient', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'storageIngredient', lower, includeLower, upper, includeUpper);
     });
   }
 }
