@@ -91,10 +91,7 @@ class ApiClient {
             final ingredients = <StorageIngredient>[];
             
             for (var ingredientData in arguments['ingredients']) {
-              final ingredient = Ingredient()
-                ..name = ingredientData['name']
-                ..unit = ingredientData['unit'];
-              await isar.ingredients.put(ingredient);
+              final ingredient = getOrCreate(ingredientData['name'],ingredientData['unit'],isar);
 
               final storageIngredient = StorageIngredient()
                 ..count = ingredientData['quantity'].toDouble();
@@ -117,6 +114,25 @@ class ApiClient {
       developer.log('Exception: $e', name: 'OpenAI');
       return null;
     }
+  }
+
+  static Ingredient getOrCreate(String name, String unit, Isar isar){
+
+    Ingredient? ingredient = isar.ingredients.where().filter()
+        .nameEqualTo(name)
+        .and()
+        .unitEqualTo(unit)
+        .findFirstSync();
+
+    if(ingredient != null) return ingredient;
+
+     ingredient = Ingredient()
+    ..name = name
+    ..unit = unit;
+
+     isar.ingredients.put(ingredient);
+
+    return ingredient;
   }
 
   static Future<MealPlan?> generateMealPlan(
