@@ -3,6 +3,13 @@ import 'package:isar/isar.dart';
 import 'package:mealmaster/db/allergy.dart';
 import 'package:mealmaster/db/diet.dart';
 import 'package:mealmaster/db/example_image.dart';
+import 'package:mealmaster/db/ingredient.dart';
+import 'package:mealmaster/db/meal_plan.dart';
+import 'package:mealmaster/db/meal_plan_entry.dart';
+import 'package:mealmaster/db/recipe.dart';
+import 'package:mealmaster/db/recipe_ingredient.dart';
+import 'package:mealmaster/db/recipe_step.dart';
+import 'package:mealmaster/db/storage_ingredient.dart';
 import 'package:mealmaster/db/user.dart';
 import 'package:mealmaster/shared/open_ai/api_client.dart';
 import 'package:path_provider/path_provider.dart';
@@ -28,7 +35,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
   Future<Isar> openIsar() async {
     final dir = await getApplicationDocumentsDirectory();
     return await Isar.open(
-      [UserSchema, DietSchema, AllergySchema],
+      [UserSchema, DietSchema, AllergySchema, IngredientSchema, MealPlanSchema, MealPlanEntrySchema, RecipeSchema, RecipeIngredientSchema, RecipeStepSchema, StorageIngredientSchema, ],
       directory: dir.path,
     );
   }
@@ -43,8 +50,12 @@ class _DbTestScreenState extends State<DbTestScreen> {
     List<String> images = [];
     images.add(ExampleImage.getFridge());
 
-    var test = await ApiClient.generateStorageIngredients(images, user);
+    final isar = await isarInstance;
+
+    var test = await ApiClient.generateStorageIngredients(images, user, isar);
+    var test2 = await ApiClient.generateMealPlan(test!, user);
     test.toString();
+    test2.toString();
   }
 
   Future<void> addUser() async {

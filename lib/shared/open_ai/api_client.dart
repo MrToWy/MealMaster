@@ -10,10 +10,11 @@ import '../../db/storage_ingredient.dart';
 import '../../db/meal_plan.dart';
 import '../../db/recipe.dart';
 import '../../db/recipe_step.dart';
+import 'package:isar/isar.dart';
 
 class ApiClient {
   static Future<List<StorageIngredient>?> generateStorageIngredients(
-      List<String> images, User user) async {
+      List<String> images, User user, Isar isar) async {
     if (images.isEmpty) {
       developer.log('No images provided', name: 'OpenAI');
       return null;
@@ -85,19 +86,31 @@ class ApiClient {
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
 
-        return (arguments['ingredients'] as List).map((ingredientData) {
-          final ingredient = Ingredient()
-            ..name = ingredientData['name']
-            ..unit = ingredientData['unit'];
+        if(isar != null){
+          return await isar.writeTxn(() async {
+            final ingredients = <StorageIngredient>[];
+            
+            for (var ingredientData in arguments['ingredients']) {
+              final ingredient = Ingredient()
+                ..name = ingredientData['name']
+                ..unit = ingredientData['unit'];
+              await isar.ingredients.put(ingredient);
 
-          final storageIngredient = StorageIngredient()
-            ..count = ingredientData['quantity'].toDouble();
+              final storageIngredient = StorageIngredient()
+                ..count = ingredientData['quantity'].toDouble();
+              await isar.storageIngredients.put(storageIngredient);
 
-          storageIngredient.ingredient.add(ingredient);
-          ingredient.storageIngredient.add(storageIngredient);
+              // Establish bidirectional relationship
+              storageIngredient.ingredient.add(ingredient);
+              await storageIngredient.ingredient.save();
 
-          return storageIngredient;
-        }).toList();
+              ingredients.add(storageIngredient);
+            }
+
+            return ingredients;
+          });
+        }
+        return null;
       }
       return null;
     } catch (e) {
@@ -229,7 +242,7 @@ class ApiClient {
         ),
       ],
       functionCall: {'name': 'generate_meal_plan'},
-      maxTokens: 300,
+      maxTokens: 3000,
     );
 
     try {
