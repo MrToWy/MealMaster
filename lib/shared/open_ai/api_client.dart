@@ -278,7 +278,7 @@ class ApiClient {
             ..title = recipeData['name']
             ..description = recipeData['description']
             ..cookingDuration = recipeData['steps']
-                .fold<int>(0, (sum, step) => sum + step['duration']);
+                .fold<int>(0, (int sum, dynamic step) => sum + step['duration'] as int);
 
           // Parse ingredients
           for (var ingredientData in recipeData['ingredients']) {
