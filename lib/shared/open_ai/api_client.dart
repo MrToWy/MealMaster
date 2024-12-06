@@ -87,11 +87,26 @@ class ApiClient {
         final arguments = jsonDecode(functionCall['arguments']);
 
         if(isar != null){
+          // First, fetch all existing ingredients outside the transaction
+          final existingIngredients = await isar.ingredients
+              .where()
+              .findAll();
+
           return await isar.writeTxn(() async {
             final ingredients = <StorageIngredient>[];
             
             for (var ingredientData in arguments['ingredients']) {
-              final ingredient = getOrCreate(ingredientData['name'],ingredientData['unit'],isar);
+              // Find matching ingredient from pre-fetched list
+              Ingredient? ingredient = existingIngredients.firstWhere(
+                (i) => i.name == ingredientData['name'] && i.unit == ingredientData['unit'],
+                orElse: () => Ingredient()
+                  ..name = ingredientData['name']
+                  ..unit = ingredientData['unit']
+              );
+
+              if (!existingIngredients.contains(ingredient)) {
+                await isar.ingredients.put(ingredient);
+              }
 
               final storageIngredient = StorageIngredient()
                 ..count = ingredientData['quantity'].toDouble();
@@ -114,25 +129,6 @@ class ApiClient {
       developer.log('Exception: $e', name: 'OpenAI');
       return null;
     }
-  }
-
-  static Ingredient getOrCreate(String name, String unit, Isar isar){
-
-    Ingredient? ingredient = isar.ingredients.where().filter()
-        .nameEqualTo(name)
-        .and()
-        .unitEqualTo(unit)
-        .findFirstSync();
-
-    if(ingredient != null) return ingredient;
-
-     ingredient = Ingredient()
-    ..name = name
-    ..unit = unit;
-
-     isar.ingredients.put(ingredient);
-
-    return ingredient;
   }
 
   static Future<MealPlan?> generateMealPlan(
@@ -275,8 +271,7 @@ class ApiClient {
         // Parse entries
         for (var entryData in arguments['mealPlan']['entries']) {
           final mealPlanEntry = MealPlanEntry()
-            ..day =
-                DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
+            ..day = DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
 
           final recipeData = entryData['recipe'];
           final recipe = Recipe()
