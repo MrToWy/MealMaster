@@ -13,6 +13,13 @@ import '../../db/recipe_step.dart';
 import 'package:isar/isar.dart';
 
 class ApiClient {
+  /// Analyzes images to detect ingredients and their quantities, storing them in the database.
+  ///
+  /// [images] List of base64 encoded image strings to analyze
+  /// [user] The user making the request, must have a valid API key
+  /// [isar] Database instance for storing the results
+  ///
+  /// Returns a list of [StorageIngredient] objects if successful, null otherwise.
   static Future<List<StorageIngredient>?> generateStorageIngredients(
       List<String> images, User user, Isar isar) async {
     if (images.isEmpty) {
@@ -127,6 +134,13 @@ class ApiClient {
     }
   }
 
+  /// Generates a 5-day meal plan based on available ingredients.
+  ///
+  /// [ingredients] List of ingredients available to use in the meal plan
+  /// [user] The user making the request, must have a valid API key
+  /// [isar] Database instance for storing the results
+  ///
+  /// Returns a [MealPlan] object if successful, null otherwise.
   static Future<MealPlan?> generateMealPlan(
       List<StorageIngredient> ingredients, User user, Isar isar) async {
     if (ingredients.isEmpty) {
