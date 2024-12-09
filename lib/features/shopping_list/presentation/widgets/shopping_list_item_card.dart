@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mealmaster/features/shopping_list/domain/shopping_list_repository.dart';
 import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
+import 'package:mealmaster/features/shopping_list/presentation/widgets/shopping_list_item_text_input.dart';
 
 Widget shoppingListItemCard(
     context, final ShoppingListItem item, Function onClick, Function callback) {
@@ -31,25 +31,7 @@ Future editShoppingListItemDialog(
       builder: (context) => AlertDialog(
             title: Text("Item bearbeiten"),
             icon: Icon(Icons.add),
-            content: SizedBox(
-              height: 200,
-              child: Column(
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                        hintText: "Name des Produktes", labelText: "Name"),
-                  ),
-                  TextField(
-                    controller: countController,
-                    decoration: InputDecoration(
-                        hintText: "Bite gib eine Menge an",
-                        labelText: "MengenAngabe"),
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  )
-                ],
-              ),
-            ),
+            content: shoppingListItemTextInput(nameController, countController),
             actions: [
               TextButton(
                   onPressed: () {
@@ -61,11 +43,13 @@ Future editShoppingListItemDialog(
                     String name = nameController.text;
                     var count = int.tryParse(countController.text);
                     if (name.isEmpty) {
-                      //TODO: add some error Message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Bitte gib einen Namen ein")));
                       return;
                     }
                     if (count == null) {
-                      //TODO: add some error Message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Bitte gib eine Menge an")));
                       return;
                     }
                     repo.editShoppingListItem(item);

@@ -9,7 +9,7 @@ Widget shoppingListGrid(Future<List<ShoppingListItem>> futureList,
   return FutureBuilder(
       future: futureList,
       builder: (context, list) {
-        if (list.hasData == false) {
+        if (!list.hasData) {
           return Container();
         }
         return GridView.builder(

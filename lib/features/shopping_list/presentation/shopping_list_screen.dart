@@ -1,9 +1,6 @@
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:mealmaster/features/shopping_list/domain/shopping_list_repository.dart';
 import 'package:mealmaster/features/shopping_list/presentation/widgets/shopping_list_grid.dart';
-//TODO: Clean Up and split into seperate Files
-//Missing Features add new Items and Change Items
 
 class ShoppingListScreen extends StatefulWidget {
   const ShoppingListScreen({super.key});
@@ -38,22 +35,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
               setState(() {});
             }),
           ),
-          ExpandablePanel(
-            header: const Text(
-              "vorherige Einkäufe",
-            ),
-            collapsed: Text("Show More"),
-            expanded: SizedBox(
-              height: 200,
-              child: shoppingListGrid(recentShoppingList, false,
-                  (ShoppingListItem item) {
-                repo.addRecentItemToShoppingList(item);
-                setState(() {});
-              }, () {
-                setState(() {});
-              }),
-            ),
-          )
+          ExpansionTile(
+            title: Text("Vorherige Einkäufe"),
+            children: [
+              SizedBox(
+                height: 200,
+                child: shoppingListGrid(recentShoppingList, false,
+                    (ShoppingListItem item) {
+                  repo.addRecentItemToShoppingList(item);
+                  setState(() {});
+                }, () {
+                  setState(() {});
+                }),
+              )
+            ],
+          ),
         ],
       ),
     );
