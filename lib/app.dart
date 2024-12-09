@@ -8,6 +8,7 @@ import 'package:mealmaster/features/shopping_list/presentation/shopping_list_scr
 import 'package:mealmaster/features/splash_screen/splash_screen.dart';
 import 'package:mealmaster/features/user_profile/presentation/profile_screen.dart';
 import 'package:provider/provider.dart';
+
 import 'shared/theme.dart';
 
 class MyApp extends StatelessWidget {
