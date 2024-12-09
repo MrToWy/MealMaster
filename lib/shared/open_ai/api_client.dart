@@ -278,71 +278,101 @@ class ApiClient {
       final response = await _makeApiCall(requestBody, user.apiKey!);
       if (response != null) {
         final existingIngredients = await isar.ingredients.where().findAll();
-
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
 
-        MealPlan mealPlan = await isar.writeTxn(() async {
-          final mealPlan = MealPlan()
-            ..startDate = DateTime.now()
-            ..endDate = DateTime.now().add(Duration(days: 5));
-          isar.mealPlans.put(mealPlan);
-
-          for (var entryData in arguments['mealPlan']['entries']) {
-            final mealPlanEntry = MealPlanEntry()
-              ..day = DateTime.now()
-                  .add(Duration(days: entryData['dayNumber'] - 1));
-
-            final recipeData = entryData['recipe'];
-            final recipe = Recipe()
-              ..title = recipeData['name']
-              ..description = recipeData['description']
-              ..cookingDuration = recipeData['steps'].fold<int>(
-                  0, (int sum, dynamic step) => sum + step['duration'] as int);
-
-            await isar.mealPlanEntrys.put(mealPlanEntry);
-            await isar.recipes.put(recipe);
-            mealPlanEntry.recipe.add(recipe);
-            await mealPlanEntry.recipe.save();
-            mealPlanEntry.mealPlan.add(mealPlan);
-            await mealPlanEntry.mealPlan.save();
-
-            for (var ingredientData in recipeData['ingredients']) {
-              final ingredient = await _findOrCreateIngredient(
-                  ingredientData, existingIngredients, isar);
-
-              final recipeIngredient = RecipeIngredient()
-                ..count = ingredientData['count'].toDouble();
-
-              await isar.recipeIngredients.put(recipeIngredient);
-
-              recipeIngredient.recipe.add(recipe);
-              await recipeIngredient.recipe.save();
-              recipeIngredient.ingredients.add(ingredient);
-              await recipeIngredient.ingredients.save();
-            }
-
-            for (var stepData in recipeData['steps']) {
-              final recipeStep = RecipeStep()
-                ..orderPosition = stepData['stepNumber']
-                ..description = stepData['instruction'];
-
-              await isar.recipeSteps.put(recipeStep);
-              recipe.steps.add(recipeStep);
-            }
-            await recipe.steps.save();
-          }
-
+        return await isar.writeTxn(() async {
+          final mealPlan = await _createMealPlan(isar);
+          await _processMealPlanEntries(
+              arguments['mealPlan']['entries'], mealPlan, existingIngredients, isar);
           return mealPlan;
         });
-
-        return mealPlan;
       }
       return null;
     } catch (e) {
       developer.log('Exception: $e', name: 'OpenAI');
       return null;
     }
+  }
+
+  static Future<MealPlan> _createMealPlan(Isar isar) async {
+    final mealPlan = MealPlan()
+      ..startDate = DateTime.now()
+      ..endDate = DateTime.now().add(Duration(days: 5));
+    await isar.mealPlans.put(mealPlan);
+    return mealPlan;
+  }
+
+  static Future<void> _processMealPlanEntries(List<dynamic> entries, MealPlan mealPlan,
+      List<Ingredient> existingIngredients, Isar isar) async {
+    for (var entryData in entries) {
+      final mealPlanEntry = await _createMealPlanEntry(entryData, mealPlan, isar);
+      final recipe = await _createRecipe(
+          entryData['recipe'], existingIngredients, mealPlanEntry, isar);
+      await _linkMealPlanEntryToRecipe(mealPlanEntry, recipe, isar);
+    }
+  }
+
+  static Future<MealPlanEntry> _createMealPlanEntry(
+      Map<String, dynamic> entryData, MealPlan mealPlan, Isar isar) async {
+    final mealPlanEntry = MealPlanEntry()
+      ..day = DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
+    await isar.mealPlanEntrys.put(mealPlanEntry);
+    mealPlanEntry.mealPlan.add(mealPlan);
+    await mealPlanEntry.mealPlan.save();
+    return mealPlanEntry;
+  }
+
+  static Future<Recipe> _createRecipe(Map<String, dynamic> recipeData,
+      List<Ingredient> existingIngredients, MealPlanEntry entry, Isar isar) async {
+    final recipe = Recipe()
+      ..title = recipeData['name']
+      ..description = recipeData['description']
+      ..cookingDuration = recipeData['steps']
+          .fold<int>(0, (sum, step) => sum + step['duration'] as int);
+
+    await isar.recipes.put(recipe);
+    await _processRecipeIngredients(recipeData['ingredients'], recipe, existingIngredients, isar);
+    await _processRecipeSteps(recipeData['steps'], recipe, isar);
+    return recipe;
+  }
+
+  static Future<void> _processRecipeIngredients(List<dynamic> ingredients,
+      Recipe recipe, List<Ingredient> existingIngredients, Isar isar) async {
+    for (var ingredientData in ingredients) {
+      final ingredient = await _findOrCreateIngredient(
+          ingredientData, existingIngredients, isar);
+      await _createRecipeIngredient(ingredientData, recipe, ingredient, isar);
+    }
+  }
+
+  static Future<void> _createRecipeIngredient(Map<String, dynamic> ingredientData,
+      Recipe recipe, Ingredient ingredient, Isar isar) async {
+    final recipeIngredient = RecipeIngredient()
+      ..count = ingredientData['count'].toDouble();
+    await isar.recipeIngredients.put(recipeIngredient);
+    recipeIngredient.recipe.add(recipe);
+    await recipeIngredient.recipe.save();
+    recipeIngredient.ingredients.add(ingredient);
+    await recipeIngredient.ingredients.save();
+  }
+
+  static Future<void> _processRecipeSteps(
+      List<dynamic> steps, Recipe recipe, Isar isar) async {
+    for (var stepData in steps) {
+      final recipeStep = RecipeStep()
+        ..orderPosition = stepData['stepNumber']
+        ..description = stepData['instruction'];
+      await isar.recipeSteps.put(recipeStep);
+      recipe.steps.add(recipeStep);
+    }
+    await recipe.steps.save();
+  }
+
+  static Future<void> _linkMealPlanEntryToRecipe(
+      MealPlanEntry entry, Recipe recipe, Isar isar) async {
+    entry.recipe.add(recipe);
+    await entry.recipe.save();
   }
 
   static Future<Map<String, dynamic>?> _makeApiCall(
