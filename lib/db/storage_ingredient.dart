@@ -9,5 +9,5 @@ part 'storage_ingredient.g.dart';
 class StorageIngredient extends DbEntry {
   double? count;
 
-  final ingredient = IsarLinks<Ingredient>();
+  final ingredient = IsarLink<Ingredient>();
 }

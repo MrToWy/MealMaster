@@ -22,7 +22,7 @@ class BaseScaffold extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: hasBackButton,
       ),
-      body: child,
+      body: SafeArea(child: child),
     );
   }
 }

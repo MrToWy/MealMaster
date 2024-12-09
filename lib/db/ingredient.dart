@@ -12,5 +12,5 @@ class Ingredient extends DbEntry {
   String? unit;
 
   final recipeIngredient = IsarLinks<RecipeIngredient>();
-  final storageIngredient = IsarLinks<StorageIngredient>();
+  final storageIngredient = IsarLink<StorageIngredient>();
 }
