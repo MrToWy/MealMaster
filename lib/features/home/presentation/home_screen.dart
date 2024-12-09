@@ -38,16 +38,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Column(children: [
       Container(
-        padding: EdgeInsets.only(top: 10),
+        color: Theme.of(context).colorScheme.primary,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Text('Reihenfolge ändern'),
-            Switch(
-              value: context.watch<EditModeProvider>().inEditMode,
-              onChanged: (value) {
-                context.read<EditModeProvider>().setEditMode(value);
-              },
+            SizedBox(width: 15),
+            Text(
+              'Hallo Max!',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                  ),
             ),
           ],
         ),
