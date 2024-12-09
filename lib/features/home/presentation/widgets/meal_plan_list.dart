@@ -29,17 +29,17 @@ class _MealPlanListState extends State<MealPlanList> {
 
   @override
   Widget build(BuildContext context) {
-    List _combinedList = [];
+    List combinedList = [];
     for (int i = 0; i < widget.recipes.length; i++) {
-      _combinedList.add(_days[i % _days.length]);
-      _combinedList.add(widget.recipes[i]);
+      combinedList.add(_days[i % _days.length]);
+      combinedList.add(widget.recipes[i]);
     }
     return Expanded(
       child: Material(
         child: ReorderableListView(
           onReorder: onReorder,
           buildDefaultDragHandles: false,
-          children: _combinedList.asMap().entries.map((entry) {
+          children: combinedList.asMap().entries.map((entry) {
             int index = entry.key;
             var item = entry.value;
 

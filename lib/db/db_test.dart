@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:mealmaster/db/allergy.dart';
-import 'package:mealmaster/db/diet.dart';
-import 'package:mealmaster/db/user.dart';
+import 'allergy.dart';
+import 'diet.dart';
+import 'example_image.dart';
+import 'ingredient.dart';
+import 'meal_plan.dart';
+import 'meal_plan_entry.dart';
+import 'recipe.dart';
+import 'recipe_ingredient.dart';
+import 'recipe_step.dart';
+import 'storage_ingredient.dart';
+import 'user.dart';
+import '../shared/open_ai/api_client.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DbTestScreen extends StatefulWidget {
@@ -14,6 +23,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
   String? displayedUsername;
   String? allergies;
   String? diets;
+  String? apiKey;
   late Future<Isar> isarInstance;
 
   @override
@@ -25,9 +35,54 @@ class _DbTestScreenState extends State<DbTestScreen> {
   Future<Isar> openIsar() async {
     final dir = await getApplicationDocumentsDirectory();
     return await Isar.open(
-      [UserSchema, DietSchema, AllergySchema],
+      [
+        UserSchema,
+        DietSchema,
+        AllergySchema,
+        IngredientSchema,
+        MealPlanSchema,
+        MealPlanEntrySchema,
+        RecipeSchema,
+        RecipeIngredientSchema,
+        RecipeStepSchema,
+        StorageIngredientSchema,
+      ],
       directory: dir.path,
     );
+  }
+
+  Future<void> callApiStorageIngredients() async {
+    User? user = await loadFirstUser();
+
+    if (user == null) {
+      return;
+    }
+
+    List<String> images = [];
+    images.add(ExampleImage.getFridge());
+
+    final isar = await isarInstance;
+
+    var test = await ApiClient.generateStorageIngredients(images, user, isar);
+    test.toString();
+  }
+
+  Future<void> callApiMealPlan() async {
+    User? user = await loadFirstUser();
+
+    if (user == null) {
+      return;
+    }
+
+    final isar = await isarInstance;
+    final storageItems = await isar.storageIngredients.where().findAll();
+
+    for (var value in storageItems) {
+      value.ingredient.loadSync();
+    }
+
+    var test2 = await ApiClient.generateMealPlan(storageItems, user, isar);
+    test2.toString();
   }
 
   Future<void> addUser() async {
@@ -46,15 +101,17 @@ class _DbTestScreenState extends State<DbTestScreen> {
     await loadFirstUser();
   }
 
-  Future<void> loadFirstUser() async {
+  Future<User?> loadFirstUser() async {
     final isar = await isarInstance;
     final firstUser = await isar.users.where().findFirst();
     setState(() {
       displayedUsername = firstUser?.name ?? 'No user found';
       diets = firstUser?.diets.join(", ");
+      apiKey = firstUser?.apiKey;
       allergies =
           firstUser?.allergies.map((allergy) => allergy.name).join(", ");
     });
+    return firstUser;
   }
 
   Future<void> deleteAllUsers() async {
@@ -75,6 +132,16 @@ class _DbTestScreenState extends State<DbTestScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            ElevatedButton(
+              onPressed: callApiStorageIngredients,
+              child: Text('Get storage ingredients'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: callApiMealPlan,
+              child: Text('Get mealplan'),
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: addUser,
               child: Text('Add New User'),
@@ -102,6 +169,10 @@ class _DbTestScreenState extends State<DbTestScreen> {
             ),
             Text(
               (diets?.isEmpty ?? true) ? 'No diets' : "Diets: ${diets!}",
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              (apiKey?.isEmpty ?? true) ? 'No api key' : "Api Key: ${apiKey!}",
               style: TextStyle(fontSize: 18),
             ),
           ],

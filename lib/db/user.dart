@@ -14,6 +14,8 @@ class User extends DbEntry {
 
   double? size;
 
+  String? apiKey;
+
   @Backlink(to: 'user')
   final diets = IsarLinks<Diet>();
 
