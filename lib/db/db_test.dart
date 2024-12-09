@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:mealmaster/db/allergy.dart';
-import 'package:mealmaster/db/diet.dart';
-import 'package:mealmaster/db/example_image.dart';
-import 'package:mealmaster/db/ingredient.dart';
-import 'package:mealmaster/db/meal_plan.dart';
-import 'package:mealmaster/db/meal_plan_entry.dart';
-import 'package:mealmaster/db/recipe.dart';
-import 'package:mealmaster/db/recipe_ingredient.dart';
-import 'package:mealmaster/db/recipe_step.dart';
-import 'package:mealmaster/db/storage_ingredient.dart';
-import 'package:mealmaster/db/user.dart';
-import 'package:mealmaster/shared/open_ai/api_client.dart';
+import 'allergy.dart';
+import 'diet.dart';
+import 'example_image.dart';
+import 'ingredient.dart';
+import 'meal_plan.dart';
+import 'meal_plan_entry.dart';
+import 'recipe.dart';
+import 'recipe_ingredient.dart';
+import 'recipe_step.dart';
+import 'storage_ingredient.dart';
+import 'user.dart';
+import '../shared/open_ai/api_client.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DbTestScreen extends StatefulWidget {

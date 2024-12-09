@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
-import 'package:mealmaster/shared/open_ai/request_body.dart';
+import 'request_body.dart';
 import '../../db/ingredient.dart';
 import '../../db/meal_plan_entry.dart';
 import '../../db/recipe_ingredient.dart';
