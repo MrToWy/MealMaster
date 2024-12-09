@@ -1,3 +1,6 @@
+import 'ai_function.dart';
+import 'message.dart';
+
 class RequestBody {
   final String model;
   final List<Message> messages;
@@ -22,43 +25,8 @@ class RequestBody {
       };
 }
 
-class Message {
-  final String role;
-  final List<Content> content;
 
-  Message({required this.role, required this.content});
 
-  Map<String, dynamic> toJson() => {
-        'role': role,
-        'content': content.map((c) => c.toJson()).toList(),
-      };
-}
 
-class Content {
-  final String type;
-  final dynamic value;
 
-  Content({required this.type, required this.value});
 
-  Map<String, dynamic> toJson() => {
-        'type': type,
-        type: value,
-      };
-}
-
-class AiFunction {
-  final String name;
-  final String description;
-  final Map<String, dynamic> parameters;
-
-  AiFunction(
-      {required this.name,
-      required this.description,
-      required this.parameters});
-
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'description': description,
-        'parameters': parameters,
-      };
-}
