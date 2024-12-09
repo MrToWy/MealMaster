@@ -90,16 +90,16 @@ class ApiClient {
                       'type': 'string',
                       'description': 'Name of the ingredient'
                     },
-                    'quantity': {
+                    'count': {
                       'type': 'number',
-                      'description': 'Quantity of the ingredient'
+                      'description': 'Count of the ingredient'
                     },
                     'unit': {
                       'type': 'string',
                       'description': 'Unit of measurement'
                     },
                   },
-                  'required': ['name', 'quantity', 'unit'],
+                  'required': ['name', 'count', 'unit'],
                 },
               },
             },
@@ -127,7 +127,7 @@ class ApiClient {
                 ingredientData, existingIngredients, isar);
 
             final storageIngredient = StorageIngredient()
-              ..count = ingredientData['quantity'].toDouble();
+              ..count = ingredientData['count'].toDouble();
             await isar.storageIngredients.put(storageIngredient);
 
             storageIngredient.ingredient.add(ingredient);
@@ -210,7 +210,7 @@ class ApiClient {
                                     'type': 'string',
                                     'description': 'Name of the ingredient'
                                   },
-                                  'quantity': {
+                                  'count': {
                                     'type': 'number',
                                     'description': 'Amount needed'
                                   },
@@ -219,7 +219,7 @@ class ApiClient {
                                     'description': 'Unit of measurement'
                                   }
                                 },
-                                'required': ['name', 'quantity', 'unit']
+                                'required': ['name', 'count', 'unit']
                               }
                             },
                             'steps': {
@@ -309,7 +309,7 @@ class ApiClient {
                   ingredientData, existingIngredients, isar);
 
               final recipeIngredient = RecipeIngredient()
-                ..count = ingredientData['quantity'].toDouble();
+                ..count = ingredientData['count'].toDouble();
 
               await isar.recipeIngredients.put(recipeIngredient);
 
