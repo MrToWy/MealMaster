@@ -3,7 +3,6 @@ import 'package:mealmaster/common/widgets/navigation_menu.dart';
 import 'package:mealmaster/features/home/presentation/controller/edit_mode_controller.dart';
 import 'package:mealmaster/features/home/presentation/home_screen.dart';
 import 'package:mealmaster/features/meal_plan/presentation/new_plan_screen.dart';
-import 'package:mealmaster/features/recipes/presentation/recipe_screen.dart';
 import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
 import 'package:mealmaster/features/splash_screen/splash_screen.dart';
 import 'package:mealmaster/features/user_profile/presentation/profile_screen.dart';
@@ -36,7 +35,6 @@ class MyApp extends StatelessWidget {
           '/profile': (context) => ProfileScreen(),
           '/shopping-list': (context) => ShoppingListScreen(),
           '/new-plan': (context) => NewPlanScreen(),
-          '/recipe': (context) => RecipeScreen(),
         },
       ),
     );
