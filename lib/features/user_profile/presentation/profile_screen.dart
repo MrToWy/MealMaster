@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/diet_label.dart';
-import 'package:mealmaster/features/user_profile/domain/enum_label.dart';
 import 'package:mealmaster/features/user_profile/domain/macros_enum.dart';
-import 'package:mealmaster/features/user_profile/presentation/category_chip_list.dart';
+import 'package:mealmaster/features/user_profile/presentation/widgets/category_chip_list.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
