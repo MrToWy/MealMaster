@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-
-enum DietLabel {
-  noDiet("Keine Besonderheiten"),
-  halal("Halal"),
-  kosher("Kosher"),
-  vegan("Vegan"),
-  vegetarian("Vegetarisch");
-
-  const DietLabel(this.label);
-  final String label;
-}
+import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
+import 'package:mealmaster/features/user_profile/domain/diet_label.dart';
+import 'package:mealmaster/features/user_profile/domain/enum_label.dart';
+import 'package:mealmaster/features/user_profile/domain/macros_enum.dart';
+import 'package:mealmaster/features/user_profile/presentation/category_chip_list.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,7 +14,11 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController dietController = TextEditingController();
+  Set<AllergiesEnum> allergies = <AllergiesEnum>{};
+  final GlobalKey<CategoryChipListState> macroChipWidgetKey = GlobalKey();
+  final GlobalKey<CategoryChipListState> allergyChipWidgetKey = GlobalKey();
 
+  String testText = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +46,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   return DropdownMenuEntry<DietLabel>(
                       value: diet, label: diet.label);
                 }).toList()),
+            CategoryChipList(
+                key: allergyChipWidgetKey,
+                title: "Allergien/Unverträglichkeiten",
+                category: AllergiesEnum.values),
+            CategoryChipList(
+                key: macroChipWidgetKey,
+                title: "Macros",
+                category: MacrosEnum.values),
+            TextButton(
+                onPressed: () {
+                  setState(() {
+                    testText =
+                        macroChipWidgetKey.currentState!.set.length.toString();
+                  });
+                },
+                child: Text("Speichern"))
           ],
         ),
       ),
