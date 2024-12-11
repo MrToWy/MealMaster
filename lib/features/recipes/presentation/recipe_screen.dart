@@ -52,33 +52,51 @@ class _RecipeScreenState extends State<RecipeScreen> {
   @override
   Widget build(BuildContext context) {
     final Recipe recipe = getTestRecipe();
+    final recipeCount = 5;
 
     return BaseScaffold(
       title: "Rezept ${widget.id}",
       hasBackButton: true,
-      child: Column(
-        children: [
-          Expanded(
-            child: CarouselView(
-              itemExtent: MediaQuery.of(context).size.width * 0.66,
-              shrinkExtent: 200,
-              children: List<Widget>.generate(5, (int index) {
-                return SizedBox(
-                  width: MediaQuery.of(context).size.width *
-                      0.66, // 2/3 of screen width
-                  child: Center(
-                    child: Text('Bild $index'),
-                  ),
-                );
-              }),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20.0),
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 2 / 3, // 2/3
+              child: PageView.builder(
+                controller: PageController(
+                  viewportFraction: 0.8,
+                  initialPage: widget.id,
+                ),
+                itemCount: recipeCount,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorLight,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Bild $index',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          Text('Rezept'),
+                          Text('Kochdauer: ${recipe.cookingDuration} Minuten'),
+                          Text('Schwierigkeit: ${recipe.difficulty}'),
+                          Text('Zutaten: ${recipe.ingredients.length}'),
+                          Text('Schritte: ${recipe.steps.length}'),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          Text('Rezept'),
-          Text('Kochdauer: ${recipe.cookingDuration} Minuten'),
-          Text('Schwierigkeit: ${recipe.difficulty}'),
-          Text('Zutaten:'),
-          Text('Schritte:'),
-        ],
+          ],
+        ),
       ),
     );
   }
