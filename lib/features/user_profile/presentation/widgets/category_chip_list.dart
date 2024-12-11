@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mealmaster/features/user_profile/domain/enum_label.dart';
-import 'package:mealmaster/features/user_profile/presentation/profile_screen.dart';
 
 //Custom Class for List of enums that implement the EnumLabel class
 class CategoryChipList<T extends EnumLabel> extends StatefulWidget {
