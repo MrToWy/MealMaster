@@ -10,8 +10,8 @@ part 'recipe_ingredient.g.dart';
 class RecipeIngredient extends DbEntry {
   double? count;
 
-  final recipe = IsarLinks<Recipe>();
+  final recipe = IsarLink<Recipe>();
 
-  @Backlink(to: 'recipeIngredient')
-  final ingredients = IsarLinks<Ingredient>();
+  @Backlink(to: 'recipeIngredients')
+  final ingredient = IsarLink<Ingredient>();
 }

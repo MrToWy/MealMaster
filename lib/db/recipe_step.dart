@@ -10,5 +10,5 @@ class RecipeStep extends DbEntry {
   int? orderPosition;
   String? description;
 
-  final recipe = IsarLinks<Recipe>();
+  final recipe = IsarLink<Recipe>();
 }

@@ -34,7 +34,13 @@ const MealPlanEntrySchema = CollectionSchema(
       id: -8444097583561803931,
       name: r'mealPlan',
       target: r'MealPlan',
-      single: false,
+      single: true,
+    ),
+    r'recipe': LinkSchema(
+      id: 6926882901754934193,
+      name: r'recipe',
+      target: r'Recipe',
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -93,13 +99,14 @@ Id _mealPlanEntryGetId(MealPlanEntry object) {
 }
 
 List<IsarLinkBase<dynamic>> _mealPlanEntryGetLinks(MealPlanEntry object) {
-  return [object.mealPlan];
+  return [object.mealPlan, object.recipe];
 }
 
 void _mealPlanEntryAttach(
     IsarCollection<dynamic> col, Id id, MealPlanEntry object) {
   object.id = id;
   object.mealPlan.attach(col, col.isar.collection<MealPlan>(), r'mealPlan', id);
+  object.recipe.attach(col, col.isar.collection<Recipe>(), r'recipe', id);
 }
 
 extension MealPlanEntryQueryWhereSort
@@ -325,56 +332,23 @@ extension MealPlanEntryQueryLinks
   }
 
   QueryBuilder<MealPlanEntry, MealPlanEntry, QAfterFilterCondition>
-      mealPlanLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlan', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<MealPlanEntry, MealPlanEntry, QAfterFilterCondition>
-      mealPlanIsEmpty() {
+      mealPlanIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'mealPlan', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<MealPlanEntry, MealPlanEntry, QAfterFilterCondition>
-      mealPlanIsNotEmpty() {
+  QueryBuilder<MealPlanEntry, MealPlanEntry, QAfterFilterCondition> recipe(
+      FilterQuery<Recipe> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlan', 0, false, 999999, true);
+      return query.link(q, r'recipe');
     });
   }
 
   QueryBuilder<MealPlanEntry, MealPlanEntry, QAfterFilterCondition>
-      mealPlanLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
+      recipeIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlan', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<MealPlanEntry, MealPlanEntry, QAfterFilterCondition>
-      mealPlanLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'mealPlan', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<MealPlanEntry, MealPlanEntry, QAfterFilterCondition>
-      mealPlanLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'mealPlan', lower, includeLower, upper, includeUpper);
+      return query.linkLength(r'recipe', 0, true, 0, true);
     });
   }
 }
