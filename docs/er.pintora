@@ -5,7 +5,7 @@ User {
  string Name
  double weight
  double size
-
+ string ApiKey
 }
 
 Diet {
@@ -22,6 +22,8 @@ Allergy {
 
   Recipe {
     int Id
+    string Title
+    string Description
     bool HasAllIngredients
     int CookingDuration
     int difficulty
@@ -65,18 +67,25 @@ ShoppingListEntry(nicht_in_db) {
  double Count
 }
 
+ShoppingListHistory {
+ double Count
+}
+
 ShoppingList(nicht_in_db) ||--|| ShoppingListEntry(nicht_in_db) : Entries
 ShoppingListEntry(nicht_in_db) ||--|| Ingredients : Entries
 
 Storage ||--|| Storage_Ingredients : Entries
 
-Storage_Ingredients ||--|| Ingredients : Entries
+Storage_Ingredients ||--|| Ingredients : Entry
+
+ShoppingListHistory }|--|| Ingredients : Entries
+
 
   User ||--|| Diet : Diet
  User ||--o{ Allergy : Allergies
 
   Recipe }|--|{ Recipe_Ingredients : Ingredients
-Recipe_Ingredients }|--|{ Ingredients : Ingredients
+Recipe_Ingredients }|--|| Ingredients : Ingredients
   Recipe }|--|{ RecipeStep : Steps
 MealPlanEntry ||--|| Recipe : Recipes
 MealPlan ||--|{ MealPlanEntry : Entries
