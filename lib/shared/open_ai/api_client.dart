@@ -283,8 +283,8 @@ class ApiClient {
 
         return await isar.writeTxn(() async {
           final mealPlan = await _createMealPlan(isar);
-          await _processMealPlanEntries(
-              arguments['mealPlan']['entries'], mealPlan, existingIngredients, isar);
+          await _processMealPlanEntries(arguments['mealPlan']['entries'],
+              mealPlan, existingIngredients, isar);
           return mealPlan;
         });
       }
@@ -303,10 +303,14 @@ class ApiClient {
     return mealPlan;
   }
 
-  static Future<void> _processMealPlanEntries(List<dynamic> entries, MealPlan mealPlan,
-      List<Ingredient> existingIngredients, Isar isar) async {
+  static Future<void> _processMealPlanEntries(
+      List<dynamic> entries,
+      MealPlan mealPlan,
+      List<Ingredient> existingIngredients,
+      Isar isar) async {
     for (var entryData in entries) {
-      final mealPlanEntry = await _createMealPlanEntry(entryData, mealPlan, isar);
+      final mealPlanEntry =
+          await _createMealPlanEntry(entryData, mealPlan, isar);
       final recipe = await _createRecipe(
           entryData['recipe'], existingIngredients, mealPlanEntry, isar);
       await _linkMealPlanEntryToRecipe(mealPlanEntry, recipe, isar);
@@ -323,8 +327,11 @@ class ApiClient {
     return mealPlanEntry;
   }
 
-  static Future<Recipe> _createRecipe(Map<String, dynamic> recipeData,
-      List<Ingredient> existingIngredients, MealPlanEntry entry, Isar isar) async {
+  static Future<Recipe> _createRecipe(
+      Map<String, dynamic> recipeData,
+      List<Ingredient> existingIngredients,
+      MealPlanEntry entry,
+      Isar isar) async {
     final recipe = Recipe()
       ..title = recipeData['name']
       ..description = recipeData['description']
@@ -332,7 +339,8 @@ class ApiClient {
           .fold<int>(0, (sum, step) => sum + step['duration'] as int);
 
     await isar.recipes.put(recipe);
-    await _processRecipeIngredients(recipeData['ingredients'], recipe, existingIngredients, isar);
+    await _processRecipeIngredients(
+        recipeData['ingredients'], recipe, existingIngredients, isar);
     await _processRecipeSteps(recipeData['steps'], recipe, isar);
     return recipe;
   }
@@ -346,8 +354,11 @@ class ApiClient {
     }
   }
 
-  static Future<void> _createRecipeIngredient(Map<String, dynamic> ingredientData,
-      Recipe recipe, Ingredient ingredient, Isar isar) async {
+  static Future<void> _createRecipeIngredient(
+      Map<String, dynamic> ingredientData,
+      Recipe recipe,
+      Ingredient ingredient,
+      Isar isar) async {
     final recipeIngredient = RecipeIngredient()
       ..count = ingredientData['count'].toDouble();
     await isar.recipeIngredients.put(recipeIngredient);

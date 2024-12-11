@@ -5,12 +5,12 @@ class AiFunction {
 
   AiFunction(
       {required this.name,
-        required this.description,
-        required this.parameters});
+      required this.description,
+      required this.parameters});
 
   Map<String, dynamic> toJson() => {
-    'name': name,
-    'description': description,
-    'parameters': parameters,
-  };
+        'name': name,
+        'description': description,
+        'parameters': parameters,
+      };
 }

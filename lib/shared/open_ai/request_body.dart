@@ -24,9 +24,3 @@ class RequestBody {
         'max_tokens': maxTokens,
       };
 }
-
-
-
-
-
-

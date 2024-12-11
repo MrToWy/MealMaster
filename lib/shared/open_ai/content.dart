@@ -5,7 +5,7 @@ class Content {
   Content({required this.type, required this.value});
 
   Map<String, dynamic> toJson() => {
-    'type': type,
-    type: value,
-  };
+        'type': type,
+        type: value,
+      };
 }
