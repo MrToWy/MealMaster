@@ -58,6 +58,21 @@ class _RecipeScreenState extends State<RecipeScreen> {
       hasBackButton: true,
       child: Column(
         children: [
+          Expanded(
+            child: CarouselView(
+              itemExtent: MediaQuery.of(context).size.width * 0.66,
+              shrinkExtent: 200,
+              children: List<Widget>.generate(5, (int index) {
+                return SizedBox(
+                  width: MediaQuery.of(context).size.width *
+                      0.66, // 2/3 of screen width
+                  child: Center(
+                    child: Text('Bild $index'),
+                  ),
+                );
+              }),
+            ),
+          ),
           Text('Rezept'),
           Text('Kochdauer: ${recipe.cookingDuration} Minuten'),
           Text('Schwierigkeit: ${recipe.difficulty}'),
