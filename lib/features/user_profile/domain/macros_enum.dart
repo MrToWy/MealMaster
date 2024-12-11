@@ -7,5 +7,6 @@ enum MacrosEnum implements EnumLabel {
   hightCarb("High Carb");
 
   const MacrosEnum(this.label);
+  @override
   final String label;
 }

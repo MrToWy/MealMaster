@@ -8,5 +8,6 @@ enum AllergiesEnum implements EnumLabel {
   egg("Ei");
 
   const AllergiesEnum(this.label);
+  @override
   final String label;
 }
