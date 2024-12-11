@@ -34,7 +34,7 @@ const StorageIngredientSchema = CollectionSchema(
       id: -7804568162400088457,
       name: r'ingredient',
       target: r'Ingredient',
-      single: false,
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -340,56 +340,9 @@ extension StorageIngredientQueryLinks
   }
 
   QueryBuilder<StorageIngredient, StorageIngredient, QAfterFilterCondition>
-      ingredientLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'ingredient', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<StorageIngredient, StorageIngredient, QAfterFilterCondition>
-      ingredientIsEmpty() {
+      ingredientIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'ingredient', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<StorageIngredient, StorageIngredient, QAfterFilterCondition>
-      ingredientIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'ingredient', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<StorageIngredient, StorageIngredient, QAfterFilterCondition>
-      ingredientLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'ingredient', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<StorageIngredient, StorageIngredient, QAfterFilterCondition>
-      ingredientLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'ingredient', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<StorageIngredient, StorageIngredient, QAfterFilterCondition>
-      ingredientLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'ingredient', lower, includeLower, upper, includeUpper);
     });
   }
 }

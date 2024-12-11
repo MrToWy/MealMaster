@@ -5,7 +5,7 @@ User {
  string Name
  double weight
  double size
-
+ string ApiKey
 }
 
 Diet {
@@ -22,6 +22,8 @@ Allergy {
 
   Recipe {
     int Id
+    string Title
+    string Description
     bool HasAllIngredients
     int CookingDuration
     int difficulty
