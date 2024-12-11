@@ -10,6 +10,6 @@ part 'meal_plan_entry.g.dart';
 class MealPlanEntry extends DbEntry {
   DateTime? day;
 
-  final mealPlan = IsarLinks<MealPlan>();
-  final recipe = IsarLinks<Recipe>();
+  final mealPlan = IsarLink<MealPlan>();
+  final recipe = IsarLink<Recipe>();
 }

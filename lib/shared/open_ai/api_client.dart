@@ -133,7 +133,7 @@ class ApiClient {
               ..count = ingredientData['count'].toDouble();
             await isar.storageIngredients.put(storageIngredient);
 
-            storageIngredient.ingredient.add(ingredient);
+            storageIngredient.ingredient.value = ingredient;
             await storageIngredient.ingredient.save();
 
             ingredients.add(storageIngredient);
@@ -169,7 +169,7 @@ class ApiClient {
             Content(
               type: 'text',
               value:
-                  'Generate a 5-day meal plan using these ingredients: ${ingredients.map((i) => "${i.ingredient.first.name}: ${i.count} ${i.ingredient.first.unit}").join(", ")}',
+                  'Generate a 5-day meal plan using these ingredients: ${ingredients.map((i) => "${i.ingredient.value?.name}: ${i.count} ${i.ingredient.value?.unit}").join(", ")}',
             ),
           ],
         ),
@@ -318,7 +318,7 @@ class ApiClient {
     final mealPlanEntry = MealPlanEntry()
       ..day = DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
     await isar.mealPlanEntrys.put(mealPlanEntry);
-    mealPlanEntry.mealPlan.add(mealPlan);
+    mealPlanEntry.mealPlan.value = mealPlan;
     await mealPlanEntry.mealPlan.save();
     return mealPlanEntry;
   }
@@ -351,10 +351,10 @@ class ApiClient {
     final recipeIngredient = RecipeIngredient()
       ..count = ingredientData['count'].toDouble();
     await isar.recipeIngredients.put(recipeIngredient);
-    recipeIngredient.recipe.add(recipe);
+    recipeIngredient.recipe.value = recipe;
     await recipeIngredient.recipe.save();
-    recipeIngredient.ingredients.add(ingredient);
-    await recipeIngredient.ingredients.save();
+    recipeIngredient.ingredient.value = ingredient;
+    await recipeIngredient.ingredient.save();
   }
 
   static Future<void> _processRecipeSteps(
@@ -371,7 +371,7 @@ class ApiClient {
 
   static Future<void> _linkMealPlanEntryToRecipe(
       MealPlanEntry entry, Recipe recipe, Isar isar) async {
-    entry.recipe.add(recipe);
+    entry.recipe.value = recipe;
     await entry.recipe.save();
   }
 
