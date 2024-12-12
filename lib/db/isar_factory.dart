@@ -39,4 +39,4 @@ class IsarFactory {
       directory: dir.path,
     );
   }
-} 
+}

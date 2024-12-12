@@ -5,11 +5,11 @@ import 'package:mealmaster/db/user.dart';
 class UserRepository {
   static final UserRepository _instance = UserRepository._internal();
   late Future<Isar> isarInstance = IsarFactory().db;
-  
+
   factory UserRepository() {
     return _instance;
   }
-  
+
   UserRepository._internal();
 
   Future<String> getUserName() async {
