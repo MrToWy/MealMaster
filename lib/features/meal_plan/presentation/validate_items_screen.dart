@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mealmaster/db/isar_factory.dart';
-import '../../../common/widgets/info_dialog_button.dart';
-import '../../user_profile/data/user_repository.dart';
-import '../../../shared/open_ai/api_client.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
+import '../../../common/widgets/info_dialog_button.dart';
 import '../../../db/storage_ingredient.dart';
+import '../../../shared/open_ai/api_client.dart';
+import '../../user_profile/data/user_repository.dart';
 import 'widgets/detected_ingredient.dart';
 
 class ValidateItemsScreen extends StatelessWidget {

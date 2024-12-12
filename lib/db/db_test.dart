@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
+
+import '../shared/open_ai/api_client.dart';
 import 'allergy.dart';
 import 'diet.dart';
 import 'example_image.dart';
@@ -11,8 +14,6 @@ import 'recipe_ingredient.dart';
 import 'recipe_step.dart';
 import 'storage_ingredient.dart';
 import 'user.dart';
-import '../shared/open_ai/api_client.dart';
-import 'package:path_provider/path_provider.dart';
 
 class DbTestScreen extends StatefulWidget {
   @override
@@ -61,9 +62,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
     List<String> images = [];
     images.add(ExampleImage.getFridge());
 
-    final isar = await isarInstance;
-
-    var test = await ApiClient.generateStorageIngredients(images, user, isar);
+    var test = await ApiClient.generateStorageIngredients(images);
     test.toString();
   }
 

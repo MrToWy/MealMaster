@@ -23,6 +23,7 @@ dependencies:
     hosted: https://pub.isar-community.dev/
   path_provider: ^2.1.5
   http: ^1.2.2
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
