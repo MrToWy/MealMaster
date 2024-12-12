@@ -13,9 +13,7 @@ class DateListTile extends StatelessWidget {
       title: Text(
         day,
         style: Theme.of(context)
-            .textTheme
-            .headlineMedium
-            ?.copyWith(color: Colors.white),
+            .textTheme.headlineMedium,
       ),
     );
   }

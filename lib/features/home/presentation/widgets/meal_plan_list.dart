@@ -28,30 +28,25 @@ class _MealPlanListState extends State<MealPlanList> {
       combinedList.add(_days[i % _days.length]);
       combinedList.add(widget.recipes[i]);
     }
-    return Expanded(
-      child: Container(
-        color: Theme.of(context).colorScheme.primary,
-        child: ReorderableListView(
-          onReorder: onReorder,
-          buildDefaultDragHandles: false,
-          children: combinedList.asMap().entries.map((entry) {
-            int index = entry.key;
-            var item = entry.value;
+    return ReorderableListView(
+      onReorder: onReorder,
+      buildDefaultDragHandles: false,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: combinedList.asMap().entries.map((entry) {
+        int index = entry.key;
+        var item = entry.value;
 
-            if (item is String) {
-              return DateListTile(
-                  key: ValueKey('date_$index'), day: item, index: index);
-            } else if (item is Recipe) {
-              return RecipeListTile(
-                  key: ValueKey('recipe_${item.id}'),
-                  recipe: item,
-                  index: index);
-            } else {
-              return const SizedBox.shrink();
-            }
-          }).toList(),
-        ),
-      ),
+        if (item is String) {
+          return DateListTile(
+              key: ValueKey('date_$index'), day: item, index: index);
+        } else if (item is Recipe) {
+          return RecipeListTile(
+              key: ValueKey('recipe_${item.id}'), recipe: item, index: index);
+        } else {
+          return const SizedBox.shrink();
+        }
+      }).toList(),
     );
   }
 }

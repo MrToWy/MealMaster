@@ -10,12 +10,15 @@ class DifficultyIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(3, (index) {
         return Icon(
           Icons.restaurant,
-          color: index < difficulty ? Colors.black : Colors.grey,
+          color: index < difficulty
+              ? theme.colorScheme.onSurface
+              : theme.disabledColor,
           size: size,
         );
       }),

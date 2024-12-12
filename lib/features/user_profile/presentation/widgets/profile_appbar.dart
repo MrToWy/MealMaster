@@ -14,13 +14,10 @@ class _HomeAppBarState extends State<ProfileAppBar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.primary,
       centerTitle: true,
       title: Text(
         'MealMe',
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
-            ),
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
     );
   }
