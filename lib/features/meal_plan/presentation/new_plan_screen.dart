@@ -130,6 +130,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
               onPressed: () async {
                 ApiClient.generateStorageIngredients(_images)
                     .then((ingredients) {
+                  print(ingredients);
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return ValidateItemsScreen(
                       ingredients: ingredients!,
