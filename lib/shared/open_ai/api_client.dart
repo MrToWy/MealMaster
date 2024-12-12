@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
@@ -412,6 +413,154 @@ class ApiClient {
         developer.log('Response: ${response.body}', name: 'OpenAI');
         return null;
       }
+    } catch (e) {
+      developer.log('Exception: $e', name: 'OpenAI');
+      return null;
+    }
+  }
+
+  /// Transcribes an audio file to text using OpenAI's Whisper model.
+  ///
+  /// [filePath] Path to the audio file to transcribe
+  ///
+  /// Returns the transcribed text if successful, null otherwise.
+  static Future<String?> transcribeAudio(String filePath) async {
+    final user = await UserRepository().getUser();
+
+    if (user.apiKey == null) {
+      developer.log('No api key provided', name: 'OpenAI');
+      return null;
+    }
+
+    try {
+      final file = File(filePath);
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://api.openai.com/v1/audio/transcriptions'),
+      );
+
+      request.headers.addAll({
+        'Authorization': 'Bearer ${user.apiKey!}',
+      });
+
+      request.fields['model'] = 'whisper-1';
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          file.path,
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData['text'];
+      } else {
+        developer.log('Error: ${response.statusCode}', name: 'OpenAI');
+        developer.log('Response: ${response.body}', name: 'OpenAI');
+        return null;
+      }
+    } catch (e) {
+      developer.log('Exception: $e', name: 'OpenAI');
+      return null;
+    }
+  }
+
+  /// Updates the list of storage ingredients based on text input describing changes.
+  ///
+  /// [currentIngredients] The current list of ingredients to update
+  /// [text] Description of changes to make to the ingredients list
+  ///
+  /// Returns an updated list of [StorageIngredient] objects if successful, null otherwise.
+  static Future<List<StorageIngredient>?> updateIngredientsFromText(
+      List<StorageIngredient> currentIngredients, String text) async {
+    final user = await UserRepository().getUser();
+    final isar = await IsarFactory().db;
+
+    if (!_validateRequest([text], user, 'text')) return null;
+
+    final requestBody = RequestBody(
+      model: 'gpt-4',
+      messages: [
+        Message(
+          role: 'user',
+          content: [
+            Content(
+              type: 'text',
+              value: '''
+Aktuelle Zutaten:
+${currentIngredients.map((i) => "${i.ingredient.value?.name}: ${i.count} ${i.ingredient.value?.unit}").join("\n")}
+
+Änderungen:
+$text
+
+Bitte aktualisiere die Zutatenliste entsprechend der Änderungen.''',
+            ),
+          ],
+        ),
+      ],
+      functions: [
+        AiFunction(
+          name: 'update_ingredients',
+          description:
+              'Updates the ingredient list based on voice input. Only delete items when explicitly told to do so.',
+          parameters: {
+            'type': 'object',
+            'properties': {
+              'ingredients': {
+                'type': 'array',
+                'items': {
+                  'type': 'object',
+                  'properties': {
+                    'name': {'type': 'string'},
+                    'count': {'type': 'number'},
+                    'unit': {'type': 'string'},
+                  },
+                  'required': ['name', 'count', 'unit'],
+                },
+              },
+            },
+            'required': ['ingredients'],
+          },
+        ),
+      ],
+      functionCall: {'name': 'update_ingredients'},
+      maxTokens: 1000,
+    );
+
+    try {
+      final response = await _makeApiCall(requestBody, user.apiKey!);
+      if (response != null) {
+        final functionCall = response['choices'][0]['message']['function_call'];
+        final arguments = jsonDecode(functionCall['arguments']);
+
+        final existingIngredients = await isar.ingredients.where().findAll();
+
+        return await isar.writeTxn(() async {
+          final ingredients = <StorageIngredient>[];
+
+          for (var ingredientData in arguments['ingredients']) {
+            final ingredient = await _findOrCreateIngredient(
+                ingredientData, existingIngredients, isar);
+
+            final storageIngredient = StorageIngredient()
+              ..count = ingredientData['count'].toDouble();
+            await isar.storageIngredients.put(storageIngredient);
+
+            storageIngredient.ingredient.value = ingredient;
+            await storageIngredient.ingredient.save();
+
+            ingredients.add(storageIngredient);
+          }
+
+          return ingredients;
+        });
+      }
+      return null;
     } catch (e) {
       developer.log('Exception: $e', name: 'OpenAI');
       return null;
