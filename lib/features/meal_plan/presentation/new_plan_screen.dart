@@ -24,7 +24,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
 
   Future<void> pickAndConvertImage() async {
     final XFile? response =
-    await _picker.pickImage(source: ImageSource.gallery);
+        await _picker.pickImage(source: ImageSource.gallery);
 
     if (response != null) {
       Uint8List bytes = await response.readAsBytes();
@@ -61,9 +61,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return BaseScaffold(
       title: 'Neuer Plan',
@@ -88,7 +86,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                       SizedBox(width: 20),
                       InfoDialogButton(
                         infoText:
-                        "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.",
+                            "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.",
                         title: "Zeige uns deine Vorräte",
                       )
                     ],
@@ -130,12 +128,14 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
             SizedBox(height: 20),
             FilledButton(
               onPressed: () async {
-                await ApiClient.generateStorageIngredients(_images, user, isar)
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return ValidateItemsScreen(
-                    ingredients: getTestData(),
-                  );
-                }));
+                ApiClient.generateStorageIngredients(_images)
+                    .then((ingredients) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ValidateItemsScreen(
+                      ingredients: ingredients!,
+                    );
+                  }));
+                });
               },
               child: Text("Weiter"),
             ),

@@ -1,19 +1,23 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+
 import 'package:http/http.dart' as http;
+import 'package:isar/isar.dart';
+
+import '../../db/ingredient.dart';
+import '../../db/isar_factory.dart';
+import '../../db/meal_plan.dart';
+import '../../db/meal_plan_entry.dart';
+import '../../db/recipe.dart';
+import '../../db/recipe_ingredient.dart';
+import '../../db/recipe_step.dart';
+import '../../db/storage_ingredient.dart';
+import '../../db/user.dart';
+import '../../features/user_profile/data/user_repository.dart';
 import 'ai_function.dart';
 import 'content.dart';
 import 'message.dart';
 import 'request_body.dart';
-import '../../db/ingredient.dart';
-import '../../db/meal_plan_entry.dart';
-import '../../db/recipe_ingredient.dart';
-import '../../db/user.dart';
-import '../../db/storage_ingredient.dart';
-import '../../db/meal_plan.dart';
-import '../../db/recipe.dart';
-import '../../db/recipe_step.dart';
-import 'package:isar/isar.dart';
 
 class ApiClient {
   static bool _validateRequest(
@@ -56,7 +60,10 @@ class ApiClient {
   ///
   /// Returns a list of [StorageIngredient] objects if successful, null otherwise.
   static Future<List<StorageIngredient>?> generateStorageIngredients(
-      List<String> images, User user, Isar isar) async {
+      List<String> images) async {
+    final user = await UserRepository().getUser();
+    final isar = await IsarFactory().db;
+
     if (!_validateRequest(images, user, 'images')) return null;
 
     final requestBody = RequestBody(
