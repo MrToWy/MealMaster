@@ -58,7 +58,10 @@ class ValidateItemsScreen extends StatelessWidget {
                 child: FilledButton.icon(
                   icon: Icon(Icons.check),
                   onPressed: () async {
-                    await ApiClient.generateMealPlan(ingredients, await UserRepository().getUser() , await UserRepository().isarInstance);
+                    await ApiClient.generateMealPlan(
+                        ingredients,
+                        await UserRepository().getUser(),
+                        await UserRepository().isarInstance);
                   },
                   label: Text('MealPlan erstellen'),
                 ),

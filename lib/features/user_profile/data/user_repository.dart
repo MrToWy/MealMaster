@@ -30,7 +30,7 @@ class UserRepository {
     final isar = await isarInstance;
     final firstUser = await isar.users.where().findFirst();
 
-    if(firstUser == null) throw Exception("Coudlnt fetch user");
+    if (firstUser == null) throw Exception("Coudlnt fetch user");
 
     return firstUser;
   }
