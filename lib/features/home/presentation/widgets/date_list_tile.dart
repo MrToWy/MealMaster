@@ -12,7 +12,10 @@ class DateListTile extends StatelessWidget {
       key: ValueKey(day),
       title: Text(
         day,
-        style: Theme.of(context).textTheme.headlineMedium,
+        style: Theme.of(context)
+            .textTheme
+            .headlineMedium
+            ?.copyWith(color: Colors.white),
       ),
     );
   }

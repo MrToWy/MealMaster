@@ -18,13 +18,7 @@ class _MealPlanListState extends State<MealPlanList> {
   final List<String> _days = ['MO', 'DI', 'MI', 'DO', 'FR', 'SA', 'SO'];
 
   void onReorder(int oldIndex, int newIndex) {
-    setState(() {
-      if (newIndex > oldIndex) {
-        newIndex -= 1;
-      }
-      final Recipe movedRecipe = widget.recipes.removeAt(oldIndex);
-      widget.recipes.insert(newIndex, movedRecipe);
-    });
+    //TODO change order and save in db
   }
 
   @override
@@ -35,7 +29,8 @@ class _MealPlanListState extends State<MealPlanList> {
       combinedList.add(widget.recipes[i]);
     }
     return Expanded(
-      child: Material(
+      child: Container(
+        color: Theme.of(context).colorScheme.primary,
         child: ReorderableListView(
           onReorder: onReorder,
           buildDefaultDragHandles: false,
