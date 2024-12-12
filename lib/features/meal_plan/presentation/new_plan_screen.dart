@@ -123,15 +123,29 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                       ),
                       itemCount: _images.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                              image: MemoryImage(base64Decode(_images[index])),
-                              fit: BoxFit.cover,
+                        return Stack(children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              image: DecorationImage(
+                                image:
+                                    MemoryImage(base64Decode(_images[index])),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        );
+                          Positioned(
+                              right: 1,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _images.removeAt(index);
+                                  });
+                                },
+                                child:
+                                    const Icon(Icons.cancel, color: Colors.red),
+                              ))
+                        ]);
                       },
                     ),
                   ),
@@ -148,19 +162,25 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
             ),
             SizedBox(height: 20),
             FilledButton(
-              onPressed: _images.isNotEmpty && !_isLoading
-                  ? getIngredientsFromImages
-                  : null,
-              child: _isLoading
-                  ? SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        color: Theme.of(context).disabledColor,
-                      ))
-                  : Text("Weiter"),
-            ),
+                onPressed: _images.isNotEmpty && !_isLoading
+                    ? getIngredientsFromImages
+                    : null,
+                child: _isLoading
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              )),
+                          SizedBox(width: 12),
+                          Text("Zutaten werden analysiert..."),
+                        ],
+                      )
+                    : Text("Weiter")),
           ],
         ),
       ),
