@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/common/widgets/navigation_menu.dart';
-import 'package:mealmaster/features/home/presentation/controller/edit_mode_controller.dart';
-import 'package:mealmaster/features/home/presentation/home_screen.dart';
-import 'package:mealmaster/features/meal_plan/presentation/new_plan_screen.dart';
-import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
-import 'package:mealmaster/features/splash_screen/splash_screen.dart';
-import 'package:mealmaster/features/user_profile/presentation/profile_screen.dart';
-import 'package:provider/provider.dart';
 
+import 'common/widgets/navigation_menu.dart';
+import 'features/home/presentation/controller/edit_mode_controller.dart';
+import 'features/home/presentation/home_screen.dart';
+import 'features/meal_plan/presentation/new_plan_screen.dart';
+import 'features/recipes/presentation/recipe_screen.dart';
+import 'features/shopping_list/presentation/shopping_list_screen.dart';
+import 'features/splash_screen/splash_screen.dart';
+import 'features/user_profile/presentation/profile_screen.dart';
 import 'shared/theme.dart';
 
 class MyApp extends StatelessWidget {
