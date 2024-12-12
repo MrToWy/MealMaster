@@ -35,9 +35,9 @@ const IngredientSchema = CollectionSchema(
   idName: r'id',
   indexes: {},
   links: {
-    r'recipeIngredient': LinkSchema(
-      id: 4448458820037290531,
-      name: r'recipeIngredient',
+    r'recipeIngredients': LinkSchema(
+      id: -8982584802359542223,
+      name: r'recipeIngredients',
       target: r'RecipeIngredient',
       single: false,
     ),
@@ -120,13 +120,13 @@ Id _ingredientGetId(Ingredient object) {
 }
 
 List<IsarLinkBase<dynamic>> _ingredientGetLinks(Ingredient object) {
-  return [object.recipeIngredient, object.storageIngredient];
+  return [object.recipeIngredients, object.storageIngredient];
 }
 
 void _ingredientAttach(IsarCollection<dynamic> col, Id id, Ingredient object) {
   object.id = id;
-  object.recipeIngredient.attach(
-      col, col.isar.collection<RecipeIngredient>(), r'recipeIngredient', id);
+  object.recipeIngredients.attach(
+      col, col.isar.collection<RecipeIngredient>(), r'recipeIngredients', id);
   object.storageIngredient.attach(
       col, col.isar.collection<StorageIngredient>(), r'storageIngredient', id);
 }
@@ -623,17 +623,17 @@ extension IngredientQueryLinks
     });
   }
 
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredients(FilterQuery<StorageIngredient> q) {
+  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition> storageIngredient(
+      FilterQuery<StorageIngredient> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'storageIngredients');
+      return query.link(q, r'storageIngredient');
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
       storageIngredientIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'storageIngredients', 0, true, 0, true);
+      return query.linkLength(r'storageIngredient', 0, true, 0, true);
     });
   }
 }
