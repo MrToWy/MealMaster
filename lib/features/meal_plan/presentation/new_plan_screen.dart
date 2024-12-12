@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,7 +17,23 @@ class NewPlanScreen extends StatefulWidget {
 }
 
 class _NewPlanScreenState extends State<NewPlanScreen> {
+  final List<Uint8List> _images = [];
   final ImagePicker _picker = ImagePicker();
+
+  Future<void> pickAndConvertImage() async {
+    final XFile? response =
+        await _picker.pickImage(source: ImageSource.gallery);
+
+    if (response != null) {
+      Uint8List bytes = await response.readAsBytes();
+
+      setState(() {
+        _images.add(bytes);
+      });
+    } else {
+      print('Kein Bild ausgewählt.');
+    }
+  }
 
   // TODO: Remove this method and replace it with actual data
   List<StorageIngredient> getTestData() {
@@ -41,7 +59,6 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final int numberOfCards = 5;
 
     return BaseScaffold(
       title: 'Neuer Plan',
@@ -70,7 +87,6 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                     )
                   ],
                 ),
-                // TODO: Replace cards with actual images
                 SizedBox(
                   height: 400,
                   child: GridView.builder(
@@ -80,12 +96,16 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                       crossAxisSpacing: 10.0,
                       childAspectRatio: 1,
                     ),
-                    itemCount: numberOfCards,
+                    itemCount: _images.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return SizedBox(
-                        height: 130,
-                        width: 130,
-                        child: Card.filled(),
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          image: DecorationImage(
+                            image: MemoryImage(_images[index]),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -94,9 +114,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                 FilledButton.icon(
                   icon: Icon(Icons.add),
                   onPressed: () async {
-                    var response =
-                        await _picker.pickImage(source: ImageSource.gallery);
-                    print(response);
+                    await pickAndConvertImage();
                   },
                   label: Text("Vorräte hinzufügen"),
                 ),
