@@ -48,10 +48,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text(
-              "MealMe",
-              textScaler: TextScaler.linear(2),
-            ),
             TextField(
               controller: userNameController,
               decoration: InputDecoration(hintText: "Dein Name"),
