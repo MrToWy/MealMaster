@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
@@ -407,6 +408,52 @@ class ApiClient {
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
+      } else {
+        developer.log('Error: ${response.statusCode}', name: 'OpenAI');
+        developer.log('Response: ${response.body}', name: 'OpenAI');
+        return null;
+      }
+    } catch (e) {
+      developer.log('Exception: $e', name: 'OpenAI');
+      return null;
+    }
+  }
+
+  static Future<String?> transcribeAudio(String filePath) async {
+    final user = await UserRepository().getUser();
+
+    if (user.apiKey == null) {
+      developer.log('No api key provided', name: 'OpenAI');
+      return null;
+    }
+
+    try {
+      final file = File(filePath);
+
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://api.openai.com/v1/audio/transcriptions'),
+      );
+
+      request.headers.addAll({
+        'Authorization': 'Bearer ${user.apiKey!}',
+      });
+
+      request.fields['model'] = 'whisper-1';
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'file',
+          file.path,
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData['text'];
       } else {
         developer.log('Error: ${response.statusCode}', name: 'OpenAI');
         developer.log('Response: ${response.body}', name: 'OpenAI');
