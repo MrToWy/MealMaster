@@ -419,6 +419,11 @@ class ApiClient {
     }
   }
 
+  /// Transcribes an audio file to text using OpenAI's Whisper model.
+  ///
+  /// [filePath] Path to the audio file to transcribe
+  ///
+  /// Returns the transcribed text if successful, null otherwise.
   static Future<String?> transcribeAudio(String filePath) async {
     final user = await UserRepository().getUser();
 
@@ -465,6 +470,12 @@ class ApiClient {
     }
   }
 
+  /// Updates the list of storage ingredients based on text input describing changes.
+  ///
+  /// [currentIngredients] The current list of ingredients to update
+  /// [text] Description of changes to make to the ingredients list
+  ///
+  /// Returns an updated list of [StorageIngredient] objects if successful, null otherwise.
   static Future<List<StorageIngredient>?> updateIngredientsFromText(
       List<StorageIngredient> currentIngredients, String text) async {
     final user = await UserRepository().getUser();
