@@ -14,35 +14,31 @@ class RecipeListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final isEditMode = context.watch<EditModeProvider>().inEditMode;
     return Container(
       height: 100,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4.0,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Center(
         child: ListTile(
           key: ValueKey(recipe.id),
-          selectedTileColor: Colors.green,
           title: Text(
             'Recipe ${recipe.id}',
-            style: const TextStyle(
-                fontWeight: FontWeight.w400, color: Colors.black, fontSize: 22),
+            style: TextStyle(
+                fontWeight: FontWeight.w400,
+                color: theme.colorScheme.onSurface,
+                fontSize: 22),
           ),
           subtitle: Row(
             children: [
               Text(
                 '${recipe.cookingDuration} min  -  ',
-                style: const TextStyle(color: Colors.black),
+                style: TextStyle(color: theme.colorScheme.onSurface),
               ),
               DifficultyIndicator(difficulty: recipe.difficulty)
             ],
@@ -50,8 +46,8 @@ class RecipeListTile extends StatelessWidget {
           trailing: isEditMode
               ? ReorderableDragStartListener(
                   index: index,
-                  child: const Icon(Icons.drag_handle,
-                      color: Colors.black, size: 30),
+                  child: Icon(Icons.drag_handle,
+                      color: theme.colorScheme.onSurface, size: 30),
                 )
               : IconButton(
                   icon: const Icon(Icons.assignment),

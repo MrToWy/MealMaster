@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'custom_app_bar.dart';
+
 class BaseScaffold extends StatelessWidget {
   final Widget child;
   final String title;
@@ -17,10 +19,9 @@ class BaseScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title, style: Theme.of(context).textTheme.headlineLarge),
-        centerTitle: true,
-        automaticallyImplyLeading: hasBackButton,
+      appBar: CustomAppBar(
+        title: title,
+        hasBackButton: hasBackButton,
       ),
       body: SafeArea(child: child),
     );

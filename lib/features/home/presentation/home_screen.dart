@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mealmaster/features/home/presentation/widgets/meal_plan_list.dart';
 import 'package:mealmaster/features/recipes/domain/recipe.dart';
+import 'package:provider/provider.dart';
+
+import 'controller/edit_mode_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +14,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<Recipe> recipes;
+  String user = 'Max';
+
   @override
   void initState() {
     super.initState();
@@ -34,25 +39,43 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Container(
-        color: Theme.of(context).colorScheme.primary,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(width: 15),
-            Text(
-              'Hallo Max!',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                  ),
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar.large(
+          centerTitle: true,
+          title: Text(
+            'Hallo $user!',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          leadingWidth: 100,
+          leading: TextButton(
+            onPressed: () {
+              final currentMode = context.read<EditModeProvider>().inEditMode;
+              context.read<EditModeProvider>().setEditMode(!currentMode);
+            },
+            child: Text(
+              context.watch<EditModeProvider>().inEditMode
+                  ? 'Fertig'
+                  : 'Bearbeiten',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/new-plan');
+              },
+              child: Text(
+                'Neuer Plan',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
             ),
           ],
         ),
-      ),
-      MealPlanList(
-        recipes: recipes,
-      ),
-    ]);
+        SliverToBoxAdapter(
+          child: MealPlanList(recipes: recipes),
+        ),
+      ],
+    );
   }
 }
