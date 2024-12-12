@@ -561,57 +561,57 @@ extension IngredientQueryObject
 
 extension IngredientQueryLinks
     on QueryBuilder<Ingredient, Ingredient, QFilterCondition> {
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition> recipeIngredient(
+  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition> recipeIngredients(
       FilterQuery<RecipeIngredient> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'recipeIngredient');
+      return query.link(q, r'recipeIngredients');
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      recipeIngredientLengthEqualTo(int length) {
+      recipeIngredientsLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'recipeIngredient', length, true, length, true);
+      return query.linkLength(r'recipeIngredients', length, true, length, true);
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      recipeIngredientIsEmpty() {
+      recipeIngredientsIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'recipeIngredient', 0, true, 0, true);
+      return query.linkLength(r'recipeIngredients', 0, true, 0, true);
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      recipeIngredientIsNotEmpty() {
+      recipeIngredientsIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'recipeIngredient', 0, false, 999999, true);
+      return query.linkLength(r'recipeIngredients', 0, false, 999999, true);
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      recipeIngredientLengthLessThan(
+      recipeIngredientsLengthLessThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'recipeIngredient', 0, true, length, include);
+      return query.linkLength(r'recipeIngredients', 0, true, length, include);
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      recipeIngredientLengthGreaterThan(
+      recipeIngredientsLengthGreaterThan(
     int length, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
-          r'recipeIngredient', length, include, 999999, true);
+          r'recipeIngredients', length, include, 999999, true);
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      recipeIngredientLengthBetween(
+      recipeIngredientsLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -619,21 +619,21 @@ extension IngredientQueryLinks
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
-          r'recipeIngredient', lower, includeLower, upper, includeUpper);
+          r'recipeIngredients', lower, includeLower, upper, includeUpper);
     });
   }
 
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition> storageIngredient(
-      FilterQuery<StorageIngredient> q) {
+  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
+      storageIngredients(FilterQuery<StorageIngredient> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'storageIngredient');
+      return query.link(q, r'storageIngredients');
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
       storageIngredientIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'storageIngredient', 0, true, 0, true);
+      return query.linkLength(r'storageIngredients', 0, true, 0, true);
     });
   }
 }

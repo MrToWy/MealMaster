@@ -39,7 +39,7 @@ const RecipeStepSchema = CollectionSchema(
       id: 1598309638564857676,
       name: r'recipe',
       target: r'Recipe',
-      single: false,
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -489,56 +489,9 @@ extension RecipeStepQueryLinks
     });
   }
 
-  QueryBuilder<RecipeStep, RecipeStep, QAfterFilterCondition>
-      recipeLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'recipe', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<RecipeStep, RecipeStep, QAfterFilterCondition> recipeIsEmpty() {
+  QueryBuilder<RecipeStep, RecipeStep, QAfterFilterCondition> recipeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'recipe', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<RecipeStep, RecipeStep, QAfterFilterCondition>
-      recipeIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'recipe', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<RecipeStep, RecipeStep, QAfterFilterCondition>
-      recipeLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'recipe', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<RecipeStep, RecipeStep, QAfterFilterCondition>
-      recipeLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'recipe', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<RecipeStep, RecipeStep, QAfterFilterCondition>
-      recipeLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'recipe', lower, includeLower, upper, includeUpper);
     });
   }
 }
