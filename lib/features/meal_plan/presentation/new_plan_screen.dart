@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import '../../../common/widgets/base_scaffold.dart';
 import '../../../common/widgets/info_dialog_button.dart';
 import '../../../db/ingredient.dart';
 import '../../../db/storage_ingredient.dart';
+import '../../../shared/open_ai/api_client.dart';
 import 'validate_items_screen.dart';
 
 class NewPlanScreen extends StatefulWidget {
@@ -17,18 +19,19 @@ class NewPlanScreen extends StatefulWidget {
 }
 
 class _NewPlanScreenState extends State<NewPlanScreen> {
-  final List<Uint8List> _images = [];
+  final List<String> _images = [];
   final ImagePicker _picker = ImagePicker();
 
   Future<void> pickAndConvertImage() async {
     final XFile? response =
-        await _picker.pickImage(source: ImageSource.gallery);
+    await _picker.pickImage(source: ImageSource.gallery);
 
     if (response != null) {
       Uint8List bytes = await response.readAsBytes();
+      String base64Image = base64Encode(bytes);
 
       setState(() {
-        _images.add(bytes);
+        _images.add(base64Image);
       });
     } else {
       print('Kein Bild ausgewählt.');
@@ -58,7 +61,9 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final textTheme = Theme
+        .of(context)
+        .textTheme;
 
     return BaseScaffold(
       title: 'Neuer Plan',
@@ -83,7 +88,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                       SizedBox(width: 20),
                       InfoDialogButton(
                         infoText:
-                            "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.",
+                        "Erstelle Fotos von deinen Vorräten, wie zum Beispiel deinem Kühlschrank oder Vorratsschrank, und MealMaster erstellt dir einen passenden Wochenplan.",
                         title: "Zeige uns deine Vorräte",
                       )
                     ],
@@ -103,7 +108,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             image: DecorationImage(
-                              image: MemoryImage(_images[index]),
+                              image: MemoryImage(base64Decode(_images[index])),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -124,7 +129,8 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
             ),
             SizedBox(height: 20),
             FilledButton(
-              onPressed: () {
+              onPressed: () async {
+                await ApiClient.generateStorageIngredients(_images, user, isar)
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return ValidateItemsScreen(
                     ingredients: getTestData(),
