@@ -20,6 +20,7 @@ class NewPlanScreen extends StatefulWidget {
 
 class _NewPlanScreenState extends State<NewPlanScreen> {
   final List<String> _images = [];
+  bool _isLoading = false;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> pickAndConvertImage() async {
@@ -36,6 +37,26 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
     } else {
       print('Kein Bild ausgewählt.');
     }
+  }
+
+  void getIngredientsFromImages() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    List<StorageIngredient>? ingredients =
+        await ApiClient.generateStorageIngredients(_images);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (!mounted) return;
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ValidateItemsScreen(
+        ingredients: ingredients!,
+      );
+    }));
   }
 
   // TODO: Remove this method and replace it with actual data
@@ -127,18 +148,18 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
             ),
             SizedBox(height: 20),
             FilledButton(
-              onPressed: () async {
-                ApiClient.generateStorageIngredients(_images)
-                    .then((ingredients) {
-                  print(ingredients);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ValidateItemsScreen(
-                      ingredients: ingredients!,
-                    );
-                  }));
-                });
-              },
-              child: Text("Weiter"),
+              onPressed: _images.isNotEmpty && !_isLoading
+                  ? getIngredientsFromImages
+                  : null,
+              child: _isLoading
+                  ? SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        color: Theme.of(context).disabledColor,
+                      ))
+                  : Text("Weiter"),
             ),
           ],
         ),
