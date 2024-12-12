@@ -104,8 +104,27 @@ class _ValidateItemsScreenState extends State<ValidateItemsScreen> {
                                         content: Text(result),
                                         actions: <Widget>[
                                           TextButton(
-                                            child: Text('OK'),
+                                            child: Text('Abbrechen'),
                                             onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          FilledButton(
+                                            child: Text('Anwenden'),
+                                            onPressed: () async {
+                                              final updatedIngredients =
+                                                  await ApiClient
+                                                      .updateIngredientsFromText(
+                                                widget.ingredients,
+                                                result,
+                                              );
+                                              if (updatedIngredients != null) {
+                                                setState(() {
+                                                  widget.ingredients.clear();
+                                                  widget.ingredients.addAll(
+                                                      updatedIngredients);
+                                                });
+                                              }
                                               Navigator.of(context).pop();
                                             },
                                           ),
