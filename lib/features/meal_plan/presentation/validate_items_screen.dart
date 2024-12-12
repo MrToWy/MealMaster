@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../user_profile/data/user_repository.dart';
+import '../../../shared/open_ai/api_client.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
 import '../../../db/storage_ingredient.dart';
@@ -55,8 +57,8 @@ class ValidateItemsScreen extends StatelessWidget {
               Center(
                 child: FilledButton.icon(
                   icon: Icon(Icons.check),
-                  onPressed: () {
-                    // TODO: Implement generating meal plan
+                  onPressed: () async {
+                    await ApiClient.generateMealPlan(ingredients, await UserRepository().getUser() , await UserRepository().isarInstance);
                   },
                   label: Text('MealPlan erstellen'),
                 ),
