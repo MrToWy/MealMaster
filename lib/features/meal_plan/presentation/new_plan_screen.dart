@@ -72,7 +72,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                   height: 400,
                   child: GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                      crossAxisCount: 3,
                       mainAxisSpacing: 10.0,
                       crossAxisSpacing: 10.0,
                       childAspectRatio: 1,
