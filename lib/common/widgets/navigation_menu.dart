@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/home/presentation/home_screen.dart';
-import 'package:mealmaster/features/home/presentation/widgets/home_appbar.dart';
-import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
-import 'package:mealmaster/features/shopping_list/presentation/widget/shopping_list_appbar.dart';
-import 'package:mealmaster/features/user_profile/presentation/profile_screen.dart';
-import 'package:mealmaster/features/user_profile/presentation/widgets/profile_appbar.dart';
+import 'package:mealmaster/common/widgets/custom_app_bar.dart';
+
+import '../../features/home/presentation/home_screen.dart';
+import '../../features/shopping_list/presentation/shopping_list_screen.dart';
+import '../../features/user_profile/presentation/profile_screen.dart';
 
 class NavigationMenu extends StatefulWidget {
   const NavigationMenu({super.key});
@@ -31,11 +30,11 @@ class _NavigationMenuState extends State<NavigationMenu> {
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
     switch (_selectedIndex) {
       case 0:
-        return ShoppingListAppBar();
+        return CustomAppBar(title: 'MealList');
       case 1:
         return null;
       case 2:
-        return ProfileAppBar();
+        return CustomAppBar(title: 'MealMe');
       default:
         return null;
     }

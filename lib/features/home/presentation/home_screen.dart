@@ -43,7 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
       slivers: [
         SliverAppBar.large(
           centerTitle: true,
-          title: Text('Hallo $user!'),
+          title: Text(
+            'Hallo $user!',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
           leadingWidth: 100,
           leading: TextButton(
             onPressed: () {
