@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mealmaster/db/isar_factory.dart';
+import '../../../common/widgets/info_dialog_button.dart';
+import '../../user_profile/data/user_repository.dart';
+import '../../../shared/open_ai/api_client.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
 import '../../../db/storage_ingredient.dart';
-import '../../../shared/open_ai/api_client.dart';
 import '../../user_profile/data/user_repository.dart';
 import 'widgets/detected_ingredient.dart';
 
@@ -24,10 +26,19 @@ class ValidateItemsScreen extends StatelessWidget {
             width: double.infinity,
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                "Folgende Zutaten wurden erkannt:",
-                style: textTheme.titleLarge,
-                textAlign: TextAlign.start,
+              Row(
+                children: [
+                  Text(
+                    "Erkannte Zutaten",
+                    style: textTheme.titleLarge,
+                    textAlign: TextAlign.start,
+                  ),
+                  InfoDialogButton(
+                    infoText:
+                        "MealMaster hat die angezeigten Vorräte erkannt. Du kannst diese bearbeiten, oder unten weitere Vorräte hinzufügen. Wenn du unzufrieden bist, kannst du auch zurück gehen und neue Fotos hochladen.",
+                    title: "Bestätige die erkannten Vorräte",
+                  ),
+                ],
               ),
               SizedBox(height: 20),
               Expanded(
