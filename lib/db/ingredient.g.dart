@@ -41,11 +41,11 @@ const IngredientSchema = CollectionSchema(
       target: r'RecipeIngredient',
       single: false,
     ),
-    r'storageIngredients': LinkSchema(
-      id: -1274472189668257415,
-      name: r'storageIngredients',
+    r'storageIngredient': LinkSchema(
+      id: -2335286330630169646,
+      name: r'storageIngredient',
       target: r'StorageIngredient',
-      single: false,
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -120,15 +120,15 @@ Id _ingredientGetId(Ingredient object) {
 }
 
 List<IsarLinkBase<dynamic>> _ingredientGetLinks(Ingredient object) {
-  return [object.recipeIngredients, object.storageIngredients];
+  return [object.recipeIngredients, object.storageIngredient];
 }
 
 void _ingredientAttach(IsarCollection<dynamic> col, Id id, Ingredient object) {
   object.id = id;
   object.recipeIngredients.attach(
       col, col.isar.collection<RecipeIngredient>(), r'recipeIngredients', id);
-  object.storageIngredients.attach(
-      col, col.isar.collection<StorageIngredient>(), r'storageIngredients', id);
+  object.storageIngredient.attach(
+      col, col.isar.collection<StorageIngredient>(), r'storageIngredient', id);
 }
 
 extension IngredientQueryWhereSort
@@ -623,66 +623,17 @@ extension IngredientQueryLinks
     });
   }
 
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredients(FilterQuery<StorageIngredient> q) {
+  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition> storageIngredient(
+      FilterQuery<StorageIngredient> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'storageIngredients');
+      return query.link(q, r'storageIngredient');
     });
   }
 
   QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientsLengthEqualTo(int length) {
+      storageIngredientIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'storageIngredients', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'storageIngredients', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'storageIngredients', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientsLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'storageIngredients', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientsLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'storageIngredients', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Ingredient, Ingredient, QAfterFilterCondition>
-      storageIngredientsLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'storageIngredients', lower, includeLower, upper, includeUpper);
+      return query.linkLength(r'storageIngredient', 0, true, 0, true);
     });
   }
 }
