@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class DifficultyIndicator extends StatelessWidget {
   final int difficulty;
+  final double size;
 
-  const DifficultyIndicator({super.key, required this.difficulty})
+  const DifficultyIndicator(
+      {super.key, required this.difficulty, this.size = 15})
       : assert(difficulty >= 1 && difficulty <= 3);
 
   @override
@@ -14,7 +16,7 @@ class DifficultyIndicator extends StatelessWidget {
         return Icon(
           Icons.restaurant,
           color: index < difficulty ? Colors.black : Colors.grey,
-          size: 15,
+          size: size,
         );
       }),
     );

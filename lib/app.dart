@@ -5,7 +5,6 @@ import 'common/widgets/navigation_menu.dart';
 import 'features/home/presentation/controller/edit_mode_controller.dart';
 import 'features/home/presentation/home_screen.dart';
 import 'features/meal_plan/presentation/new_plan_screen.dart';
-import 'features/recipes/presentation/recipe_screen.dart';
 import 'features/shopping_list/presentation/shopping_list_screen.dart';
 import 'features/splash_screen/splash_screen.dart';
 import 'features/user_profile/presentation/profile_screen.dart';
@@ -36,7 +35,6 @@ class MyApp extends StatelessWidget {
           '/profile': (context) => ProfileScreen(),
           '/shopping-list': (context) => ShoppingListScreen(),
           '/new-plan': (context) => NewPlanScreen(),
-          '/recipe': (context) => RecipeScreen(),
         },
       ),
     );

@@ -4,6 +4,8 @@ import 'package:mealmaster/features/home/presentation/widgets/difficulty_indicat
 import 'package:mealmaster/features/recipes/domain/recipe.dart';
 import 'package:provider/provider.dart';
 
+import '../../../recipes/presentation/recipe_screen.dart';
+
 class RecipeListTile extends StatelessWidget {
   final Recipe recipe;
   final int index;
@@ -51,7 +53,14 @@ class RecipeListTile extends StatelessWidget {
                   child: const Icon(Icons.drag_handle,
                       color: Colors.black, size: 30),
                 )
-              : const Icon(Icons.assignment, color: Colors.black, size: 30),
+              : IconButton(
+                  icon: const Icon(Icons.assignment),
+                  iconSize: 30,
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RecipeScreen(id: recipe.id))),
+                ),
         ),
       ),
     );
