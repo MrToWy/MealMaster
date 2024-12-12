@@ -75,7 +75,7 @@ class ApiClient {
             Content(
               type: 'text',
               value:
-                  'Analyze these images and identify all ingredients with their approximate quantities.',
+                  'Analysieren Sie diese Bilder und identifizieren Sie alle Zutaten mit ihren ungefähren Mengenangaben.',
             ),
             ...images.map((image) => Content(
                   type: 'image_url',
@@ -176,7 +176,7 @@ class ApiClient {
             Content(
               type: 'text',
               value:
-                  'Generate a 5-day meal plan using these ingredients: ${ingredients.map((i) => "${i.ingredient.value?.name}: ${i.count} ${i.ingredient.value?.unit}").join(", ")}',
+                  'Erstellen Sie einen 5-Tage-Mahlzeitenplan mit diesen Zutaten. Es dürfen auch andere Zutaten genutzt werden, um nicht jeden Tag ähnliches zu essen. Die genannten Zutaten sollten aber wenn möglich aufgebraucht werden. ${ingredients.map((i) => "${i.ingredient.value?.name}: ${i.count} ${i.ingredient.value?.unit}").join(", ")}',
             ),
           ],
         ),
