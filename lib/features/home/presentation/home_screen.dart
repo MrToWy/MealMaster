@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/home/presentation/controller/edit_mode_controller.dart';
 import 'package:mealmaster/features/home/presentation/widgets/meal_plan_list.dart';
 import 'package:mealmaster/features/recipes/domain/recipe.dart';
-import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

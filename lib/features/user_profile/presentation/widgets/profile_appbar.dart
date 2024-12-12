@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/home/presentation/controller/edit_mode_controller.dart';
-import 'package:provider/provider.dart';
 
 class ProfileAppBar extends StatefulWidget implements PreferredSizeWidget {
   const ProfileAppBar({super.key});

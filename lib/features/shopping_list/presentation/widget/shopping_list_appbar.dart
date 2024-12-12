@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/home/presentation/controller/edit_mode_controller.dart';
-import 'package:provider/provider.dart';
 
 class ShoppingListAppBar extends StatefulWidget implements PreferredSizeWidget {
   const ShoppingListAppBar({super.key});
