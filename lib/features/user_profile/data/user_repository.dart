@@ -26,6 +26,15 @@ class UserRepository {
     return firstUser?.name ?? "Kein Name vorhanden";
   }
 
+  Future<User> getUser() async {
+    final isar = await isarInstance;
+    final firstUser = await isar.users.where().findFirst();
+
+    if (firstUser == null) throw Exception("Coudlnt fetch user");
+
+    return firstUser;
+  }
+
   Future<String> getWeightString() async {
     final isar = await isarInstance;
     final firstUser = await isar.users.where().findFirst();
