@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
 import '../../../common/widgets/info_dialog_button.dart';
@@ -14,6 +15,8 @@ class NewPlanScreen extends StatefulWidget {
 }
 
 class _NewPlanScreenState extends State<NewPlanScreen> {
+  final ImagePicker _picker = ImagePicker();
+
   // TODO: Remove this method and replace it with actual data
   List<StorageIngredient> getTestData() {
     final Ingredient ingredient = Ingredient()
@@ -90,8 +93,10 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
                 SizedBox(height: 8),
                 FilledButton.icon(
                   icon: Icon(Icons.add),
-                  onPressed: () {
-                    //TODO: Implement upload images
+                  onPressed: () async {
+                    var response =
+                        await _picker.pickImage(source: ImageSource.gallery);
+                    print(response);
                   },
                   label: Text("Vorräte hinzufügen"),
                 ),
