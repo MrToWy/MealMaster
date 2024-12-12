@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/db/isar_factory.dart';
 import '../../user_profile/data/user_repository.dart';
 import '../../../shared/open_ai/api_client.dart';
 
@@ -61,7 +62,7 @@ class ValidateItemsScreen extends StatelessWidget {
                     await ApiClient.generateMealPlan(
                         ingredients,
                         await UserRepository().getUser(),
-                        await UserRepository().isarInstance);
+                        await IsarFactory().db);
                   },
                   label: Text('MealPlan erstellen'),
                 ),

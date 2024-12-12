@@ -1,24 +1,16 @@
 import 'package:isar/isar.dart';
-import 'package:mealmaster/db/allergy.dart';
-import 'package:mealmaster/db/diet.dart';
+import 'package:mealmaster/db/isar_factory.dart';
 import 'package:mealmaster/db/user.dart';
-import 'package:path_provider/path_provider.dart';
 
 class UserRepository {
   static final UserRepository _instance = UserRepository._internal();
-  late Future<Isar> isarInstance = openIsar();
+  late Future<Isar> isarInstance = IsarFactory().db;
+  
   factory UserRepository() {
     return _instance;
   }
+  
   UserRepository._internal();
-
-  Future<Isar> openIsar() async {
-    final dir = await getApplicationDocumentsDirectory();
-    return await Isar.open(
-      [UserSchema, DietSchema, AllergySchema],
-      directory: dir.path,
-    );
-  }
 
   Future<String> getUserName() async {
     final isar = await isarInstance;
