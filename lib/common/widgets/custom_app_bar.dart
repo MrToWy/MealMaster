@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool hasBackButton;
   final String title;
+  final List<Widget>? actions;
 
   const CustomAppBar(
-      {super.key, this.hasBackButton = false, required this.title});
+      {super.key,
+      this.hasBackButton = false,
+      required this.title,
+      this.actions});
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +17,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(title, style: Theme.of(context).textTheme.headlineMedium),
       centerTitle: true,
       automaticallyImplyLeading: hasBackButton,
+      actions: actions,
     );
   }
 

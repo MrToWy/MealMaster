@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mealmaster/common/widgets/custom_app_bar.dart';
+import 'package:mealmaster/db/db_test.dart';
 
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/shopping_list/presentation/shopping_list_screen.dart';
@@ -34,7 +35,16 @@ class _NavigationMenuState extends State<NavigationMenu> {
       case 1:
         return null;
       case 2:
-        return CustomAppBar(title: 'MealMe');
+        return CustomAppBar(title: 'MealMe', actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DbTestScreen()),
+                );
+              },
+              child: Text('DB Test'))
+        ]);
       default:
         return null;
     }
