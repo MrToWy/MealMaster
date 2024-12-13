@@ -1,31 +1,35 @@
-# mealmaster
+# MealMaster - AI-Powered Meal Planning App
 
-A new Flutter project.
+MealMaster is a student project developed as part of the Mobile Interaction Design course.
 
-## Getting Started
+The app is primarily designed for Android devices and leverages OpenAI API to help you create
+personalized meal plans.
+Simply take pictures of your ingredients, and MealMaster will generate a weekly plan with recipes
+tailored to your available stocks.
 
-This project is a starting point for a Flutter application.
+Start planning smarter, reducing waste, and enjoying delicious meals with MealMaster!
 
-A few resources to get you started if this is your first Flutter project:
+## Used Packages
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [Isar](https://pub.dev/packages/isar) - Database
+- [Flex Color Scheme](https://pub.dev/packages/flex_color_scheme) - Use Color Scheme
+- [Http](https://pub.dev/packages/http) - Send HTTP Requests
+- [Image Picker](https://pub.dev/packages/image_picker) - Access to the device's camera and gallery
+- [Record](https://pub.dev/packages/record) - Audio recorder from microphone
+- [Path Provider](https://pub.dev/packages/path_provider) - Get the path of the device's storage
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Development
 
-
-## New release
+### How to create a new release
 1. Create a tag (e.g. 0.0.1)
 2. Push the tag
 3. GitHub will create a new apk + release automatically
 
-# Database
+### Database
 We are using Isar v3 (Community) for our database.
 Documentation: https://isar-community.dev/v3/de/
 
-## Change database tables
+#### Change database tables
 1. Add a collection-class, or edit an existing one (e.g. lib/db/user.dart)
 2. When adding a new class XYZ, add the code `part 'xyz.g.dart';`
 3. Run the following command 
