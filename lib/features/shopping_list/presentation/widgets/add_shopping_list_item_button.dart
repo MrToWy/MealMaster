@@ -4,7 +4,7 @@ import 'package:mealmaster/features/shopping_list/presentation/shopping_list_scr
 import 'package:mealmaster/features/shopping_list/presentation/widgets/shopping_list_item_text_input.dart';
 
 Widget addShoppingListItemButton(context, Function callback) {
-  return Card(
+  return Card.filled(
       child: IconButton(
           onPressed: () {
             addItemToShoppingListDialog(context, callback);
