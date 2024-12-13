@@ -22,7 +22,6 @@ sealed class AppTheme {
     surfaceMode: FlexSurfaceMode.highSurfaceLowScaffold,
     blendLevel: 17,
     subThemesData: const FlexSubThemesData(
-      cardElevation: 10,
       interactionEffects: true,
       tintedDisabledControls: true,
       useMaterial3Typography: true,

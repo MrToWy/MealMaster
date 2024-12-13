@@ -5,7 +5,7 @@ import 'package:mealmaster/features/shopping_list/presentation/widgets/shopping_
 
 Widget shoppingListItemCard(
     context, final ShoppingListItem item, Function onClick, Function callback) {
-  return Card(
+  return Card.filled(
     child: ListTile(
       title: Text(item.name),
       subtitle: Text("${item.count}"),
