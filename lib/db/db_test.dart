@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
 
+import '../common/widgets/base_scaffold.dart';
 import '../shared/open_ai/api_client.dart';
 import 'allergy.dart';
-import 'diet.dart';
 import 'example_image.dart';
-import 'ingredient.dart';
-import 'meal_plan.dart';
-import 'meal_plan_entry.dart';
-import 'recipe.dart';
-import 'recipe_ingredient.dart';
-import 'recipe_step.dart';
+import 'isar_factory.dart';
 import 'storage_ingredient.dart';
 import 'user.dart';
 
@@ -30,26 +24,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
   @override
   void initState() {
     super.initState();
-    isarInstance = openIsar();
-  }
-
-  Future<Isar> openIsar() async {
-    final dir = await getApplicationDocumentsDirectory();
-    return await Isar.open(
-      [
-        UserSchema,
-        DietSchema,
-        AllergySchema,
-        IngredientSchema,
-        MealPlanSchema,
-        MealPlanEntrySchema,
-        RecipeSchema,
-        RecipeIngredientSchema,
-        RecipeStepSchema,
-        StorageIngredientSchema,
-      ],
-      directory: dir.path,
-    );
+    isarInstance = IsarFactory().db;
   }
 
   Future<void> callApiStorageIngredients() async {
@@ -125,8 +100,10 @@ class _DbTestScreenState extends State<DbTestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return BaseScaffold(
+      title: 'DB Test',
+      hasBackButton: true,
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
