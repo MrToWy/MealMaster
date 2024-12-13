@@ -9,6 +9,11 @@ tailored to your available stocks.
 
 Start planning smarter, reducing waste, and enjoying delicious meals with MealMaster!
 
+## Requirements
+
+To use MealMaster, you will need an OpenAI API key.
+Additionally, the app requires your Android device to run on a minimum SDK version of 23 or higher.
+
 ## Used Packages
 
 - [Isar](https://pub.dev/packages/isar) - Database
