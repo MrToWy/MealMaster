@@ -104,8 +104,7 @@ class _ValidateItemsScreenState extends State<ValidateItemsScreen> {
                       },
                     ),
                     isLoadingVoice
-                        ? LoadingButton(
-                            text: "Zutaten zu den Vorräten hinzufügen")
+                        ? LoadingButton(text: "Vorräte bearbeiten...")
                         : FilledButton(
                             child: Text('Anwenden'),
                             onPressed: () async => {
