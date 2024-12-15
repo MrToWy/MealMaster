@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
 import '../../../common/widgets/info_dialog_button.dart';
-import '../../../db/ingredient.dart';
+import '../../../common/widgets/loading_button.dart';
 import '../../../db/storage_ingredient.dart';
 import '../../../shared/open_ai/api_client.dart';
 import 'validate_items_screen.dart';
@@ -54,30 +54,9 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
     if (!mounted) return;
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return ValidateItemsScreen(
-        ingredients: ingredients!,
+        ingredients: ingredients ?? [],
       );
     }));
-  }
-
-  // TODO: Remove this method and replace it with actual data
-  List<StorageIngredient> getTestData() {
-    final Ingredient ingredient = Ingredient()
-      ..name = "Eier"
-      ..unit = "Stück";
-
-    final StorageIngredient storageIngredient = StorageIngredient()
-      ..count = 3
-      ..ingredient.value = ingredient;
-
-    final Ingredient ingredient2 = Ingredient()
-      ..name = "Milch"
-      ..unit = "ml";
-
-    final StorageIngredient storageIngredient2 = StorageIngredient()
-      ..count = 200
-      ..ingredient.value = ingredient2;
-
-    return [storageIngredient, storageIngredient2];
   }
 
   @override
@@ -161,26 +140,12 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
               ),
             ),
             SizedBox(height: 20),
-            FilledButton(
-                onPressed: _images.isNotEmpty && !_isLoading
-                    ? getIngredientsFromImages
-                    : null,
-                child: _isLoading
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: Theme.of(context).colorScheme.onPrimary,
-                              )),
-                          SizedBox(width: 12),
-                          Text("Zutaten werden analysiert..."),
-                        ],
-                      )
-                    : Text("Weiter")),
+            _isLoading
+                ? LoadingButton(text: "Zutaten werden analysiert...")
+                : FilledButton(
+                    onPressed:
+                        _images.isNotEmpty ? getIngredientsFromImages : null,
+                    child: Text("Weiter")),
           ],
         ),
       ),
