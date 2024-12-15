@@ -92,26 +92,35 @@ class _ValidateItemsScreenState extends State<ValidateItemsScreen> {
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Transkribierter Text'),
-                content: Text(result),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('Abbrechen'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  isLoadingVoice
-                      ? LoadingButton(
-                          text: "Zutaten zu den Vorräten hinzufügen")
-                      : FilledButton(
-                          child: Text('Anwenden'),
-                          onPressed: () async =>
+              return StatefulBuilder(builder: (context, setState) {
+                return AlertDialog(
+                  title: Text('Transkribierter Text'),
+                  content: Text(result),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('Abbrechen'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    isLoadingVoice
+                        ? LoadingButton(
+                            text: "Zutaten zu den Vorräten hinzufügen")
+                        : FilledButton(
+                            child: Text('Anwenden'),
+                            onPressed: () async => {
+                              setState(() {
+                                isLoadingVoice = true;
+                              }),
                               await processVoiceInput(result),
-                        ),
-                ],
-              );
+                              setState(() {
+                                isLoadingVoice = false;
+                              }),
+                            },
+                          ),
+                  ],
+                );
+              });
             },
           );
         }
