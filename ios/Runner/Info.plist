@@ -6,6 +6,8 @@
     <string>Wir benötigen Zugriff auf die Fotobibliothek, um Bilder zu importieren.</string>
     <key>NSCameraUsageDescription</key>
     <string>Wir benötigen Zugriff auf die Kamera, um Fotos aufzunehmen.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Wir benötigen Zugriff auf dein Mikro, um deine Vorräte verwalten zu können.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
