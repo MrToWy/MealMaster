@@ -76,7 +76,7 @@ class ApiClient {
             Content(
               type: 'text',
               value:
-                  'Analysieren Sie diese Bilder und identifizieren Sie alle Zutaten mit ihren ungefähren Mengenangaben.',
+                  'Analysieren Sie diese Bilder und identifizieren Sie alle Zutaten mit ihren ungefähren Mengenangaben. Antworten Sie immer auf Deutsch, unabhängig von der Anfrage.',
             ),
             ...images.map((image) => Content(
                   type: 'image_url',
@@ -177,7 +177,7 @@ class ApiClient {
             Content(
               type: 'text',
               value:
-                  'Erstellen Sie einen 5-Tage-Mahlzeitenplan mit diesen Zutaten. Es dürfen auch andere Zutaten genutzt werden, um nicht jeden Tag ähnliches zu essen. Die genannten Zutaten sollten aber wenn möglich aufgebraucht werden. ${ingredients.map((i) => "${i.ingredient.value?.name}: ${i.count} ${i.ingredient.value?.unit}").join(", ")}',
+                  'Erstellen Sie einen 5-Tage-Mahlzeitenplan mit diesen Zutaten. Es dürfen auch andere Zutaten genutzt werden, um nicht jeden Tag ähnliches zu essen. Die genannten Zutaten sollten aber wenn möglich aufgebraucht werden. ${ingredients.map((i) => "${i.ingredient.value?.name}: ${i.count} ${i.ingredient.value?.unit}").join(", ")}. Antworten Sie immer auf Deutsch, unabhängig von der Anfrage.',
             ),
           ],
         ),
@@ -407,7 +407,8 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        final decodedResponse = utf8.decode(response.bodyBytes);
+        return jsonDecode(decodedResponse);
       } else {
         developer.log('Error: ${response.statusCode}', name: 'OpenAI');
         developer.log('Response: ${response.body}', name: 'OpenAI');
@@ -457,7 +458,8 @@ class ApiClient {
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        final decodedResponse = utf8.decode(response.bodyBytes);
+        final responseData = jsonDecode(decodedResponse);
         return responseData['text'];
       } else {
         developer.log('Error: ${response.statusCode}', name: 'OpenAI');
