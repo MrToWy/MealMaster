@@ -17,20 +17,31 @@ class RecipeScreen extends StatefulWidget {
 
 class _RecipeScreenState extends State<RecipeScreen> {
   List<Recipe> recipes = [];
+  late PageController _pageController;
   Recipe currentRecipe = Recipe();
 
   @override
   initState() {
-    getRecipes();
     super.initState();
+    _pageController = PageController(viewportFraction: 0.8);
+    getRecipes();
   }
 
   getRecipes() async {
     final recipes = await RecipeRepository().getRecipes();
     final recipe = await RecipeRepository().getRecipeById(widget.id);
+    int initialIndex = recipes.indexWhere((r) => r.id == recipe.id);
     setState(() {
       this.recipes = recipes;
       currentRecipe = recipe;
+      if (initialIndex != -1) {
+        // Sicherstellen, dass die Methode nach dem Frame-Aufbau aufgerufen wird
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(initialIndex);
+          }
+        });
+      }
     });
   }
 
@@ -55,6 +66,10 @@ class _RecipeScreenState extends State<RecipeScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
 
+    if (recipes.isEmpty) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return BaseScaffold(
       title: "${currentRecipe.title}",
       hasBackButton: true,
@@ -68,11 +83,13 @@ class _RecipeScreenState extends State<RecipeScreen> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 2 / 3,
               child: PageView.builder(
-                controller: PageController(
-                  viewportFraction: 0.8,
-                  initialPage: 0, // TODO set to current recipe index
-                ),
+                controller: _pageController,
                 itemCount: recipes.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    currentRecipe = recipes[index];
+                  });
+                },
                 itemBuilder: (context, index) {
                   Recipe recipe = recipes[index];
 
