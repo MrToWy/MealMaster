@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mealmaster/features/user_profile/data/user_repository.dart';
 import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/diet_enum.dart';
@@ -6,7 +7,8 @@ import 'package:mealmaster/features/user_profile/domain/macros_enum.dart';
 import 'package:mealmaster/features/user_profile/presentation/widgets/category_chip_list.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final bool firstTime;
+  const ProfileScreen({this.firstTime = false, super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -15,7 +17,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   UserRepository userRepo = UserRepository();
   final TextEditingController dietController = TextEditingController();
-  Set<AllergiesEnum> allergies = <AllergiesEnum>{};
   final GlobalKey<CategoryChipListState> macroChipWidgetKey = GlobalKey();
   final GlobalKey<CategoryChipListState> allergyChipWidgetKey = GlobalKey();
   TextEditingController userNameController = TextEditingController();
@@ -33,6 +34,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         userWeightController.value =
             userWeightController.value.copyWith(text: weight);
+      });
+    });
+
+    userRepo.getAllergies().then((savedAllergies) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          allergyChipWidgetKey.currentState?.set.addAll(savedAllergies);
+        });
       });
     });
 
@@ -54,6 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             TextField(
               controller: userWeightController,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(hintText: "Gewicht"),
             ),
             DropdownMenu(
@@ -73,14 +83,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 key: macroChipWidgetKey,
                 title: "Macros",
                 category: MacrosEnum.values),
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    testText =
-                        macroChipWidgetKey.currentState!.set.length.toString();
-                  });
-                },
-                child: Text("Speichern"))
+            if (widget.firstTime == false)
+              TextButton(
+                  onPressed: () {
+                    userRepo.saveUserData(
+                        userNameController.text,
+                        userWeightController.text,
+                        allergyChipWidgetKey.currentState!.set
+                            .cast<AllergiesEnum>());
+                  },
+                  child: Text("Speichern"))
+            else
+              TextButton(
+                  onPressed: () {
+                    userRepo.createUser(
+                        userNameController.text, userWeightController.text);
+                  },
+                  child: Text("Weiter"))
           ],
         ),
       ),
