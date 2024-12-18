@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/db/recipe_ingredient.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
 import '../../../db/recipe.dart';
@@ -33,6 +34,23 @@ class _RecipeScreenState extends State<RecipeScreen> {
     });
   }
 
+  String getDayFromDateTime(DateTime? date) {
+    if (date == null) return '';
+
+    const List<String> daysInGerman = [
+      'Montag',
+      'Dienstag',
+      'Mittwoch',
+      'Donnerstag',
+      'Freitag',
+      'Samstag',
+      'Sonntag'
+    ];
+
+    int dayIndex = date.weekday;
+    return daysInGerman[dayIndex - 1];
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
@@ -44,7 +62,8 @@ class _RecipeScreenState extends State<RecipeScreen> {
         padding: const EdgeInsets.symmetric(vertical: 20.0),
         child: Column(
           children: [
-            Text("DAY", style: theme.displaySmall),
+            Text(getDayFromDateTime(currentRecipe.mealPlanEntries.first.day),
+                style: theme.displaySmall),
             SizedBox(height: 20),
             SizedBox(
               height: MediaQuery.of(context).size.height * 2 / 3,
@@ -86,8 +105,22 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                   ),
                                 ]),
                             Text('Zutaten', style: theme.headlineMedium),
+                            for (RecipeIngredient ingredient
+                                in recipe.ingredients)
+                              SizedBox(
+                                  height: 20,
+                                  child: Text(
+                                      ingredient.ingredient.value?.name ??
+                                          'Unbekannte Zutat',
+                                      style: theme.bodyMedium)),
                             SizedBox(height: 20),
                             Text('Schritte:', style: theme.headlineMedium),
+                            for (int i = 0; i < recipe.steps.length; i++)
+                              SizedBox(
+                                  height: 20,
+                                  child: Text(
+                                      '${i + 1}. ${recipe.steps.elementAt(i).description}',
+                                      style: theme.bodyMedium)),
                           ],
                         ),
                       ),
