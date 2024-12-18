@@ -73,6 +73,11 @@ class _RecipeScreenState extends State<RecipeScreen> {
                   initialPage: 0, // TODO set to current recipe index
                 ),
                 itemCount: recipes.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    currentRecipe = recipes[index];
+                  });
+                },
                 itemBuilder: (context, index) {
                   Recipe recipe = recipes[index];
 
