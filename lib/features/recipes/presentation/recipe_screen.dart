@@ -116,8 +116,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                   Text('-'),
                                   SizedBox(width: 20),
                                   DifficultyIndicator(
-                                    difficulty: 2,
-                                    // TODO set to recipe difficulty
+                                    difficulty: recipe.difficulty ?? 0,
                                     size: 20,
                                   ),
                                 ]),
