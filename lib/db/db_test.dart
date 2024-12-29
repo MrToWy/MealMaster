@@ -135,14 +135,27 @@ class _DbTestScreenState extends State<DbTestScreen> {
               child: Text('Delete all User'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
+                final db = await isarInstance;
+                Ingredient newIngredient = Ingredient()
+                  ..name = "Eier"
+                  ..unit = "count";
+                await db.writeTxn(() async {
+                  return await db.ingredients.put(newIngredient);
+                });
+                StorageRepository().addToStorage(newIngredient, 1);
+              },
+              child: Text('Add Storage Ingredient'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
                 Ingredient newIngredient = Ingredient()
                   ..name = "Eier"
                   ..unit = "count";
 
-                StorageRepository().addToStorage(newIngredient, 1);
+                StorageRepository().removeFromStorage(newIngredient, 1);
               },
-              child: Text('Add Storage Ingredient'),
+              child: Text('Remove Storage Ingredient'),
             ),
             SizedBox(height: 20),
             Text(
