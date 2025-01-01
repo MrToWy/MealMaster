@@ -41,7 +41,6 @@ class ApiClient {
   static Future<List<StorageIngredient>?> generateStorageIngredientsFromImages(
       List<String> images) async {
     final user = await UserRepository().getUser();
-    final isar = await IsarFactory().db;
 
     if (!_validateRequest(images, user, 'images')) return null;
 
@@ -345,7 +344,6 @@ class ApiClient {
   static Future<List<StorageIngredient>?> updateIngredientsFromText(
       List<StorageIngredient> currentIngredients, String text) async {
     final user = await UserRepository().getUser();
-    final isar = await IsarFactory().db;
 
     if (!_validateRequest([text], user, 'text')) return null;
 
