@@ -7,7 +7,6 @@ import 'package:isar/isar.dart';
 import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
 import 'package:mealmaster/features/storage/data/storage_repositoy.dart';
 
-import '../../db/isar_factory.dart';
 import '../../db/meal_plan.dart';
 import '../../db/storage_ingredient.dart';
 import '../../db/user.dart';
