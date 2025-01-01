@@ -39,7 +39,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
     List<String> images = [];
     images.add(ExampleImage.getFridge());
 
-    var test = await ApiClient.generateStorageIngredients(images);
+    var test = await ApiClient.generateStorageIngredientsFromImages(images);
     test.toString();
   }
 
@@ -143,7 +143,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
                 await db.writeTxn(() async {
                   return await db.ingredients.put(newIngredient);
                 });
-                StorageRepository().addToStorage(newIngredient, 1);
+                StorageRepository().addStorageIngredient(newIngredient, 1);
               },
               child: Text('Add Storage Ingredient'),
             ),

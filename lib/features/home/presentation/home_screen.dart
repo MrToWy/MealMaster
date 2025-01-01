@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         SliverToBoxAdapter(
-          child: MealPlanList(recipes: recipes),
+          child: MealPlanList(),
         ),
       ],
     );
