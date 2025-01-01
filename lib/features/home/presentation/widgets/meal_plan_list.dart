@@ -50,7 +50,6 @@ class _MealPlanListState extends State<MealPlanList> {
     final mealPlanRepository = MealPlanRepository();
     List<MealPlanEntry> mealPlanEntries =
         await mealPlanRepository.getMealPlanEntries();
-    log("MealplanEntries: ${mealPlanEntries}");
     for (var dayString in nextSevenDays) {
       combinedList.add(dayString);
 
@@ -79,7 +78,6 @@ class _MealPlanListState extends State<MealPlanList> {
     return FutureBuilder<List>(
       future: _combinedList, // Wait for the recipes to load
       builder: (context, snapshot) {
-        log("CombinedList: ${_combinedList}");
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
