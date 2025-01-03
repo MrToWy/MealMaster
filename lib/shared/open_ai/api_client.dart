@@ -212,6 +212,11 @@ class ApiClient {
                               'type': 'string',
                               'description': 'Brief description of the recipe'
                             },
+                            'difficulty': {
+                              'type': 'integer',
+                              'description':
+                                  'An integer ranging from 0 to 5, indicating the recipe difficulty level, where 0 represents very easy and 5 represents very difficult.'
+                            },
                             'ingredients': {
                               'type': 'array',
                               'items': {
@@ -262,6 +267,7 @@ class ApiClient {
                           'required': [
                             'name',
                             'description',
+                            'difficulty',
                             'ingredients',
                             'steps'
                           ]
@@ -343,6 +349,7 @@ class ApiClient {
     final recipe = Recipe()
       ..title = recipeData['name']
       ..description = recipeData['description']
+      ..difficulty = recipeData['difficulty']
       ..cookingDuration = recipeData['steps']
           .fold<int>(0, (sum, step) => sum + step['duration'] as int);
 
