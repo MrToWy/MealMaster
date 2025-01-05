@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mealmaster/common/widgets/loading_button.dart';
 import 'package:mealmaster/features/user_profile/data/user_repository.dart';
 import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/diet_enum.dart';
@@ -21,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final GlobalKey<CategoryChipListState> allergyChipWidgetKey = GlobalKey();
   TextEditingController userNameController = TextEditingController();
   TextEditingController userWeightController = TextEditingController();
+  TextEditingController apiKey = TextEditingController();
 
   @override
   void initState() {
@@ -83,6 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 key: macroChipWidgetKey,
                 title: "Macros",
                 category: MacrosEnum.values),
+            LoadingButton(text: "test"),
             if (widget.firstTime == false)
               TextButton(
                   onPressed: () {
@@ -94,12 +97,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                   child: Text("Speichern"))
             else
-              TextButton(
-                  onPressed: () {
-                    userRepo.createUser(
-                        userNameController.text, userWeightController.text);
-                  },
-                  child: Text("Weiter"))
+              Column(
+                children: [
+                  TextField(
+                    controller: apiKey,
+                    decoration: InputDecoration(hintText: "Dein API-Key"),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        userRepo.createUser(
+                            userNameController.text, userWeightController.text);
+                      },
+                      child: Text("Weiter"))
+                ],
+              )
           ],
         ),
       ),
