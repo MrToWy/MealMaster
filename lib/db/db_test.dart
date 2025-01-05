@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:mealmaster/db/ingredient.dart';
+import 'package:mealmaster/features/storage/data/storage_repositoy.dart';
 
 import '../common/widgets/base_scaffold.dart';
 import '../shared/open_ai/api_client.dart';
@@ -131,6 +133,29 @@ class _DbTestScreenState extends State<DbTestScreen> {
             ElevatedButton(
               onPressed: deleteAllUsers,
               child: Text('Delete all User'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final db = await isarInstance;
+                Ingredient newIngredient = Ingredient()
+                  ..name = "Eier"
+                  ..unit = "count";
+                await db.writeTxn(() async {
+                  return await db.ingredients.put(newIngredient);
+                });
+                StorageRepository().addToStorage(newIngredient, 1);
+              },
+              child: Text('Add Storage Ingredient'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Ingredient newIngredient = Ingredient()
+                  ..name = "Eier"
+                  ..unit = "count";
+
+                StorageRepository().removeFromStorage(newIngredient, 1);
+              },
+              child: Text('Remove Storage Ingredient'),
             ),
             SizedBox(height: 20),
             Text(
