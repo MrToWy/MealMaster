@@ -5,6 +5,7 @@ import 'package:mealmaster/features/user_profile/data/user_repository.dart';
 import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/diet_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/macros_enum.dart';
+import 'package:mealmaster/features/user_profile/domain/user.dart';
 import 'package:mealmaster/features/user_profile/presentation/widgets/category_chip_list.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,29 +24,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController userNameController = TextEditingController();
   TextEditingController userWeightController = TextEditingController();
   TextEditingController apiKey = TextEditingController();
+  bool loading = true;
+  bool hasNoUser = true;
 
   @override
   void initState() {
-    userRepo.getUserName().then((name) {
-      setState(() {
-        userNameController.value =
-            userNameController.value.copyWith(text: name);
-      });
-    });
-    userRepo.getWeightString().then((weight) {
-      setState(() {
-        userWeightController.value =
-            userWeightController.value.copyWith(text: weight);
-      });
-    });
+    userRepo.getUserRepresentation().then((user) {
+      if (user == null) {
+        setState(() {
+          loading = false;
+        });
+        return;
+      }
 
-    userRepo.getAllergies().then((savedAllergies) {
+      setState(() {
+        hasNoUser = false;
+        userNameController.value =
+            userNameController.value.copyWith(text: user.name);
+        userWeightController.value =
+            userWeightController.value.copyWith(text: user.weight);
+        loading = false;
+      });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          allergyChipWidgetKey.currentState?.set.addAll(savedAllergies);
+          allergyChipWidgetKey.currentState?.set.addAll(user.allergies);
         });
       });
     });
+
+    /*userRepo.getAllergies().then((savedAllergies) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          allergyChipWidgetKey.currentState?.set.addAll(savedAllergies);
+          loading = false;
+        });
+      });
+    });*/
 
     super.initState();
   }
@@ -53,6 +67,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String testText = "";
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return Center(child: LoadingButton(text: "Loading User"));
+    }
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -85,8 +103,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 key: macroChipWidgetKey,
                 title: "Macros",
                 category: MacrosEnum.values),
-            LoadingButton(text: "test"),
-            if (widget.firstTime == false)
+            if (hasNoUser)
+              Column(
+                children: [
+                  TextField(
+                    controller: apiKey,
+                    decoration: InputDecoration(hintText: "Dein API-Key"),
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        if (userNameController.value.text == "") {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text("Das Namen Feld darf nicht leer sein")));
+                          return;
+                        }
+                        userRepo.createUser(
+                            userNameController.text, userWeightController.text);
+                      },
+                      child: Text("Nutzer erstellen"))
+                ],
+              )
+            else
               TextButton(
                   onPressed: () {
                     userRepo.saveUserData(
@@ -96,21 +134,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             .cast<AllergiesEnum>());
                   },
                   child: Text("Speichern"))
-            else
-              Column(
-                children: [
-                  TextField(
-                    controller: apiKey,
-                    decoration: InputDecoration(hintText: "Dein API-Key"),
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        userRepo.createUser(
-                            userNameController.text, userWeightController.text);
-                      },
-                      child: Text("Weiter"))
-                ],
-              )
           ],
         ),
       ),

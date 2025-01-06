@@ -3,6 +3,7 @@ import 'package:mealmaster/db/allergy.dart';
 import 'package:mealmaster/db/isar_factory.dart';
 import 'package:mealmaster/db/user.dart';
 import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
+import 'package:mealmaster/features/user_profile/domain/user.dart';
 
 class UserRepository {
   static final UserRepository _instance = UserRepository._internal();
@@ -62,16 +63,15 @@ class UserRepository {
     if (firstUser == null) {
       return false;
     }
-    //TODO: FIX
-    //allergies are still saved twice
+
     List<Allergy> dbAllergies = await isar.allergys.where().findAll();
     var allergies = allergyEnumToDBEnum(allergiesEnum);
     List<Allergy> finalAllergies = [];
     for (Allergy al in allergies) {
       if (dbAllergies.where((e) => al.name == e.name).isEmpty) {
-        finalAllergies.add(dbAllergies.firstWhere((e) => al.name == e.name));
-      } else {
         finalAllergies.add(al);
+      } else {
+        finalAllergies.add(dbAllergies.firstWhere((e) => al.name == e.name));
       }
     }
     firstUser.allergies.clear();
@@ -100,5 +100,30 @@ class UserRepository {
 
   Future<bool> createUser(String userName, String weightString) async {
     return true;
+  }
+
+  Future<UserRepresentation?> getUserRepresentation() async {
+    final isar = await isarInstance;
+    final firstUser = await isar.users.where().findFirst();
+    if (firstUser == null) {
+      return null;
+    }
+    String name = firstUser.name ?? "Kein Name vorhanden";
+    String weight = firstUser.weight.toString();
+
+    var allergies = firstUser.allergies;
+    Set<AllergiesEnum> allergiesEnum = {};
+    for (var allergy in allergies) {
+      try {
+        var tempAllergie =
+            AllergiesEnum.values.firstWhere((e) => e.key == allergy.name);
+        allergiesEnum.add(tempAllergie);
+      } catch (e) {
+        //TODO: ADD Error Message if allergie was not found
+      }
+    }
+
+    return UserRepresentation(
+        name: name, weight: weight, allergies: allergiesEnum);
   }
 }

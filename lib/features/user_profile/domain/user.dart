@@ -7,6 +7,17 @@ class UserRepresentation {
   Set<DietEnum> diets = {};
   Set<MacrosEnum> macros = {};
   final String name;
-  final double weight;
-  UserRepresentation({required this.name, required this.weight});
+  final String weight;
+  UserRepresentation(
+      {required this.name, required this.weight, allergies, diets, macros}) {
+    if (allergies != null) {
+      this.allergies.addAll(allergies);
+    }
+    if (diets != null) {
+      this.diets.addAll(diets);
+    }
+    if (macros != null) {
+      this.macros.addAll(macros);
+    }
+  }
 }
