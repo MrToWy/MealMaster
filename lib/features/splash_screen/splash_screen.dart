@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/features/user_profile/data/user_repository.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -8,6 +9,18 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    UserRepository().hasUser().then((hasUser) {
+      if (hasUser) {
+        Navigator.popAndPushNamed(context, "/navigation");
+        return;
+      }
+      Navigator.popAndPushNamed(context, "/profile");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -102,6 +102,15 @@ class UserRepository {
     return true;
   }
 
+  Future<bool> hasUser() async {
+    final isar = await isarInstance;
+    final firstUser = await isar.users.where().findFirst();
+    if (firstUser == null) {
+      return false;
+    }
+    return true;
+  }
+
   Future<UserRepresentation?> getUserRepresentation() async {
     final isar = await isarInstance;
     final firstUser = await isar.users.where().findFirst();

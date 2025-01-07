@@ -52,15 +52,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     });
 
-    /*userRepo.getAllergies().then((savedAllergies) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          allergyChipWidgetKey.currentState?.set.addAll(savedAllergies);
-          loading = false;
-        });
-      });
-    });*/
-
     super.initState();
   }
 

@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
-        initialRoute: '/navigation',
+        initialRoute: '/splash',
         routes: {
           '/navigation': (context) => NavigationMenu(),
           '/splash': (context) => SplashScreen(),
