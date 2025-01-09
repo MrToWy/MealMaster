@@ -62,9 +62,39 @@ class _DbTestScreenState extends State<DbTestScreen> {
   }
 
   Future<void> addUser() async {
+    String? apiKey = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        final TextEditingController controller = TextEditingController();
+        return AlertDialog(
+          title: const Text('OpenAI API Key'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              hintText: 'Enter your API key',
+            ),
+            obscureText: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, controller.text),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (apiKey == null || apiKey.isEmpty) return;
+
     final isar = await isarInstance;
     final newUser = User()
-      ..name = 'Test User ${DateTime.now().millisecondsSinceEpoch}';
+      ..name = 'Test User ${DateTime.now().millisecondsSinceEpoch}'
+      ..apiKey = apiKey;
     final allergy = Allergy()..name = "Nuts";
     newUser.allergies.add(allergy);
 
