@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/recipes/presentation/widgets/recipe_page.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
 import '../../../db/recipe.dart';
 import '../data/recipe_repository.dart';
+import 'widgets/recipe_page.dart';
 
 class RecipeScreen extends StatefulWidget {
   final int id;
