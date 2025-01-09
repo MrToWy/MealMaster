@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:record/record.dart';
 
 import '../../../common/widgets/base_scaffold.dart';
@@ -9,6 +10,7 @@ import '../../../db/isar_factory.dart';
 import '../../../db/storage_ingredient.dart';
 import '../../../shared/open_ai/api_client.dart';
 import '../../user_profile/data/user_repository.dart';
+import 'controller/meal_plan_provider.dart';
 import 'widgets/detected_ingredient.dart';
 
 class ValidateItemsScreen extends StatefulWidget {
@@ -39,7 +41,11 @@ class _ValidateItemsScreenState extends State<ValidateItemsScreen> {
 
     if (!mounted) return;
     Navigator.of(context).popUntil((route) {
-      return route.isFirst;
+      if (route.isFirst) {
+        context.read<MealPlanProvider>().refresh();
+        return true;
+      }
+      return false;
     });
   }
 
