@@ -138,12 +138,22 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                       style: theme.bodyMedium)),
                             SizedBox(height: 20),
                             Text('Schritte:', style: theme.headlineMedium),
-                            for (int i = 0; i < recipe.steps.length; i++)
-                              SizedBox(
-                                  height: 20,
-                                  child: Text(
-                                      '${i + 1}. ${recipe.steps.elementAt(i).description}',
-                                      style: theme.bodyMedium)),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: recipe.steps.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0),
+                                    child: Text(
+                                      '${index + 1}. ${recipe.steps.elementAt(index).description}',
+                                      style: theme.bodyMedium,
+                                      softWrap: true,
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
                           ],
                         ),
                       ),
