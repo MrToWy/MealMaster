@@ -50,6 +50,7 @@ class RecipeRepository {
     final recipe = Recipe()
       ..title = recipeData['name']
       ..description = recipeData['description']
+      ..difficulty = recipeData['difficulty']
       ..cookingDuration = recipeData['steps']
           .fold<int>(0, (sum, step) => sum + step['duration'] as int);
     await isar.writeTxn(() async {
