@@ -368,7 +368,7 @@ ${currentIngredients.map((i) => "${i.ingredient.value?.name}: ${i.count} ${i.ing
 Änderungen:
 $text
 
-Bitte aktualisiere die Zutatenliste entsprechend der Änderungen.''',
+Bitte aktualisiere die Zutatenliste entsprechend der Änderungen. Lösche Einträge nur, wenn explizit gesagt wurde, dass der Gegenstand nicht da ist.''',
             ),
           ],
         ),
@@ -399,7 +399,7 @@ Bitte aktualisiere die Zutatenliste entsprechend der Änderungen.''',
         ),
       ],
       functionCall: {'name': 'update_ingredients'},
-      maxTokens: 1000,
+      maxTokens: 2000,
     );
 
     try {
