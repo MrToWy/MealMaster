@@ -15,6 +15,7 @@ import 'ai_function.dart';
 import 'content.dart';
 import 'message.dart';
 import 'request_body.dart';
+import 'config.dart';
 
 class ApiClient {
   static bool _validateRequest(
@@ -44,7 +45,7 @@ class ApiClient {
     if (!_validateRequest(images, user, 'images')) return null;
 
     final requestBody = RequestBody(
-      model: 'gpt-4o',
+      model: OpenAIConfig.gptModel,
       messages: [
         Message(
           role: 'user',
@@ -127,7 +128,7 @@ class ApiClient {
     if (!_validateRequest(ingredients, user, 'ingredients')) return null;
 
     final requestBody = RequestBody(
-      model: 'gpt-4',
+      model: OpenAIConfig.gptModel,
       messages: [
         Message(
           role: 'user',
@@ -313,7 +314,7 @@ class ApiClient {
         'Authorization': 'Bearer ${user.apiKey!}',
       });
 
-      request.fields['model'] = 'whisper-1';
+      request.fields['model'] = OpenAIConfig.whisperModel;
 
       request.files.add(
         await http.MultipartFile.fromPath(
@@ -353,7 +354,7 @@ class ApiClient {
     if (!_validateRequest([text], user, 'text')) return null;
 
     final requestBody = RequestBody(
-      model: 'gpt-4',
+      model: OpenAIConfig.gptModel,
       messages: [
         Message(
           role: 'user',
