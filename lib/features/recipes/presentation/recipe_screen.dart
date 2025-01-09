@@ -71,14 +71,21 @@ class _RecipeScreenState extends State<RecipeScreen> {
     }
 
     return BaseScaffold(
-      title: "${currentRecipe.title}",
+      title: getDayFromDateTime(currentRecipe.mealPlanEntries.first.day),
       hasBackButton: true,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0),
         child: Column(
           children: [
-            Text(getDayFromDateTime(currentRecipe.mealPlanEntries.first.day),
-                style: theme.displaySmall),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Center(
+                  child: Text(currentRecipe.title ?? '',
+                      textAlign: TextAlign.center, style: theme.displaySmall),
+                ),
+              ),
+            ),
             SizedBox(height: 20),
             SizedBox(
               height: MediaQuery.of(context).size.height * 2 / 3,
