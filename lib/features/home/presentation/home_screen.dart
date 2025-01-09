@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/home/presentation/widgets/meal_plan_list.dart';
 import 'package:provider/provider.dart';
 
+import '../../user_profile/data/user_repository.dart';
 import 'controller/edit_mode_controller.dart';
+import 'widgets/meal_plan_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,7 +13,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String user = 'Max';
+  String user = '';
+
+  @override
+  initState() {
+    super.initState();
+    getUser();
+  }
+
+  getUser() async {
+    final userName = await UserRepository().getUserName();
+    setState(() {
+      user = userName;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
