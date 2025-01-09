@@ -6,7 +6,9 @@ import 'package:mealmaster/features/home/presentation/widgets/date_list_tile.dar
 import 'package:mealmaster/features/home/presentation/widgets/recipe_list_tile.dart';
 import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mealmaster/features/home/presentation/controller/meal_plan_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../../../meal_plan/presentation/controller/meal_plan_provider.dart';
 
 class MealPlanList extends StatefulWidget {
   const MealPlanList({
