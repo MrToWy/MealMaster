@@ -6,6 +6,7 @@ import 'package:mealmaster/features/home/presentation/widgets/date_list_tile.dar
 import 'package:mealmaster/features/home/presentation/widgets/recipe_list_tile.dart';
 import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:mealmaster/features/home/presentation/controller/meal_plan_provider.dart';
 
 class MealPlanList extends StatefulWidget {
   const MealPlanList({
@@ -74,6 +75,9 @@ class _MealPlanListState extends State<MealPlanList> {
 
   @override
   Widget build(BuildContext context) {
+    // Force rebuild when provider changes
+    context.watch<MealPlanProvider>();
+
     return FutureBuilder<List>(
       future: _combinedList, // Wait for the recipes to load
       builder: (context, snapshot) {

@@ -10,6 +10,7 @@ import '../../../db/storage_ingredient.dart';
 import '../../../shared/open_ai/api_client.dart';
 import '../../user_profile/data/user_repository.dart';
 import 'widgets/detected_ingredient.dart';
+import '../../home/presentation/controller/meal_plan_provider.dart';
 
 class ValidateItemsScreen extends StatefulWidget {
   final List<StorageIngredient> ingredients;
@@ -39,7 +40,11 @@ class _ValidateItemsScreenState extends State<ValidateItemsScreen> {
 
     if (!mounted) return;
     Navigator.of(context).popUntil((route) {
-      return route.isFirst;
+      if (route.isFirst) {
+        context.read<MealPlanProvider>().refresh();
+        return true;
+      }
+      return false;
     });
   }
 

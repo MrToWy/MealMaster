@@ -9,6 +9,7 @@ import 'features/shopping_list/presentation/shopping_list_screen.dart';
 import 'features/splash_screen/splash_screen.dart';
 import 'features/user_profile/presentation/profile_screen.dart';
 import 'shared/theme.dart';
+import 'features/home/presentation/controller/meal_plan_provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -19,6 +20,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<EditModeProvider>(
           create: (_) => EditModeProvider(),
+        ),
+        ChangeNotifierProvider<MealPlanProvider>(
+          create: (_) => MealPlanProvider(),
         ),
       ],
       child: MaterialApp(
