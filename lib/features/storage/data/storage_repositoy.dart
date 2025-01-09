@@ -140,10 +140,13 @@ class StorageRepository {
 
       final storageIngredient = StorageIngredient()
         ..count = ingredientData['count'].toDouble();
-      await isar.storageIngredients.put(storageIngredient);
 
-      storageIngredient.ingredient.value = ingredient;
-      await storageIngredient.ingredient.save();
+      await isar.writeTxn(() async {
+        await isar.storageIngredients.put(storageIngredient);
+
+        storageIngredient.ingredient.value = ingredient;
+        await storageIngredient.ingredient.save();
+      });
 
       ingredients.add(storageIngredient);
     }
