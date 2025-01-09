@@ -23,6 +23,7 @@ dependencies:
   http: ^1.2.2
   image_picker: ^1.1.2
   record: ^5.0.5
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:

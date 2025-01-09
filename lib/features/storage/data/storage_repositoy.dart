@@ -15,7 +15,8 @@ class StorageRepository {
     return _instance;
   }
 
-  void addToStorage(Ingredient newIngredient, double count) async {
+  Future<StorageIngredient> addStorageIngredient(
+      Ingredient newIngredient, double count) async {
     final db = await isarInstance;
 
     //check if ingredient already exists in Storage
@@ -31,7 +32,7 @@ class StorageRepository {
         await db.writeTxn(() async {
           await db.storageIngredients.put(storageIngredient);
         });
-        return;
+        return storageIngredient;
       }
     }
 
@@ -43,6 +44,8 @@ class StorageRepository {
       await db.storageIngredients.put(newStorageIngredient);
       await newStorageIngredient.ingredient.save();
     });
+
+    return newStorageIngredient;
   }
 
   void removeFromStorage(Ingredient ingredientToRemove, double count) async {
@@ -78,7 +81,76 @@ class StorageRepository {
     log('No match found. Nothing to remove.');
   }
 
-  void test() {
-    log("Test storage repo");
+  Future<Ingredient> findOrCreateIngredient(
+    Map<String, dynamic> ingredientData,
+    List<Ingredient> existingIngredients,
+    Isar isar,
+  ) async {
+    return await isar.writeTxn(() async {
+      Ingredient ingredient = existingIngredients.firstWhere(
+          (i) =>
+              i.name == ingredientData['name'] &&
+              i.unit == ingredientData['unit'],
+          orElse: () => Ingredient()
+            ..name = ingredientData['name']
+            ..unit = ingredientData['unit']);
+
+      if (ingredient.id == Isar.autoIncrement) {
+        await isar.ingredients.put(ingredient);
+      }
+      return ingredient;
+    });
+  }
+
+  Future<List<StorageIngredient>?> createStorageIngredientsFromAiResponse(
+      dynamic response) async {
+    final isar = await isarInstance;
+
+    final existingIngredients = await isar.ingredients.where().findAll();
+
+    final ingredients = <StorageIngredient>[];
+
+    for (var ingredientData in response['ingredients']) {
+      final storageRepository = StorageRepository();
+      final ingredient = await storageRepository.findOrCreateIngredient(
+          ingredientData, existingIngredients, isar);
+
+      StorageIngredient newStorageIngredient = await addStorageIngredient(
+        ingredient,
+        ingredientData['count'].toDouble(),
+      );
+      ingredients.add(newStorageIngredient);
+    }
+
+    return ingredients;
+  }
+
+  Future<List<StorageIngredient>?> updateStorageIngredientsFromAiResponse(
+      dynamic response) async {
+    final isar = await isarInstance;
+
+    final existingIngredients = await isar.ingredients.where().findAll();
+
+    final ingredients = <StorageIngredient>[];
+
+    for (var ingredientData in response['ingredients']) {
+      final storageRepository = StorageRepository();
+      final ingredient = await storageRepository.findOrCreateIngredient(
+          ingredientData, existingIngredients, isar);
+
+      final storageIngredient = StorageIngredient()
+        ..count = ingredientData['count'].toDouble();
+
+      await isar.writeTxn(() async {
+        await isar.storageIngredients.put(storageIngredient);
+
+        storageIngredient.ingredient.value = ingredient;
+        await storageIngredient.ingredient.save();
+      });
+
+      ingredients.add(storageIngredient);
+    }
+
+    return ingredients;
   }
 }

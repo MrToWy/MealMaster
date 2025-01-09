@@ -4,14 +4,10 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
+import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
+import 'package:mealmaster/features/storage/data/storage_repositoy.dart';
 
-import '../../db/ingredient.dart';
-import '../../db/isar_factory.dart';
 import '../../db/meal_plan.dart';
-import '../../db/meal_plan_entry.dart';
-import '../../db/recipe.dart';
-import '../../db/recipe_ingredient.dart';
-import '../../db/recipe_step.dart';
 import '../../db/storage_ingredient.dart';
 import '../../db/user.dart';
 import '../../features/user_profile/data/user_repository.dart';
@@ -34,25 +30,6 @@ class ApiClient {
     return true;
   }
 
-  static Future<Ingredient> _findOrCreateIngredient(
-    Map<String, dynamic> ingredientData,
-    List<Ingredient> existingIngredients,
-    Isar isar,
-  ) async {
-    Ingredient ingredient = existingIngredients.firstWhere(
-        (i) =>
-            i.name == ingredientData['name'] &&
-            i.unit == ingredientData['unit'],
-        orElse: () => Ingredient()
-          ..name = ingredientData['name']
-          ..unit = ingredientData['unit']);
-
-    if (ingredient.id == Isar.autoIncrement) {
-      await isar.ingredients.put(ingredient);
-    }
-    return ingredient;
-  }
-
   /// Analyzes images to detect ingredients and their quantities, storing them in the database.
   ///
   /// [images] List of base64 encoded image strings to analyze
@@ -60,10 +37,9 @@ class ApiClient {
   /// [isar] Database instance for storing the results
   ///
   /// Returns a list of [StorageIngredient] objects if successful, null otherwise.
-  static Future<List<StorageIngredient>?> generateStorageIngredients(
+  static Future<List<StorageIngredient>?> generateStorageIngredientsFromImages(
       List<String> images) async {
     final user = await UserRepository().getUser();
-    final isar = await IsarFactory().db;
 
     if (!_validateRequest(images, user, 'images')) return null;
 
@@ -127,28 +103,10 @@ class ApiClient {
       if (response != null) {
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
+        final storageRepository = StorageRepository();
 
-        final existingIngredients = await isar.ingredients.where().findAll();
-
-        return await isar.writeTxn(() async {
-          final ingredients = <StorageIngredient>[];
-
-          for (var ingredientData in arguments['ingredients']) {
-            final ingredient = await _findOrCreateIngredient(
-                ingredientData, existingIngredients, isar);
-
-            final storageIngredient = StorageIngredient()
-              ..count = ingredientData['count'].toDouble();
-            await isar.storageIngredients.put(storageIngredient);
-
-            storageIngredient.ingredient.value = ingredient;
-            await storageIngredient.ingredient.save();
-
-            ingredients.add(storageIngredient);
-          }
-
-          return ingredients;
-        });
+        return storageRepository
+            .createStorageIngredientsFromAiResponse(arguments);
       }
       return null;
     } catch (e) {
@@ -291,114 +249,17 @@ class ApiClient {
     try {
       final response = await _makeApiCall(requestBody, user.apiKey!);
       if (response != null) {
-        final existingIngredients = await isar.ingredients.where().findAll();
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
-
-        return await isar.writeTxn(() async {
-          final mealPlan = await _createMealPlan(isar);
-          await _processMealPlanEntries(arguments['mealPlan']['entries'],
-              mealPlan, existingIngredients, isar);
-          return mealPlan;
-        });
+        final mealPlanRepository = MealPlanRepository();
+        return mealPlanRepository
+            .createMealPlanFromAiResponse(arguments['mealPlan']['entries']);
       }
       return null;
     } catch (e) {
       developer.log('Exception: $e', name: 'OpenAI');
       return null;
     }
-  }
-
-  static Future<MealPlan> _createMealPlan(Isar isar) async {
-    final mealPlan = MealPlan()
-      ..startDate = DateTime.now()
-      ..endDate = DateTime.now().add(Duration(days: 5));
-    await isar.mealPlans.put(mealPlan);
-    return mealPlan;
-  }
-
-  static Future<void> _processMealPlanEntries(
-      List<dynamic> entries,
-      MealPlan mealPlan,
-      List<Ingredient> existingIngredients,
-      Isar isar) async {
-    for (var entryData in entries) {
-      final mealPlanEntry =
-          await _createMealPlanEntry(entryData, mealPlan, isar);
-      final recipe = await _createRecipe(
-          entryData['recipe'], existingIngredients, mealPlanEntry, isar);
-      await _linkMealPlanEntryToRecipe(mealPlanEntry, recipe, isar);
-    }
-  }
-
-  static Future<MealPlanEntry> _createMealPlanEntry(
-      Map<String, dynamic> entryData, MealPlan mealPlan, Isar isar) async {
-    final mealPlanEntry = MealPlanEntry()
-      ..day = DateTime.now().add(Duration(days: entryData['dayNumber'] - 1));
-    await isar.mealPlanEntrys.put(mealPlanEntry);
-    mealPlanEntry.mealPlan.value = mealPlan;
-    await mealPlanEntry.mealPlan.save();
-    return mealPlanEntry;
-  }
-
-  static Future<Recipe> _createRecipe(
-      Map<String, dynamic> recipeData,
-      List<Ingredient> existingIngredients,
-      MealPlanEntry entry,
-      Isar isar) async {
-    final recipe = Recipe()
-      ..title = recipeData['name']
-      ..description = recipeData['description']
-      ..difficulty = recipeData['difficulty']
-      ..cookingDuration = recipeData['steps']
-          .fold<int>(0, (sum, step) => sum + step['duration'] as int);
-
-    await isar.recipes.put(recipe);
-    await _processRecipeIngredients(
-        recipeData['ingredients'], recipe, existingIngredients, isar);
-    await _processRecipeSteps(recipeData['steps'], recipe, isar);
-    return recipe;
-  }
-
-  static Future<void> _processRecipeIngredients(List<dynamic> ingredients,
-      Recipe recipe, List<Ingredient> existingIngredients, Isar isar) async {
-    for (var ingredientData in ingredients) {
-      final ingredient = await _findOrCreateIngredient(
-          ingredientData, existingIngredients, isar);
-      await _createRecipeIngredient(ingredientData, recipe, ingredient, isar);
-    }
-  }
-
-  static Future<void> _createRecipeIngredient(
-      Map<String, dynamic> ingredientData,
-      Recipe recipe,
-      Ingredient ingredient,
-      Isar isar) async {
-    final recipeIngredient = RecipeIngredient()
-      ..count = ingredientData['count'].toDouble();
-    await isar.recipeIngredients.put(recipeIngredient);
-    recipeIngredient.recipe.value = recipe;
-    await recipeIngredient.recipe.save();
-    recipeIngredient.ingredient.value = ingredient;
-    await recipeIngredient.ingredient.save();
-  }
-
-  static Future<void> _processRecipeSteps(
-      List<dynamic> steps, Recipe recipe, Isar isar) async {
-    for (var stepData in steps) {
-      final recipeStep = RecipeStep()
-        ..orderPosition = stepData['stepNumber']
-        ..description = stepData['instruction'];
-      await isar.recipeSteps.put(recipeStep);
-      recipe.steps.add(recipeStep);
-    }
-    await recipe.steps.save();
-  }
-
-  static Future<void> _linkMealPlanEntryToRecipe(
-      MealPlanEntry entry, Recipe recipe, Isar isar) async {
-    entry.recipe.value = recipe;
-    await entry.recipe.save();
   }
 
   static Future<Map<String, dynamic>?> _makeApiCall(
@@ -488,7 +349,6 @@ class ApiClient {
   static Future<List<StorageIngredient>?> updateIngredientsFromText(
       List<StorageIngredient> currentIngredients, String text) async {
     final user = await UserRepository().getUser();
-    final isar = await IsarFactory().db;
 
     if (!_validateRequest([text], user, 'text')) return null;
 
@@ -547,27 +407,10 @@ Bitte aktualisiere die Zutatenliste entsprechend der Änderungen.''',
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
 
-        final existingIngredients = await isar.ingredients.where().findAll();
+        final storageRepository = StorageRepository();
 
-        return await isar.writeTxn(() async {
-          final ingredients = <StorageIngredient>[];
-
-          for (var ingredientData in arguments['ingredients']) {
-            final ingredient = await _findOrCreateIngredient(
-                ingredientData, existingIngredients, isar);
-
-            final storageIngredient = StorageIngredient()
-              ..count = ingredientData['count'].toDouble();
-            await isar.storageIngredients.put(storageIngredient);
-
-            storageIngredient.ingredient.value = ingredient;
-            await storageIngredient.ingredient.save();
-
-            ingredients.add(storageIngredient);
-          }
-
-          return ingredients;
-        });
+        return storageRepository
+            .updateStorageIngredientsFromAiResponse(arguments);
       }
       return null;
     } catch (e) {
