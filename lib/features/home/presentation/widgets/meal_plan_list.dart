@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:mealmaster/db/meal_plan_entry.dart';
 import 'package:mealmaster/db/recipe.dart';
 import 'package:mealmaster/features/home/presentation/widgets/date_list_tile.dart';
 import 'package:mealmaster/features/home/presentation/widgets/recipe_list_tile.dart';
 import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 import '../../../meal_plan/presentation/controller/meal_plan_provider.dart';
@@ -21,6 +21,7 @@ class MealPlanList extends StatefulWidget {
 
 class _MealPlanListState extends State<MealPlanList> {
   late Future<List> _combinedList;
+  bool noMealPlan = true;
 
   @override
   void initState() {
@@ -55,33 +56,91 @@ class _MealPlanListState extends State<MealPlanList> {
     List combinedList = [];
 
     final mealPlanRepository = MealPlanRepository();
-    List<MealPlanEntry> mealPlanEntries =
-        await mealPlanRepository.getMealPlanEntries();
-    for (var dayString in nextSevenDays) {
-      combinedList.add(dayString);
+    try {
+      List<MealPlanEntry> mealPlanEntries =
+          await mealPlanRepository.getMealPlanEntries();
+      for (var dayString in nextSevenDays) {
+        combinedList.add(dayString);
 
-      for (var mealPlanEntry in mealPlanEntries) {
-        if (mealPlanEntry.day != null) {
-          final entryDay = DateFormat('EE', 'de_DE')
-              .format(mealPlanEntry.day!)
-              .toUpperCase();
+        for (var mealPlanEntry in mealPlanEntries) {
+          if (mealPlanEntry.day != null) {
+            final entryDay = DateFormat('EE', 'de_DE')
+                .format(mealPlanEntry.day!)
+                .toUpperCase();
 
-          if (entryDay == dayString) {
-            await mealPlanEntry.recipe.load();
-            final recipe = mealPlanEntry.recipe.value;
+            if (entryDay == dayString) {
+              await mealPlanEntry.recipe.load();
+              final recipe = mealPlanEntry.recipe.value;
 
-            if (recipe != null) {
-              combinedList.add(recipe);
+              if (recipe != null) {
+                combinedList.add(recipe);
+              }
             }
           }
         }
       }
+    } catch (e) {
+      if (e.toString().contains('No meal plan found')) {
+        setState(() {
+          noMealPlan = true;
+        });
+        return [];
+      }
     }
+    setState(() {
+      noMealPlan = false;
+    });
     return combinedList;
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorTheme = Theme.of(context).colorScheme;
+    if (noMealPlan) {
+      return Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+            SizedBox(height: 50.0),
+            Icon(
+              Icons.fastfood, // Symbol für Essen
+              size: 80.0,
+              color: colorTheme.primary,
+            ),
+            SizedBox(height: 20.0),
+            Text(
+              'Kein MealPlan gefunden',
+              style: TextStyle(
+                fontSize: 22.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 10.0),
+            Text(
+              'Erstelle jetzt deinen ersten MealPlan!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.black54,
+              ),
+            ),
+            SizedBox(height: 30.0),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/new-plan');
+              },
+              child: Text(
+                'Neuer Plan',
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+            ),
+          ]));
+    }
+    ;
+
     // When provider changes, recreate the Future
     final _ = context.watch<MealPlanProvider>();
     _combinedList = _initializeCombinedList();

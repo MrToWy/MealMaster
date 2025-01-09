@@ -62,18 +62,31 @@ class _DbTestScreenState extends State<DbTestScreen> {
   }
 
   Future<void> addUser() async {
-    String? apiKey = await showDialog<String>(
+    Map<String, String>? userDetails = await showDialog<Map<String, String>>(
       context: context,
       builder: (BuildContext context) {
-        final TextEditingController controller = TextEditingController();
+        final TextEditingController nameController = TextEditingController();
+        final TextEditingController apiKeyController = TextEditingController();
         return AlertDialog(
           title: const Text('OpenAI API Key'),
-          content: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Enter your API key',
-            ),
-            obscureText: true,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your name',
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: apiKeyController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your API key',
+                ),
+                obscureText: true,
+              ),
+            ],
           ),
           actions: [
             TextButton(
@@ -81,7 +94,10 @@ class _DbTestScreenState extends State<DbTestScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, controller.text),
+              onPressed: () => Navigator.pop(context, {
+                'name': nameController.text,
+                'apiKey': apiKeyController.text,
+              }),
               child: const Text('Save'),
             ),
           ],
@@ -89,12 +105,16 @@ class _DbTestScreenState extends State<DbTestScreen> {
       },
     );
 
-    if (apiKey == null || apiKey.isEmpty) return;
+    if (userDetails == null ||
+        userDetails['name']!.isEmpty ||
+        userDetails['apiKey']!.isEmpty) {
+      return;
+    }
 
     final isar = await isarInstance;
     final newUser = User()
-      ..name = 'Test User ${DateTime.now().millisecondsSinceEpoch}'
-      ..apiKey = apiKey;
+      ..name = userDetails['name']!
+      ..apiKey = userDetails['apiKey']!;
     final allergy = Allergy()..name = "Nuts";
     newUser.allergies.add(allergy);
 
