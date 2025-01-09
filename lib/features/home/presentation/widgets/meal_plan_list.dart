@@ -20,8 +20,13 @@ class MealPlanList extends StatefulWidget {
 }
 
 class _MealPlanListState extends State<MealPlanList> {
-  late final Future<List> _combinedList =
-      _initializeCombinedList(); // Initialize directly
+  late Future<List> _combinedList;
+
+  @override
+  void initState() {
+    super.initState();
+    _combinedList = _initializeCombinedList();
+  }
 
   Future<List> _initializeCombinedList() async {
     await initializeDateFormatting('de_DE', null);
@@ -77,11 +82,12 @@ class _MealPlanListState extends State<MealPlanList> {
 
   @override
   Widget build(BuildContext context) {
-    // Force rebuild when provider changes
-    context.watch<MealPlanProvider>();
+    // When provider changes, recreate the Future
+    final _ = context.watch<MealPlanProvider>();
+    _combinedList = _initializeCombinedList();
 
     return FutureBuilder<List>(
-      future: _combinedList, // Wait for the recipes to load
+      future: _combinedList,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
