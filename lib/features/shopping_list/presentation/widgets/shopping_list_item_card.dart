@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../db/shopping_list_entry.dart';
-import 'shopping_list_item_text_input.dart';
+import '../../domain/shopping_list_repository.dart';
 
 class ShoppingListItemCard extends StatelessWidget {
   final ShoppingListEntry item;
@@ -16,6 +17,15 @@ class ShoppingListItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController countController =
+        TextEditingController(text: item.count?.toStringAsFixed(0));
+
+    Future<void> updateItem(double count, int id) async {
+      final shoppingListRepository = ShoppingListRepository();
+
+      await shoppingListRepository.updateShoppingListEntryById(count, id);
+    }
+
     return Card.filled(
       child: ListTile(
         title: Text(item.ingredient.value?.name ?? ''),
@@ -25,53 +35,43 @@ class ShoppingListItemCard extends StatelessWidget {
           onClick(item);
         },
         onLongPress: () {
-          editShoppingListItemDialog(context, item, callback);
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title:
+                        Text("${item.ingredient.value?.name ?? ''} bearbeiten"),
+                    icon: Icon(Icons.add),
+                    content: TextField(
+                      controller: countController,
+                      decoration: InputDecoration(
+                          hintText: "Bitte gib eine Menge an",
+                          labelText: "Menge"),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    ),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Abbrechen")),
+                      TextButton(
+                          onPressed: () async {
+                            var count = double.tryParse(countController.text);
+                            if (count == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text("Bitte gib eine Menge an")));
+                              return;
+                            }
+                            await updateItem(count, item.id);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("Speichern"))
+                    ],
+                  ));
         },
       ),
     );
   }
-}
-
-Future editShoppingListItemDialog(
-    context, ShoppingListEntry item, Function callback) async {
-  TextEditingController nameController =
-      TextEditingController(text: item.ingredient.value?.name);
-  TextEditingController countController =
-      TextEditingController(text: item.count?.toStringAsFixed(0));
-
-  return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-            title: Text("Item bearbeiten"),
-            icon: Icon(Icons.add),
-            content: ShoppingListItemTextInput(
-                nameController: nameController,
-                countController: countController),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Abbrechen")),
-              TextButton(
-                  onPressed: () {
-                    String name = nameController.text;
-                    var count = int.tryParse(countController.text);
-                    if (name.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Bitte gib einen Namen ein")));
-                      return;
-                    }
-                    if (count == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Bitte gib eine Menge an")));
-                      return;
-                    }
-                    // TODO: update item
-                    callback();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Speichern"))
-            ],
-          ));
 }
