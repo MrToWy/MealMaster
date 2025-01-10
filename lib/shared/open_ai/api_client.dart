@@ -5,17 +5,17 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
 import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
-import 'package:mealmaster/features/storage/data/storage_repositoy.dart';
+import 'package:mealmaster/features/storage/data/storage_repository.dart';
 
 import '../../db/meal_plan.dart';
 import '../../db/storage_ingredient.dart';
 import '../../db/user.dart';
 import '../../features/user_profile/data/user_repository.dart';
 import 'ai_function.dart';
+import 'config.dart';
 import 'content.dart';
 import 'message.dart';
 import 'request_body.dart';
-import 'config.dart';
 
 class ApiClient {
   static bool _validateRequest(
