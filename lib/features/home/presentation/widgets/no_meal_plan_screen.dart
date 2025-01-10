@@ -5,7 +5,7 @@ class NoMealPlanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
 
     return Center(
         child: Column(
@@ -17,25 +17,16 @@ class NoMealPlanScreen extends StatelessWidget {
           Icon(
             Icons.fastfood, // Symbol für Essen
             size: 80.0,
-            color: colorTheme.primary,
+            color: theme.colorScheme.primary,
           ),
           SizedBox(height: 20.0),
           Text(
-            'Kein MealPlan gefunden',
-            style: TextStyle(
-              fontSize: 22.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
+            'Kein MealPlan gefunden', style: theme.textTheme.headlineMedium),
           SizedBox(height: 10.0),
           Text(
             'Erstelle jetzt deinen ersten MealPlan!',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black54,
-            ),
+            style: theme.textTheme.titleSmall,
           ),
           SizedBox(height: 30.0),
           ElevatedButton(
