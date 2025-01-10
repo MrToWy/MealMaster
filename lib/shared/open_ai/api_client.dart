@@ -4,12 +4,17 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
-import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
-import 'package:mealmaster/features/storage/data/storage_repository.dart';
 
+import '../../db/ingredient.dart';
 import '../../db/meal_plan.dart';
+import '../../db/meal_plan_entry.dart';
+import '../../db/recipe_ingredient.dart';
+import '../../db/shopping_list_entry.dart';
 import '../../db/storage_ingredient.dart';
 import '../../db/user.dart';
+import '../../features/meal_plan/data/meal_plan_repository.dart';
+import '../../features/shopping_list/domain/shopping_list_repository.dart';
+import '../../features/storage/data/storage_repository.dart';
 import '../../features/user_profile/data/user_repository.dart';
 import 'ai_function.dart';
 import 'config.dart';
@@ -253,14 +258,96 @@ class ApiClient {
         final functionCall = response['choices'][0]['message']['function_call'];
         final arguments = jsonDecode(functionCall['arguments']);
         final mealPlanRepository = MealPlanRepository();
-        return mealPlanRepository
+        MealPlan? mealPlan = await mealPlanRepository
             .createMealPlanFromAiResponse(arguments['mealPlan']['entries']);
+
+        generateShoppingListItems(mealPlan, ingredients);
+        return mealPlan;
       }
       return null;
     } catch (e) {
       developer.log('Exception: $e', name: 'OpenAI');
       return null;
     }
+  }
+
+  static Future<void> generateShoppingListItems(
+      MealPlan? mealPlan, List<StorageIngredient> storageIngredients) async {
+    ShoppingListRepository shoppingListRepository = ShoppingListRepository();
+    shoppingListRepository.clearShoppingList();
+
+    List<RecipeIngredient> recipeIngredients = [];
+
+    for (MealPlanEntry entry in mealPlan!.entries) {
+      await entry.recipe.load();
+      await entry.recipe.value!.ingredients.load();
+      recipeIngredients.addAll(entry.recipe.value!.ingredients.toList());
+    }
+
+    for (RecipeIngredient recipeIngredient in recipeIngredients) {
+      if (await checkIfIngredientIsInShoppingList(
+          recipeIngredient.ingredient.value!)) continue;
+
+      double totalIngredientCount = await getTotalIngredientCount(
+          recipeIngredient.ingredient.value!, mealPlan);
+
+      double storageIngredientCount = await getIngredientCountFromStorage(
+          recipeIngredient.ingredient.value!, storageIngredients);
+
+      if (totalIngredientCount > storageIngredientCount) {
+        await shoppingListRepository.createShoppingListEntry(
+            recipeIngredient.ingredient.value!,
+            totalIngredientCount - storageIngredientCount);
+      }
+    }
+  }
+
+  static Future<double> getIngredientCountFromStorage(
+      Ingredient ingredient, List<StorageIngredient> storageIngredients) async {
+    double count = 0;
+
+    for (StorageIngredient storageIngredient in storageIngredients) {
+      if (storageIngredient.ingredient.value!.name == ingredient.name &&
+          storageIngredient.ingredient.value!.unit == ingredient.unit) {
+        count += storageIngredient.count!;
+      }
+    }
+
+    return count;
+  }
+
+  static Future<double> getTotalIngredientCount(
+      Ingredient ingredient, MealPlan mealPlan) async {
+    double count = 0;
+
+    for (MealPlanEntry entry in mealPlan.entries) {
+      await entry.recipe.load();
+      await entry.recipe.value!.ingredients.load();
+      for (RecipeIngredient recipeIngredient
+          in entry.recipe.value!.ingredients) {
+        await recipeIngredient.ingredient.load();
+        if (recipeIngredient.ingredient.value!.name == ingredient.name &&
+            recipeIngredient.ingredient.value!.unit == ingredient.unit) {
+          count += recipeIngredient.count!;
+        }
+      }
+    }
+
+    return count;
+  }
+
+  static Future<bool> checkIfIngredientIsInShoppingList(
+      Ingredient ingredient) async {
+    ShoppingListRepository shoppingListRepository = ShoppingListRepository();
+    List<ShoppingListEntry> shoppingListEntries =
+        await shoppingListRepository.getShoppingListEntries();
+
+    for (ShoppingListEntry entry in shoppingListEntries) {
+      await entry.ingredient.load();
+      if (entry.ingredient.value!.name == ingredient.name &&
+          entry.ingredient.value!.unit == ingredient.unit) return true;
+    }
+    return false;
   }
 
   static Future<Map<String, dynamic>?> _makeApiCall(

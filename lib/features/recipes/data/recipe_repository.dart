@@ -1,13 +1,13 @@
 import 'package:isar/isar.dart';
-import 'package:mealmaster/db/ingredient.dart';
-import 'package:mealmaster/db/recipe_ingredient.dart';
-import 'package:mealmaster/db/recipe_step.dart';
-import 'package:mealmaster/features/storage/data/storage_repositoy.dart';
 
+import '../../../db/ingredient.dart';
 import '../../../db/isar_factory.dart';
 import '../../../db/meal_plan_entry.dart';
 import '../../../db/recipe.dart';
+import '../../../db/recipe_ingredient.dart';
+import '../../../db/recipe_step.dart';
 import '../../meal_plan/data/meal_plan_repository.dart';
+import '../../storage/data/storage_repository.dart';
 
 class RecipeRepository {
   static final RecipeRepository _instance = RecipeRepository._internal();
