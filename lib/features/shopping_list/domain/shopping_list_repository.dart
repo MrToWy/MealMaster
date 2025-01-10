@@ -43,4 +43,16 @@ class ShoppingListRepository {
       await isar.shoppingListEntrys.clear();
     });
   }
+
+  Future<void> updateShoppingListEntryById(count, id) async {
+    final isar = await isarInstance;
+    final item =
+        await isar.shoppingListEntrys.where().idEqualTo(id).findFirst();
+    if (item != null) {
+      item.count = count;
+      await isar.writeTxn(() async {
+        await isar.shoppingListEntrys.put(item);
+      });
+    }
+  }
 }
