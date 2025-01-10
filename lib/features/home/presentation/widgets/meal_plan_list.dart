@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:mealmaster/db/meal_plan_entry.dart';
 import 'package:mealmaster/db/recipe.dart';
 import 'package:mealmaster/features/home/presentation/widgets/date_list_tile.dart';
+import 'package:mealmaster/features/home/presentation/widgets/no_meal_plan_screen.dart';
 import 'package:mealmaster/features/home/presentation/widgets/recipe_list_tile.dart';
 import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
 import 'package:provider/provider.dart';
@@ -20,18 +21,28 @@ class MealPlanList extends StatefulWidget {
 }
 
 class _MealPlanListState extends State<MealPlanList> {
-  late Future<List> _combinedList;
-  bool noMealPlan = true;
+  late List _combinedList;
+  bool hasMealPlan = false;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _combinedList = _initializeCombinedList();
+    _initializeCombinedList();
   }
 
-  Future<List> _initializeCombinedList() async {
+  Future<void> _initializeCombinedList() async {
+    setState(() {
+      isLoading = true;
+    });
+
     await initializeDateFormatting('de_DE', null);
-    return orderRecipesByDay(); // Fetch recipes
+    var combinedList = await orderRecipesByDay();
+
+    setState(() {
+      _combinedList = combinedList;
+      isLoading = false;
+    });
   }
 
   void onReorder(int oldIndex, int newIndex) {
@@ -82,111 +93,55 @@ class _MealPlanListState extends State<MealPlanList> {
     } catch (e) {
       if (e.toString().contains('No meal plan found')) {
         setState(() {
-          noMealPlan = true;
+          hasMealPlan = false;
         });
         return [];
       }
     }
     setState(() {
-      noMealPlan = false;
+      hasMealPlan = true;
     });
     return combinedList;
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = Theme.of(context).colorScheme;
-    if (noMealPlan) {
-      return Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-            SizedBox(height: 50.0),
-            Icon(
-              Icons.fastfood, // Symbol für Essen
-              size: 80.0,
-              color: colorTheme.primary,
-            ),
-            SizedBox(height: 20.0),
-            Text(
-              'Kein MealPlan gefunden',
-              style: TextStyle(
-                fontSize: 22.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 10.0),
-            Text(
-              'Erstelle jetzt deinen ersten MealPlan!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.black54,
-              ),
-            ),
-            SizedBox(height: 30.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/new-plan');
-              },
-              child: Text(
-                'Neuer Plan',
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-            ),
-          ]));
+    if (!hasMealPlan) {
+      return NoMealPlanScreen();
     }
-    ;
+
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     // When provider changes, recreate the Future
     final _ = context.watch<MealPlanProvider>();
-    _combinedList = _initializeCombinedList();
+    _initializeCombinedList();
 
-    return FutureBuilder<List>(
-      future: _combinedList,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
+    return ReorderableListView(
+      onReorder: onReorder,
+      buildDefaultDragHandles: false,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: _combinedList.asMap().entries.map((entry) {
+        int index = entry.key;
+        var item = entry.value;
+        if (item is String) {
+          return DateListTile(
+            key: ValueKey(item),
+            day: item,
+            index: index,
           );
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
-            child: Text('No data available'),
+        } else if (item is Recipe) {
+          return RecipeListTile(
+            key: ValueKey(item.id),
+            recipe: item,
+            index: index,
           );
         } else {
-          final combinedList = snapshot.data!;
-          return ReorderableListView(
-            onReorder: onReorder,
-            buildDefaultDragHandles: false,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: combinedList.asMap().entries.map((entry) {
-              int index = entry.key;
-              var item = entry.value;
-              if (item is String) {
-                return DateListTile(
-                  key: ValueKey(item),
-                  day: item,
-                  index: index,
-                );
-              } else if (item is Recipe) {
-                return RecipeListTile(
-                  key: ValueKey(item.id),
-                  recipe: item,
-                  index: index,
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }).toList(),
-          );
+          return const SizedBox.shrink();
         }
-      },
+      }).toList(),
     );
   }
 }

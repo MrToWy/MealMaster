@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/shopping_list/domain/shopping_list_repository.dart';
-import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
+import 'package:mealmaster/db/shopping_list_entry.dart';
 import 'package:mealmaster/features/shopping_list/presentation/widgets/shopping_list_item_text_input.dart';
 
-Widget shoppingListItemCard(
-    context, final ShoppingListItem item, Function onClick, Function callback) {
+Widget shoppingListItemCard(context, final ShoppingListEntry item,
+    Function onClick, Function callback) {
   return Card.filled(
     child: ListTile(
-      title: Text(item.name),
+      title: Text(item.ingredient.value?.name ?? ''),
       subtitle: Text("${item.count}"),
       onTap: () {
         onClick(item);
@@ -19,12 +18,12 @@ Widget shoppingListItemCard(
   );
 }
 
-Future editShoppingListItemDialog(
-    context, ShoppingListItem item, Function callback) async {
-  ShoppingListRepository repo = DemoShoppingListRepository();
-  TextEditingController nameController = TextEditingController(text: item.name);
-  TextEditingController countController =
-      TextEditingController(text: item.count.toString());
+Future editShoppingListItemDialog(context, ShoppingListEntry item,
+    Function callback) async {
+  TextEditingController nameController = TextEditingController(
+      text: item.ingredient.value?.name);
+  TextEditingController countController = TextEditingController(
+      text: item.count.toString());
 
   return showDialog(
       context: context,
@@ -52,7 +51,7 @@ Future editShoppingListItemDialog(
                           SnackBar(content: Text("Bitte gib eine Menge an")));
                       return;
                     }
-                    repo.editShoppingListItem(item);
+                    // TODO: update item
                     callback();
                     Navigator.of(context).pop();
                   },
