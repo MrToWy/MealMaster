@@ -1,5 +1,7 @@
 import 'package:isar/isar.dart';
+import 'package:mealmaster/db/shopping_list_entry.dart';
 import 'package:path_provider/path_provider.dart';
+
 import 'allergy.dart';
 import 'diet.dart';
 import 'ingredient.dart';
@@ -34,7 +36,8 @@ class IsarFactory {
         RecipeStepSchema,
         MealPlanEntrySchema,
         MealPlanSchema,
-        StorageIngredientSchema
+        StorageIngredientSchema,
+        ShoppingListEntrySchema
       ],
       directory: dir.path,
     );
