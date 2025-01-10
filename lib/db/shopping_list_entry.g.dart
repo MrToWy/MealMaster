@@ -35,12 +35,6 @@ const ShoppingListEntrySchema = CollectionSchema(
       name: r'ingredient',
       target: r'Ingredient',
       single: true,
-    ),
-    r'shoppingList': LinkSchema(
-      id: -2248848841746564481,
-      name: r'shoppingList',
-      target: r'ShoppingList',
-      single: true,
     )
   },
   embeddedSchemas: {},
@@ -100,7 +94,7 @@ Id _shoppingListEntryGetId(ShoppingListEntry object) {
 
 List<IsarLinkBase<dynamic>> _shoppingListEntryGetLinks(
     ShoppingListEntry object) {
-  return [object.ingredient, object.shoppingList];
+  return [object.ingredient];
 }
 
 void _shoppingListEntryAttach(
@@ -108,8 +102,6 @@ void _shoppingListEntryAttach(
   object.id = id;
   object.ingredient
       .attach(col, col.isar.collection<Ingredient>(), r'ingredient', id);
-  object.shoppingList
-      .attach(col, col.isar.collection<ShoppingList>(), r'shoppingList', id);
 }
 
 extension ShoppingListEntryQueryWhereSort
@@ -351,20 +343,6 @@ extension ShoppingListEntryQueryLinks
       ingredientIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'ingredient', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<ShoppingListEntry, ShoppingListEntry, QAfterFilterCondition>
-      shoppingList(FilterQuery<ShoppingList> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'shoppingList');
-    });
-  }
-
-  QueryBuilder<ShoppingListEntry, ShoppingListEntry, QAfterFilterCondition>
-      shoppingListIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'shoppingList', 0, true, 0, true);
     });
   }
 }
