@@ -55,4 +55,40 @@ class ShoppingListRepository {
       });
     }
   }
+
+  Future<Ingredient> findOrCreateIngredient(
+    String name,
+    String unit,
+    List<Ingredient> existingIngredients,
+    Isar isar,
+  ) async {
+    return await isar.writeTxn(() async {
+      Ingredient ingredient = existingIngredients.firstWhere(
+          (i) => i.name == name && i.unit == unit,
+          orElse: () => Ingredient()
+            ..name = name
+            ..unit = unit);
+
+      if (ingredient.id == Isar.autoIncrement) {
+        await isar.ingredients.put(ingredient);
+      }
+      return ingredient;
+    });
+  }
+
+  Future<void> addShoppingListEntry(
+      String name, double count, String unit) async {
+    final isar = await isarInstance;
+    final existingIngredients = await isar.ingredients.where().findAll();
+    final ingredient =
+        await findOrCreateIngredient(name, unit, existingIngredients, isar);
+
+    return await isar.writeTxn(() async {
+      final shoppingListEntry = ShoppingListEntry()
+        ..ingredient.value = ingredient
+        ..count = count;
+      await isar.shoppingListEntrys.put(shoppingListEntry);
+      await shoppingListEntry.ingredient.save();
+    });
+  }
 }

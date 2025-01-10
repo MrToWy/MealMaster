@@ -40,7 +40,7 @@ class ShoppingListItemCard extends StatelessWidget {
               builder: (context) => AlertDialog(
                     title:
                         Text("${item.ingredient.value?.name ?? ''} bearbeiten"),
-                    icon: Icon(Icons.add),
+                    icon: Icon(Icons.edit),
                     content: TextField(
                       controller: countController,
                       decoration: InputDecoration(
