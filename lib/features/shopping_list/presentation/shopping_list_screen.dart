@@ -35,22 +35,22 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       body: Column(
         children: [
           Flexible(
-            child: shoppingListGrid(shoppingList, true, () {
-              setState(() {});
-            }, () {
-              setState(() {});
-            }),
+            child: ShoppingListGrid(
+                hasAddButton: true,
+                onClick: () {},
+                callBack: () {},
+                shoppingList: shoppingList),
           ),
           ExpansionTile(
             title: Text("Vorherige Einkäufe"),
             children: [
               SizedBox(
                 height: 200,
-                child: shoppingListGrid(shoppingList, false, () {
-                  setState(() {});
-                }, () {
-                  setState(() {});
-                }),
+                child: ShoppingListGrid(
+                    hasAddButton: false,
+                    onClick: () {},
+                    callBack: () {},
+                    shoppingList: []),
               )
             ],
           ),
