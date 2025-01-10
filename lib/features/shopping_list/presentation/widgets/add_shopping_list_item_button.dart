@@ -72,7 +72,7 @@ class AddShoppingListItemButton extends StatelessWidget {
                                   return;
                                 }
                                 var unit = unitController.text;
-                                if (unit == null) {
+                                if (unit == "") {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           content: Text(
@@ -80,7 +80,7 @@ class AddShoppingListItemButton extends StatelessWidget {
                                   return;
                                 }
                                 var name = nameController.text;
-                                if (name == null) {
+                                if (name == "") {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           content: Text(
