@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:mealmaster/db/ingredient.dart';
-import 'package:mealmaster/features/storage/data/storage_repositoy.dart';
+import 'package:mealmaster/features/storage/data/storage_repository.dart';
 
 import '../common/widgets/base_scaffold.dart';
 import '../shared/open_ai/api_client.dart';

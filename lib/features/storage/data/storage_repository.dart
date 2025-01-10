@@ -1,8 +1,8 @@
+import 'dart:developer';
+
 import 'package:isar/isar.dart';
 import 'package:mealmaster/db/ingredient.dart';
 import 'package:mealmaster/db/isar_factory.dart';
-import 'dart:developer';
-
 import 'package:mealmaster/db/storage_ingredient.dart';
 
 class StorageRepository {
@@ -13,6 +13,12 @@ class StorageRepository {
 
   factory StorageRepository() {
     return _instance;
+  }
+
+  Future<List<StorageIngredient>> getStorageIngredients() async {
+    final db = await isarInstance;
+    final storageIngredients = await db.storageIngredients.where().findAll();
+    return storageIngredients;
   }
 
   Future<StorageIngredient> addStorageIngredient(
