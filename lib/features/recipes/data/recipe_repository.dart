@@ -47,10 +47,17 @@ class RecipeRepository {
       List<Ingredient> existingIngredients,
       MealPlanEntry entry,
       Isar isar) async {
+    var difficulty = recipeData['difficulty'];
+    if (recipeData['difficulty'] > 3) {
+      difficulty = 3;
+    }
+    if (recipeData['difficulty'] < 1) {
+      difficulty = 1;
+    }
     final recipe = Recipe()
       ..title = recipeData['name']
       ..description = recipeData['description']
-      ..difficulty = recipeData['difficulty']
+      ..difficulty = difficulty
       ..cookingDuration = recipeData['steps']
           .fold<int>(0, (sum, step) => sum + step['duration'] as int);
     await isar.writeTxn(() async {
