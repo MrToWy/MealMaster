@@ -64,7 +64,9 @@ class _RecipeScreenState extends State<RecipeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
-    final day = getDayFromDateTime(currentRecipe.mealPlanEntries.first.day);
+    final day = currentRecipe.mealPlanEntries.isNotEmpty
+        ? getDayFromDateTime(currentRecipe.mealPlanEntries.first.day)
+        : '';
 
     if (recipes.isEmpty) {
       return Center(child: CircularProgressIndicator());
