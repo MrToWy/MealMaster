@@ -9,6 +9,7 @@ import 'package:mealmaster/features/home/presentation/widgets/recipe_list_tile.d
 import 'package:mealmaster/features/meal_plan/data/meal_plan_repository.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../db/meal_plan.dart';
 import '../../../meal_plan/presentation/controller/meal_plan_provider.dart';
 
 class MealPlanList extends StatefulWidget {
@@ -55,22 +56,33 @@ class _MealPlanListState extends State<MealPlanList> {
     });
   }
 
-  List<String> getNextSevenDays() {
+  Future<List<String>> getRemainingDays() async {
     final now = DateTime.now();
     final DateFormat formatter = DateFormat('EE', 'de_DE');
-    return List.generate(7,
-        (i) => formatter.format(now.add(Duration(days: i + 1))).toUpperCase());
+
+    MealPlanRepository mealPlanRepository = MealPlanRepository();
+    MealPlan mealPlan = await mealPlanRepository.getCurrentMealPlan();
+
+    int remainingDays = 0;
+    if (mealPlan.endDate!.isBefore(now)) {
+      remainingDays = 0;
+    } else {
+      remainingDays = mealPlan.endDate!.difference(now).inDays + 1;
+    }
+
+    return List.generate(remainingDays,
+        (i) => formatter.format(now.add(Duration(days: i))).toUpperCase());
   }
 
   Future<List> orderRecipesByDay() async {
-    List<String> nextSevenDays = getNextSevenDays();
+    List<String> remainingDays = await getRemainingDays();
     List combinedList = [];
 
     final mealPlanRepository = MealPlanRepository();
     try {
       List<MealPlanEntry> mealPlanEntries =
           await mealPlanRepository.getMealPlanEntries();
-      for (var dayString in nextSevenDays) {
+      for (var dayString in remainingDays) {
         combinedList.add(dayString);
 
         for (var mealPlanEntry in mealPlanEntries) {
