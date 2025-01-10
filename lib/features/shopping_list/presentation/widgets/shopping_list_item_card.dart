@@ -8,11 +8,11 @@ class ShoppingListItemCard extends StatelessWidget {
   final ShoppingListEntry item;
   final Function onClick;
 
-  const ShoppingListItemCard(
-      {super.key,
-      required this.item,
-      required this.onClick,
-      });
+  const ShoppingListItemCard({
+    super.key,
+    required this.item,
+    required this.onClick,
+  });
 
   @override
   Widget build(BuildContext context) {

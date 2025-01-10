@@ -29,8 +29,8 @@ class ShoppingListGrid extends StatelessWidget {
           }
 
           return ShoppingListItemCard(
-              item: shoppingList.elementAt(index - startIndex),
-              onClick: onClick,
+            item: shoppingList.elementAt(index - startIndex),
+            onClick: onClick,
           );
         });
   }
