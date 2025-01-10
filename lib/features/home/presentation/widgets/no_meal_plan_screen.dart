@@ -20,8 +20,7 @@ class NoMealPlanScreen extends StatelessWidget {
             color: theme.colorScheme.primary,
           ),
           SizedBox(height: 20.0),
-          Text(
-            'Kein MealPlan gefunden', style: theme.textTheme.headlineMedium),
+          Text('Kein MealPlan gefunden', style: theme.textTheme.headlineMedium),
           SizedBox(height: 10.0),
           Text(
             'Erstelle jetzt deinen ersten MealPlan!',
