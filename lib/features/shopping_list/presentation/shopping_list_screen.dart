@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/features/shopping_list/controller/shopping_list_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../../db/shopping_list_entry.dart';
 import '../domain/shopping_list_repository.dart';
@@ -13,6 +15,23 @@ class ShoppingListScreen extends StatefulWidget {
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
   List<ShoppingListEntry> shoppingList = [];
+  List<ShoppingListEntry> previousPurchases = [];
+
+  Future<void> removeItem(ShoppingListEntry entry) async {
+    final shoppingListRepository = ShoppingListRepository();
+    await shoppingListRepository.removeEntryFromShoppingList(entry.id);
+    setState(() {
+      previousPurchases.add(entry);
+    });
+  }
+
+  Future<void> addItem(ShoppingListEntry entry) async {
+    final shoppingListRepository = ShoppingListRepository();
+    await shoppingListRepository.addEntryToShoppingList(entry);
+    setState(() {
+      previousPurchases.remove(entry);
+    });
+  }
 
   Future<void> getShoppingListEntries() async {
     final shoppingListRepository = ShoppingListRepository();
@@ -31,14 +50,16 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _ = context.watch<ShoppingListProvider>();
+    getShoppingListEntries();
+
     return Scaffold(
       body: Column(
         children: [
           Flexible(
             child: ShoppingListGrid(
                 hasAddButton: true,
-                onClick: () {},
-                callBack: () {},
+                onClick: removeItem,
                 shoppingList: shoppingList),
           ),
           ExpansionTile(
@@ -48,9 +69,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                 height: 200,
                 child: ShoppingListGrid(
                     hasAddButton: false,
-                    onClick: () {},
-                    callBack: () {},
-                    shoppingList: []),
+                    onClick: addItem,
+                    shoppingList: previousPurchases),
               )
             ],
           ),

@@ -7,14 +7,12 @@ import 'shopping_list_item_card.dart';
 class ShoppingListGrid extends StatelessWidget {
   final bool hasAddButton;
   final Function onClick;
-  final Function callBack;
   final List<ShoppingListEntry> shoppingList;
 
   const ShoppingListGrid(
       {super.key,
       required this.hasAddButton,
       required this.onClick,
-      required this.callBack,
       required this.shoppingList});
 
   @override
@@ -31,9 +29,9 @@ class ShoppingListGrid extends StatelessWidget {
           }
 
           return ShoppingListItemCard(
-              item: shoppingList.elementAt(index - startIndex),
-              onClick: onClick,
-              callback: callBack);
+            item: shoppingList.elementAt(index - startIndex),
+            onClick: onClick,
+          );
         });
   }
 }

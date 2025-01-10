@@ -91,4 +91,28 @@ class ShoppingListRepository {
       await shoppingListEntry.ingredient.save();
     });
   }
+
+  Future<void> removeEntryFromShoppingList(int id) async {
+    final isar = await isarInstance;
+
+    await isar.writeTxn(() async {
+      await isar.shoppingListEntrys.delete(id);
+    });
+  }
+
+  Future<void> addEntryToShoppingList(ShoppingListEntry entry) async {
+    final isar = await isarInstance;
+
+    await isar.writeTxn(() async {
+      final shoppingListEntry = ShoppingListEntry()
+        ..ingredient.value = entry.ingredient.value
+        ..count = entry.count;
+
+      shoppingListEntry.ingredient.value =
+          entry.ingredient.value; // Setzt die Verknüpfung
+
+      await isar.shoppingListEntrys.put(shoppingListEntry);
+      await shoppingListEntry.ingredient.save(); // Speichert die Verknüpfung
+    });
+  }
 }
