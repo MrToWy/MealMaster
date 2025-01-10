@@ -18,12 +18,12 @@ Widget shoppingListItemCard(context, final ShoppingListEntry item,
   );
 }
 
-Future editShoppingListItemDialog(context, ShoppingListEntry item,
-    Function callback) async {
-  TextEditingController nameController = TextEditingController(
-      text: item.ingredient.value?.name);
-  TextEditingController countController = TextEditingController(
-      text: item.count.toString());
+Future editShoppingListItemDialog(
+    context, ShoppingListEntry item, Function callback) async {
+  TextEditingController nameController =
+      TextEditingController(text: item.ingredient.value?.name);
+  TextEditingController countController =
+      TextEditingController(text: item.count.toString());
 
   return showDialog(
       context: context,
