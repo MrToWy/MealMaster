@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/features/shopping_list/controller/shopping_list_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'common/widgets/navigation_menu.dart';
@@ -24,6 +25,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<MealPlanProvider>(
           create: (_) => MealPlanProvider(),
         ),
+        ChangeNotifierProvider<ShoppingListProvider>(
+            create: (_) => ShoppingListProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

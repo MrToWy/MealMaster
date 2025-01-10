@@ -7,13 +7,12 @@ import '../../domain/shopping_list_repository.dart';
 class ShoppingListItemCard extends StatelessWidget {
   final ShoppingListEntry item;
   final Function onClick;
-  final Function callback;
 
   const ShoppingListItemCard(
       {super.key,
       required this.item,
       required this.onClick,
-      required this.callback});
+      });
 
   @override
   Widget build(BuildContext context) {
