@@ -18,8 +18,10 @@ class RecipeListTile extends StatelessWidget {
 
     final isEditMode = context.watch<EditModeProvider>().inEditMode;
     return Container(
-      height: 100,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      constraints: BoxConstraints(
+        minHeight: 100.0,
+      ),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(20.0),
