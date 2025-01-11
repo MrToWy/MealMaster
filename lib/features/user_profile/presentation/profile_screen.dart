@@ -56,13 +56,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void createUserOnClick() {
-    if (userNameController.value.text == "") {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Das Namen Feld darf nicht leer sein")));
+    if (!validProfileInput()) {
       return;
     }
+
     userRepo
-        .createUser(userNameController.text, userWeightController.text)
+        .createUser(
+            userNameController.text, userWeightController.text, apiKey.text)
         .then((success) {
       if (success) {
         if (context.mounted) {
@@ -72,6 +72,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
         //error Message
       }
     });
+  }
+
+  void saveUserOnClick() {
+    if (!validProfileInput()) {
+      return;
+    }
+
+    userRepo.saveUserData(userNameController.text, userWeightController.text,
+        allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>());
+  }
+
+  bool validProfileInput() {
+    if (userNameController.value.text == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Das Namen-Feld darf nicht leer sein")));
+      return false;
+    }
+    if (userWeightController.value.text == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Das Gewichts-Feld darf nicht leer sein")));
+      return false;
+    }
+    if (hasNoUser && apiKey.text == "") {
+      //TODO: maybe check key validity
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Bitte gib einen api Key ein")));
+      return false;
+    }
+
+    return true;
   }
 
   String testText = "";
@@ -94,7 +124,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TextField(
               controller: userWeightController,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: InputDecoration(hintText: "Gewicht"),
+              decoration:
+                  InputDecoration(hintText: "Gewicht", suffixText: "Kg"),
             ),
             DropdownMenu(
                 initialSelection: DietEnum.noDiet,
@@ -126,15 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               )
             else
-              TextButton(
-                  onPressed: () {
-                    userRepo.saveUserData(
-                        userNameController.text,
-                        userWeightController.text,
-                        allergyChipWidgetKey.currentState!.set
-                            .cast<AllergiesEnum>());
-                  },
-                  child: Text("Speichern"))
+              TextButton(onPressed: saveUserOnClick, child: Text("Speichern"))
           ],
         ),
       ),

@@ -98,7 +98,19 @@ class UserRepository {
     return result;
   }
 
-  Future<bool> createUser(String userName, String weightString) async {
+  Future<bool> createUser(
+      String userName, String weightString, String apiKey) async {
+    //TODO add Allergies and diet
+    final isar = await isarInstance;
+    final newUser = User()..name = userName;
+    double? weight = double.tryParse(weightString);
+    newUser.weight = weight;
+    newUser.apiKey = apiKey;
+    await isar.writeTxn(() async {
+      await isar.users.put(newUser);
+      //await isar.allergys.put(allergy);
+      //await newUser.allergies.save();
+    });
     return true;
   }
 
