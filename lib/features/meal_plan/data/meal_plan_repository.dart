@@ -29,6 +29,13 @@ class MealPlanRepository {
     return mealPlan;
   }
 
+  Future<bool> checkIfMealPlanExists() async {
+    final isar = await isarInstance;
+    final mealPlan =
+        await isar.mealPlans.where().sortByStartDateDesc().findFirst();
+    return mealPlan != null;
+  }
+
   Future<List<MealPlanEntry>> getMealPlanEntries() async {
     MealPlan currentMealPlan = await getCurrentMealPlan();
     await currentMealPlan.entries.load();
