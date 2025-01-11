@@ -13,6 +13,9 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     UserRepository().hasUser().then((hasUser) {
+      if (!context.mounted) {
+        return;
+      }
       if (hasUser) {
         Navigator.popAndPushNamed(context, "/navigation");
         return;

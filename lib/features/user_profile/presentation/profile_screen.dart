@@ -55,6 +55,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
   }
 
+  void createUserOnClick() {
+    if (userNameController.value.text == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Das Namen Feld darf nicht leer sein")));
+      return;
+    }
+    userRepo
+        .createUser(userNameController.text, userWeightController.text)
+        .then((success) {
+      if (success) {
+        if (context.mounted) {
+          Navigator.popAndPushNamed(context, "/navigation");
+        }
+      } else {
+        //error Message
+      }
+    });
+  }
+
   String testText = "";
   @override
   Widget build(BuildContext context) {
@@ -102,16 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: InputDecoration(hintText: "Dein API-Key"),
                   ),
                   TextButton(
-                      onPressed: () {
-                        if (userNameController.value.text == "") {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content:
-                                  Text("Das Namen Feld darf nicht leer sein")));
-                          return;
-                        }
-                        userRepo.createUser(
-                            userNameController.text, userWeightController.text);
-                      },
+                      onPressed: createUserOnClick,
                       child: Text("Nutzer erstellen"))
                 ],
               )
