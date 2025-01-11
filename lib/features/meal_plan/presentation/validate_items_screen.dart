@@ -29,6 +29,12 @@ class _ValidateItemsScreenState extends State<ValidateItemsScreen> {
   final record = AudioRecorder();
   Stream<List<int>>? audioStream;
 
+  void deleteStorageIngredient(StorageIngredient storageIngredient) {
+    setState(() {
+      widget.ingredients.remove(storageIngredient);
+    });
+  }
+
   Future<void> generateMealPlan() async {
     setState(() {
       isLoading = true;
@@ -167,9 +173,8 @@ class _ValidateItemsScreenState extends State<ValidateItemsScreen> {
                   itemBuilder: (context, index) {
                     final storageIngredient = widget.ingredients[index];
                     return DetectedIngredient(
-                      name: storageIngredient.ingredient.value?.name ?? '',
-                      count: storageIngredient.count ?? 0.0,
-                      unit: storageIngredient.ingredient.value?.unit ?? '',
+                      storageIngredient: storageIngredient,
+                      delete: deleteStorageIngredient,
                     );
                   },
                 ),
