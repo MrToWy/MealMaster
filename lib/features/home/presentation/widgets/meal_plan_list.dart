@@ -24,7 +24,7 @@ class MealPlanList extends StatefulWidget {
 class _MealPlanListState extends State<MealPlanList> {
   late List _combinedList;
   bool hasMealPlan = false;
-  bool isLoading = false;
+  bool isInitialized = false;
 
   @override
   void initState() {
@@ -33,16 +33,14 @@ class _MealPlanListState extends State<MealPlanList> {
   }
 
   Future<void> _initializeCombinedList() async {
-    setState(() {
-      isLoading = true;
-    });
-
     await initializeDateFormatting('de_DE', null);
     var combinedList = await orderRecipesByDay();
 
     setState(() {
       _combinedList = combinedList;
-      isLoading = false;
+      if (_combinedList.isNotEmpty) {
+        isInitialized = true;
+      }
     });
   }
 
@@ -118,17 +116,15 @@ class _MealPlanListState extends State<MealPlanList> {
 
   @override
   Widget build(BuildContext context) {
+    final mealPlanProvider = context.watch<MealPlanProvider>();
+
+    if (!isInitialized || mealPlanProvider.version > 0) {
+      _initializeCombinedList();
+    }
+
     if (!hasMealPlan || _combinedList.isEmpty) {
       return NoMealPlanScreen();
     }
-
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    // When provider changes, recreate the Future
-    final _ = context.watch<MealPlanProvider>();
-    _initializeCombinedList();
 
     return ReorderableListView(
       onReorder: onReorder,
