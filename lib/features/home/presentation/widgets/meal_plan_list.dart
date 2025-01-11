@@ -118,7 +118,7 @@ class _MealPlanListState extends State<MealPlanList> {
 
   @override
   Widget build(BuildContext context) {
-    if (!hasMealPlan) {
+    if (!hasMealPlan || _combinedList.isEmpty) {
       return NoMealPlanScreen();
     }
 

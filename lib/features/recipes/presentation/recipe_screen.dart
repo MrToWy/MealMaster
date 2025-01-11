@@ -27,8 +27,9 @@ class _RecipeScreenState extends State<RecipeScreen> {
   }
 
   getRecipes() async {
-    final recipes = await RecipeRepository().getRecipes();
+    final recipes = await RecipeRepository().getRemainingRecipes();
     final recipe = await RecipeRepository().getRecipeById(widget.id);
+
     int initialIndex = recipes.indexWhere((r) => r.id == recipe.id);
     setState(() {
       this.recipes = recipes;

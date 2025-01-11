@@ -36,6 +36,27 @@ class RecipeRepository {
     return allRecipes;
   }
 
+  Future<List<Recipe>> getRemainingRecipes() async {
+    List<MealPlanEntry> entries =
+        await MealPlanRepository().getMealPlanEntries();
+    entries = entries
+        .where((element) =>
+            element.day!.isAfter(DateTime.now().subtract(Duration(days: 1))))
+        .toList();
+
+    final List<Recipe> allRecipes = [];
+
+    for (final entry in entries) {
+      await entry.recipe.load();
+      final recipe = entry.recipe.value;
+
+      if (recipe != null) {
+        allRecipes.add(recipe);
+      }
+    }
+    return allRecipes;
+  }
+
   Future<Recipe> getRecipeById(int id) async {
     final recipes = getRecipes();
     return recipes
