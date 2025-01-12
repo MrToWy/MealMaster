@@ -98,18 +98,32 @@ class UserRepository {
     return result;
   }
 
-  Future<bool> createUser(
-      String userName, String weightString, String apiKey) async {
+  Future<bool> createUser(String userName, String weightString, String apiKey,
+      Set<AllergiesEnum> allergiesEnum) async {
     //TODO add Allergies and diet
     final isar = await isarInstance;
     final newUser = User()..name = userName;
     double? weight = double.tryParse(weightString);
     newUser.weight = weight;
     newUser.apiKey = apiKey;
+
+    List<Allergy> dbAllergies = await isar.allergys.where().findAll();
+    var allergies = allergyEnumToDBEnum(allergiesEnum);
+    List<Allergy> finalAllergies = [];
+    for (Allergy al in allergies) {
+      if (dbAllergies.where((e) => al.name == e.name).isEmpty) {
+        finalAllergies.add(al);
+      } else {
+        finalAllergies.add(dbAllergies.firstWhere((e) => al.name == e.name));
+      }
+    }
+    newUser.allergies.clear();
+    newUser.allergies.addAll(finalAllergies);
+
     await isar.writeTxn(() async {
+      await isar.allergys.putAll(finalAllergies);
       await isar.users.put(newUser);
-      //await isar.allergys.put(allergy);
-      //await newUser.allergies.save();
+      await newUser.allergies.save();
     });
     return true;
   }
@@ -121,6 +135,10 @@ class UserRepository {
       return false;
     }
     return true;
+  }
+
+  Future<String> getAPIKey() async {
+    return "test";
   }
 
   Future<UserRepresentation?> getUserRepresentation() async {

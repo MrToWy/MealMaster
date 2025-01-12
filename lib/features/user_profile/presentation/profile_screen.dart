@@ -5,7 +5,6 @@ import 'package:mealmaster/features/user_profile/data/user_repository.dart';
 import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/diet_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/macros_enum.dart';
-import 'package:mealmaster/features/user_profile/domain/user.dart';
 import 'package:mealmaster/features/user_profile/presentation/widgets/category_chip_list.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -56,13 +55,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void createUserOnClick() {
-    if (!validProfileInput()) {
+    if (!validateProfileInput()) {
       return;
     }
 
     userRepo
         .createUser(
-            userNameController.text, userWeightController.text, apiKey.text)
+            userNameController.text,
+            userWeightController.text,
+            apiKey.text,
+            allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>())
         .then((success) {
       if (success) {
         if (context.mounted) {
@@ -75,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void saveUserOnClick() {
-    if (!validProfileInput()) {
+    if (!validateProfileInput()) {
       return;
     }
 
@@ -83,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>());
   }
 
-  bool validProfileInput() {
+  bool validateProfileInput() {
     if (userNameController.value.text == "") {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Das Namen-Feld darf nicht leer sein")));
