@@ -4,7 +4,7 @@ import 'package:mealmaster/features/user_profile/domain/macros_enum.dart';
 
 class UserRepresentation {
   Set<AllergiesEnum> allergies = {};
-  Set<DietEnum> diets = {};
+  DietEnum diets = DietEnum.noDiet;
   Set<MacrosEnum> macros = {};
   final String name;
   final String weight;
@@ -14,7 +14,7 @@ class UserRepresentation {
       this.allergies.addAll(allergies);
     }
     if (diets != null) {
-      this.diets.addAll(diets);
+      this.diets = diets;
     }
     if (macros != null) {
       this.macros.addAll(macros);

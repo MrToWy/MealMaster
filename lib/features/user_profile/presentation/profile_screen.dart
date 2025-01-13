@@ -25,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController apiKey = TextEditingController();
   bool loading = true;
   bool hasNoUser = true;
+  DietEnum _selectedDiet = DietEnum.noDiet;
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         userWeightController.value =
             userWeightController.value.copyWith(text: user.weight);
         loading = false;
+        _selectedDiet = user.diets;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
@@ -64,7 +66,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             userNameController.text,
             userWeightController.text,
             apiKey.text,
-            allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>())
+            allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>(),
+            _selectedDiet)
         .then((success) {
       if (success) {
         if (context.mounted) {
@@ -81,8 +84,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    userRepo.saveUserData(userNameController.text, userWeightController.text,
-        allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>());
+    userRepo.saveUserData(
+        userNameController.text,
+        userWeightController.text,
+        allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>(),
+        _selectedDiet);
   }
 
   bool validateProfileInput() {
@@ -131,8 +137,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   InputDecoration(hintText: "Gewicht", suffixText: "Kg"),
             ),
             DropdownMenu(
-                initialSelection: DietEnum.noDiet,
+                initialSelection: _selectedDiet,
                 controller: dietController,
+                onSelected: (diet) {
+                  setState(() {
+                    _selectedDiet = diet ?? _selectedDiet;
+                  });
+                },
                 label: const Text("Ernährungsform"),
                 dropdownMenuEntries: DietEnum.values
                     .map<DropdownMenuEntry<DietEnum>>((DietEnum diet) {

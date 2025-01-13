@@ -1,8 +1,10 @@
 import 'package:isar/isar.dart';
 import 'package:mealmaster/db/allergy.dart';
+import 'package:mealmaster/db/diet.dart';
 import 'package:mealmaster/db/isar_factory.dart';
 import 'package:mealmaster/db/user.dart';
 import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
+import 'package:mealmaster/features/user_profile/domain/diet_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/user.dart';
 
 class UserRepository {
@@ -57,12 +59,16 @@ class UserRepository {
   }
 
   Future<bool> saveUserData(String userName, String weightString,
-      Set<AllergiesEnum> allergiesEnum) async {
+      Set<AllergiesEnum> allergiesEnum, DietEnum dietEnum) async {
     final isar = await isarInstance;
     final firstUser = await isar.users.where().findFirst();
     if (firstUser == null) {
       return false;
     }
+
+    firstUser.name = userName;
+    double? weight = double.tryParse(weightString);
+    firstUser.weight = weight;
 
     List<Allergy> dbAllergies = await isar.allergys.where().findAll();
     var allergies = allergyEnumToDBEnum(allergiesEnum);
@@ -74,19 +80,38 @@ class UserRepository {
         finalAllergies.add(dbAllergies.firstWhere((e) => al.name == e.name));
       }
     }
-    firstUser.allergies.clear();
-    firstUser.allergies.addAll(finalAllergies);
-    firstUser.name = userName;
-    double? weight = double.tryParse(weightString);
-    firstUser.weight = weight;
+
+    var diet = await enumDietToDbDiet(dietEnum);
 
     await isar.writeTxn(() async {
+      // Save the allergies and diet
       await isar.allergys.putAll(finalAllergies);
+      await isar.diets.put(diet);
+
+      firstUser.allergies.clear();
+      firstUser.allergies.addAll(finalAllergies);
+
+      firstUser.diets.clear();
+      firstUser.diets.add(diet);
+
+      firstUser.allergies.save();
+      firstUser.diets.save();
+
       await isar.users.put(firstUser);
-      await firstUser.allergies.save();
     });
 
     return true;
+  }
+
+  Future<Diet> enumDietToDbDiet(DietEnum diet) async {
+    final isar = await isarInstance;
+    List<Diet> dbDiets = await isar.diets.where().findAll();
+    Diet dbDiet = Diet()..name = diet.key;
+    if (dbDiets.where((e) => diet.name == e.name).isEmpty) {
+      return dbDiet;
+    } else {
+      return dbDiets.firstWhere((e) => diet.name == e.name);
+    }
   }
 
   Set<Allergy> allergyEnumToDBEnum(Set<AllergiesEnum> allergiesEnum) {
@@ -99,7 +124,7 @@ class UserRepository {
   }
 
   Future<bool> createUser(String userName, String weightString, String apiKey,
-      Set<AllergiesEnum> allergiesEnum) async {
+      Set<AllergiesEnum> allergiesEnum, DietEnum dietEnum) async {
     //TODO add Allergies and diet
     final isar = await isarInstance;
     final newUser = User()..name = userName;
@@ -117,12 +142,18 @@ class UserRepository {
         finalAllergies.add(dbAllergies.firstWhere((e) => al.name == e.name));
       }
     }
-    newUser.allergies.clear();
-    newUser.allergies.addAll(finalAllergies);
+    var diet = await enumDietToDbDiet(dietEnum);
 
     await isar.writeTxn(() async {
       await isar.allergys.putAll(finalAllergies);
+      await isar.diets.put(diet);
+      newUser.allergies.clear();
+      newUser.allergies.addAll(finalAllergies);
+
+      newUser.diets.clear();
+      newUser.diets.add(diet);
       await isar.users.put(newUser);
+
       await newUser.allergies.save();
     });
     return true;
@@ -180,8 +211,13 @@ class UserRepository {
         //TODO: ADD Error Message if allergie was not found
       }
     }
+    var dbDiet = firstUser.diets.firstOrNull;
+    DietEnum diet = DietEnum.noDiet;
+    if (dbDiet != null) {
+      diet = DietEnum.values.firstWhere((e) => e.key == dbDiet.name);
+    }
 
     return UserRepresentation(
-        name: name, weight: weight, allergies: allergiesEnum);
+        name: name, weight: weight, allergies: allergiesEnum, diets: diet);
   }
 }

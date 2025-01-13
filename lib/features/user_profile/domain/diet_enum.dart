@@ -1,13 +1,14 @@
 import 'package:mealmaster/features/user_profile/domain/enum_label.dart';
 
 enum DietEnum implements EnumLabel {
-  noDiet("Keine Besonderheiten"),
-  halal("Halal"),
-  kosher("Kosher"),
-  vegan("Vegan"),
-  vegetarian("Vegetarisch");
+  noDiet("Keine Besonderheiten", "noDiet"),
+  halal("Halal", "halal"),
+  kosher("Kosher", "kosher"),
+  vegan("Vegan", "vegan"),
+  vegetarian("Vegetarisch", "vegetarian");
 
   @override
   final String label;
-  const DietEnum(this.label);
+  final String key;
+  const DietEnum(this.label, this.key);
 }

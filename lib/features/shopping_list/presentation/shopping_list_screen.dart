@@ -37,9 +37,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     final shoppingListRepository = ShoppingListRepository();
     List<ShoppingListEntry> shoppingList =
         await shoppingListRepository.getShoppingListEntries();
-    setState(() {
-      this.shoppingList = shoppingList;
-    });
+    if (mounted) {
+      setState(() {
+        this.shoppingList = shoppingList;
+      });
+    }
   }
 
   @override
