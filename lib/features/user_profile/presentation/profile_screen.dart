@@ -114,6 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

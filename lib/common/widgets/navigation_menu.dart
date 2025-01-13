@@ -61,6 +61,7 @@ class _NavigationMenuState extends State<NavigationMenu> {
     const double iconSize = 30;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: _buildAppBar(context),
       body: _pages[_selectedIndex],
       bottomNavigationBar: NavigationBar(
@@ -95,7 +96,24 @@ Future editAPIKeyDialog(context) async {
       builder: (context) => AlertDialog(
             title: Text("API-Key ändern"),
             content: Column(
-              children: [TextField(controller: controller)],
-            ),
+                mainAxisSize: MainAxisSize.min,
+                children: [TextField(controller: controller)]),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Abbrechen")),
+              TextButton(
+                  onPressed: () async {
+                    if (!context.mounted) {
+                      //add error Message
+                      return;
+                    }
+                    await UserRepository().setAPIKey(controller.value.text);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Speichern"))
+            ],
           ));
 }

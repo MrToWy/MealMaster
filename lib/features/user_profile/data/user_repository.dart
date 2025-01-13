@@ -138,7 +138,26 @@ class UserRepository {
   }
 
   Future<String> getAPIKey() async {
-    return "test";
+    final isar = await isarInstance;
+    final user = await isar.users.where().findFirst();
+    if (user == null) {
+      return "Error: kein User vorhanden";
+    }
+    String key = user.apiKey ?? "Error: Kein API-Key vorhanden";
+    return key;
+  }
+
+  Future<bool> setAPIKey(String apiKey) async {
+    final isar = await isarInstance;
+    final user = await isar.users.where().findFirst();
+    if (user == null) {
+      return false;
+    }
+    user.apiKey = apiKey;
+    await isar.writeTxn(() async {
+      await isar.users.put(user);
+    });
+    return true;
   }
 
   Future<UserRepresentation?> getUserRepresentation() async {
