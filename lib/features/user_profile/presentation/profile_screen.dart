@@ -128,13 +128,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             TextField(
               controller: userNameController,
-              decoration: InputDecoration(hintText: "Dein Name"),
+              decoration:
+                  InputDecoration(hintText: "Dein Name", label: Text("Name")),
             ),
             TextField(
               controller: userWeightController,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration:
-                  InputDecoration(hintText: "Gewicht", suffixText: "Kg"),
+              decoration: InputDecoration(
+                  hintText: "Gewicht",
+                  suffixText: "Kg",
+                  label: Text("Gewicht")),
             ),
             DropdownMenu(
                 initialSelection: _selectedDiet,

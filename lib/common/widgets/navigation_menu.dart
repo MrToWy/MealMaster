@@ -61,7 +61,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
     const double iconSize = 30;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: _buildAppBar(context),
       body: _pages[_selectedIndex],
       bottomNavigationBar: NavigationBar(
