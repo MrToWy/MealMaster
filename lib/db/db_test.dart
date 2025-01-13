@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:mealmaster/db/ingredient.dart';
-import 'package:mealmaster/features/storage/data/storage_repositoy.dart';
+import 'package:mealmaster/features/storage/data/storage_repository.dart';
 
 import '../common/widgets/base_scaffold.dart';
 import '../shared/open_ai/api_client.dart';
@@ -39,7 +39,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
     List<String> images = [];
     images.add(ExampleImage.getFridge());
 
-    var test = await ApiClient.generateStorageIngredients(images);
+    var test = await ApiClient.generateStorageIngredientsFromImages(images);
     test.toString();
   }
 
@@ -62,9 +62,59 @@ class _DbTestScreenState extends State<DbTestScreen> {
   }
 
   Future<void> addUser() async {
+    Map<String, String>? userDetails = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (BuildContext context) {
+        final TextEditingController nameController = TextEditingController();
+        final TextEditingController apiKeyController = TextEditingController();
+        return AlertDialog(
+          title: const Text('OpenAI API Key'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your name',
+                ),
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: apiKeyController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your API key',
+                ),
+                obscureText: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, {
+                'name': nameController.text,
+                'apiKey': apiKeyController.text,
+              }),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (userDetails == null ||
+        userDetails['name']!.isEmpty ||
+        userDetails['apiKey']!.isEmpty) {
+      return;
+    }
+
     final isar = await isarInstance;
     final newUser = User()
-      ..name = 'Test User ${DateTime.now().millisecondsSinceEpoch}';
+      ..name = userDetails['name']!
+      ..apiKey = userDetails['apiKey']!;
     final allergy = Allergy()..name = "Nuts";
     newUser.allergies.add(allergy);
 
@@ -143,7 +193,7 @@ class _DbTestScreenState extends State<DbTestScreen> {
                 await db.writeTxn(() async {
                   return await db.ingredients.put(newIngredient);
                 });
-                StorageRepository().addToStorage(newIngredient, 1);
+                StorageRepository().addStorageIngredient(newIngredient, 1);
               },
               child: Text('Add Storage Ingredient'),
             ),

@@ -1,64 +1,118 @@
 import 'dart:async';
 
-import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
+import 'package:isar/isar.dart';
 
-abstract class ShoppingListRepository {
-  Future<List<ShoppingListItem>> getShoppingList();
-  Future<List<ShoppingListItem>> getRecentShoppingList();
-  addItemToShoppingList(ShoppingListItem item);
-  removeItemFromShoppingList(ShoppingListItem item);
-  addRecentItemToShoppingList(ShoppingListItem item);
-  editShoppingListItem(ShoppingListItem item);
-}
+import '../../../db/ingredient.dart';
+import '../../../db/isar_factory.dart';
+import '../../../db/shopping_list_entry.dart';
 
-class DemoShoppingListRepository implements ShoppingListRepository {
-  static final DemoShoppingListRepository _instance =
-      DemoShoppingListRepository._internal();
+class ShoppingListRepository {
+  static final ShoppingListRepository _instance =
+      ShoppingListRepository._internal();
+  late Future<Isar> isarInstance = IsarFactory().db;
 
-  factory DemoShoppingListRepository() {
+  factory ShoppingListRepository() {
     return _instance;
   }
-  DemoShoppingListRepository._internal();
 
-  List<ShoppingListItem> testList = [
-    ShoppingListItem(count: 3, name: "Eggs"),
-    ShoppingListItem(count: 10, name: "Cheese"),
-    ShoppingListItem(count: 1, name: "Milk"),
-    ShoppingListItem(count: 1, name: "Pizza"),
-    ShoppingListItem(count: 2, name: "Paprika")
-  ];
+  ShoppingListRepository._internal();
 
-  List<ShoppingListItem> boughtList = [];
-  @override
-  Future<List<ShoppingListItem>> getRecentShoppingList() {
-    return Future.value(boughtList);
+  Future<List<ShoppingListEntry>> getShoppingListEntries() async {
+    final db = await isarInstance;
+    final shoppingListEntries = await db.shoppingListEntrys.where().findAll();
+    return shoppingListEntries;
   }
 
-  @override
-  Future<List<ShoppingListItem>> getShoppingList() {
-    return Future.value(testList);
+  Future<ShoppingListEntry> createShoppingListEntry(
+      Ingredient ingredient, double count) async {
+    final isar = await isarInstance;
+    return await isar.writeTxn(() async {
+      final shoppingListEntry = ShoppingListEntry()
+        ..ingredient.value = ingredient
+        ..count = count;
+      await isar.shoppingListEntrys.put(shoppingListEntry);
+      await shoppingListEntry.ingredient.save();
+      return shoppingListEntry;
+    });
   }
 
-  @override
-  addItemToShoppingList(ShoppingListItem item) {
-    testList.add(item);
+  void clearShoppingList() async {
+    final isar = await isarInstance;
+
+    await isar.writeTxn(() async {
+      await isar.shoppingListEntrys.clear();
+    });
   }
 
-  @override
-  removeItemFromShoppingList(ShoppingListItem item) {
-    testList.remove(item);
-    boughtList.add(item);
+  Future<void> updateShoppingListEntryById(count, id) async {
+    final isar = await isarInstance;
+    final item =
+        await isar.shoppingListEntrys.where().idEqualTo(id).findFirst();
+    if (item != null) {
+      item.count = count;
+      await isar.writeTxn(() async {
+        await isar.shoppingListEntrys.put(item);
+      });
+    }
   }
 
-  @override
-  addRecentItemToShoppingList(ShoppingListItem item) {
-    boughtList.remove(item);
-    testList.add(item);
+  Future<Ingredient> findOrCreateIngredient(
+    String name,
+    String unit,
+    List<Ingredient> existingIngredients,
+    Isar isar,
+  ) async {
+    return await isar.writeTxn(() async {
+      Ingredient ingredient = existingIngredients.firstWhere(
+          (i) => i.name == name && i.unit == unit,
+          orElse: () => Ingredient()
+            ..name = name
+            ..unit = unit);
+
+      if (ingredient.id == Isar.autoIncrement) {
+        await isar.ingredients.put(ingredient);
+      }
+      return ingredient;
+    });
   }
 
-  @override
-  editShoppingListItem(ShoppingListItem item) {
-    // TODO: implement editShoppingListItem
-    throw UnimplementedError();
+  Future<void> addShoppingListEntry(
+      String name, double count, String unit) async {
+    final isar = await isarInstance;
+    final existingIngredients = await isar.ingredients.where().findAll();
+    final ingredient =
+        await findOrCreateIngredient(name, unit, existingIngredients, isar);
+
+    return await isar.writeTxn(() async {
+      final shoppingListEntry = ShoppingListEntry()
+        ..ingredient.value = ingredient
+        ..count = count;
+      await isar.shoppingListEntrys.put(shoppingListEntry);
+      await shoppingListEntry.ingredient.save();
+    });
+  }
+
+  Future<void> removeEntryFromShoppingList(int id) async {
+    final isar = await isarInstance;
+
+    await isar.writeTxn(() async {
+      await isar.shoppingListEntrys.delete(id);
+    });
+  }
+
+  Future<void> addEntryToShoppingList(ShoppingListEntry entry) async {
+    final isar = await isarInstance;
+
+    await isar.writeTxn(() async {
+      final shoppingListEntry = ShoppingListEntry()
+        ..ingredient.value = entry.ingredient.value
+        ..count = entry.count;
+
+      shoppingListEntry.ingredient.value =
+          entry.ingredient.value; // Setzt die Verknüpfung
+
+      await isar.shoppingListEntrys.put(shoppingListEntry);
+      await shoppingListEntry.ingredient.save(); // Speichert die Verknüpfung
+    });
   }
 }

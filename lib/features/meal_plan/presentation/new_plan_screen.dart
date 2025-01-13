@@ -10,6 +10,7 @@ import '../../../common/widgets/loading_button.dart';
 import '../../../db/storage_ingredient.dart';
 import '../../../shared/open_ai/api_client.dart';
 import 'validate_items_screen.dart';
+import 'dart:developer';
 
 class NewPlanScreen extends StatefulWidget {
   const NewPlanScreen({super.key});
@@ -35,7 +36,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
         _images.add(base64Image);
       });
     } else {
-      print('Kein Bild ausgewählt.');
+      log('Kein Bild ausgewählt.');
     }
   }
 
@@ -45,7 +46,7 @@ class _NewPlanScreenState extends State<NewPlanScreen> {
     });
 
     List<StorageIngredient>? ingredients =
-        await ApiClient.generateStorageIngredients(_images);
+        await ApiClient.generateStorageIngredientsFromImages(_images);
 
     setState(() {
       _isLoading = false;

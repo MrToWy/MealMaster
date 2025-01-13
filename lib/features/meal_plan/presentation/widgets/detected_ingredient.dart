@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 
+import '../../../../db/storage_ingredient.dart';
+
 class DetectedIngredient extends StatelessWidget {
-  final String name;
-  final double count;
-  final String unit;
+  final StorageIngredient storageIngredient;
+  final Function delete;
 
   const DetectedIngredient(
-      {super.key, required this.name, required this.count, required this.unit});
+      {super.key, required this.storageIngredient, required this.delete});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(name),
-      subtitle: Text('${count.toStringAsFixed(0)} $unit'),
+      title: Text(storageIngredient.ingredient.value!.name ?? ''),
+      subtitle: Text(
+          '${storageIngredient.count?.toStringAsFixed(0)} ${storageIngredient.ingredient.value?.unit}'),
       trailing: IconButton(
-        icon: Icon(Icons.edit),
-        onPressed: () {},
+        icon: Icon(Icons.delete_outline),
+        onPressed: () {
+          delete(storageIngredient);
+        },
       ),
     );
   }

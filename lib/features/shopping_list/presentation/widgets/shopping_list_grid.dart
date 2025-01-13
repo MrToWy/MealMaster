@@ -1,27 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
-import 'package:mealmaster/features/shopping_list/presentation/widgets/add_shopping_list_item_button.dart';
-import 'package:mealmaster/features/shopping_list/presentation/widgets/shopping_list_item_card.dart';
 
-Widget shoppingListGrid(Future<List<ShoppingListItem>> futureList,
-    bool hasAddButton, Function onClick, Function callBack) {
-  int startIndex = hasAddButton ? 1 : 0;
-  return FutureBuilder(
-      future: futureList,
-      builder: (context, list) {
-        if (!list.hasData) {
-          return Container();
-        }
-        return GridView.builder(
-            itemCount: startIndex + list.data!.length,
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-            itemBuilder: (context, index) {
-              if (index == 0 && hasAddButton) {
-                return addShoppingListItemButton(context, callBack);
-              }
-              return shoppingListItemCard(
-                  context, list.data![index - startIndex], onClick, callBack);
-            });
-      });
+import '../../../../db/shopping_list_entry.dart';
+import 'add_shopping_list_item_button.dart';
+import 'shopping_list_item_card.dart';
+
+class ShoppingListGrid extends StatelessWidget {
+  final bool hasAddButton;
+  final Function onClick;
+  final List<ShoppingListEntry> shoppingList;
+
+  const ShoppingListGrid(
+      {super.key,
+      required this.hasAddButton,
+      required this.onClick,
+      required this.shoppingList});
+
+  @override
+  Widget build(BuildContext context) {
+    int startIndex = hasAddButton ? 1 : 0;
+
+    return GridView.builder(
+        itemCount: startIndex + shoppingList.length,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        itemBuilder: (context, index) {
+          if (index == 0 && hasAddButton) {
+            return AddShoppingListItemButton();
+          }
+
+          return ShoppingListItemCard(
+            item: shoppingList.elementAt(index - startIndex),
+            onClick: onClick,
+          );
+        });
+  }
 }

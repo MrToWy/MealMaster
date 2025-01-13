@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/db/recipe.dart';
 import 'package:mealmaster/features/home/presentation/controller/edit_mode_controller.dart';
-import 'package:mealmaster/features/home/presentation/widgets/difficulty_indicator.dart';
-import 'package:mealmaster/features/recipes/domain/recipe.dart';
 import 'package:provider/provider.dart';
 
 import '../../../recipes/presentation/recipe_screen.dart';
+import 'difficulty_indicator.dart';
 
 class RecipeListTile extends StatelessWidget {
   final Recipe recipe;
@@ -18,8 +18,10 @@ class RecipeListTile extends StatelessWidget {
 
     final isEditMode = context.watch<EditModeProvider>().inEditMode;
     return Container(
-      height: 100,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      constraints: BoxConstraints(
+        minHeight: 100.0,
+      ),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(20.0),
@@ -28,7 +30,7 @@ class RecipeListTile extends StatelessWidget {
         child: ListTile(
           key: ValueKey(recipe.id),
           title: Text(
-            'Recipe ${recipe.id}',
+            recipe.title ?? '',
             style: TextStyle(
                 fontWeight: FontWeight.w400,
                 color: theme.colorScheme.onSurface,
@@ -40,7 +42,7 @@ class RecipeListTile extends StatelessWidget {
                 '${recipe.cookingDuration} min  -  ',
                 style: TextStyle(color: theme.colorScheme.onSurface),
               ),
-              DifficultyIndicator(difficulty: recipe.difficulty)
+              DifficultyIndicator(difficulty: recipe.difficulty ?? 1)
             ],
           ),
           trailing: isEditMode
@@ -55,7 +57,7 @@ class RecipeListTile extends StatelessWidget {
                   onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RecipeScreen(id: 16))),
+                          builder: (context) => RecipeScreen(id: recipe.id))),
                 ),
         ),
       ),

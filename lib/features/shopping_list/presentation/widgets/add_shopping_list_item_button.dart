@@ -1,54 +1,100 @@
 import 'package:flutter/material.dart';
-import 'package:mealmaster/features/shopping_list/domain/shopping_list_repository.dart';
-import 'package:mealmaster/features/shopping_list/presentation/shopping_list_screen.dart';
-import 'package:mealmaster/features/shopping_list/presentation/widgets/shopping_list_item_text_input.dart';
+import 'package:flutter/services.dart';
 
-Widget addShoppingListItemButton(context, Function callback) {
-  return Card.filled(
-      child: IconButton(
-          onPressed: () {
-            addItemToShoppingListDialog(context, callback);
-          },
-          icon: Icon(Icons.add)));
-}
+import '../../domain/shopping_list_repository.dart';
 
-Future addItemToShoppingListDialog(context, Function callback) async {
-  ShoppingListRepository repo = DemoShoppingListRepository();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController countController = TextEditingController();
+class AddShoppingListItemButton extends StatelessWidget {
+  const AddShoppingListItemButton({super.key});
 
-  return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-            title: Text("Neues Item erstellen"),
-            icon: Icon(Icons.add),
-            content: shoppingListItemTextInput(nameController, countController),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Abbrechen")),
-              TextButton(
-                  onPressed: () {
-                    String name = nameController.text;
-                    var count = int.tryParse(countController.text);
-                    if (name.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Bitte gib einen Namen ein")));
-                      return;
-                    }
-                    if (count == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Bitte gib eine Menge an")));
-                      return;
-                    }
-                    repo.addItemToShoppingList(
-                        ShoppingListItem(count: count, name: name));
-                    callback();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Hinzufügen"))
-            ],
-          ));
+  Future<void> addNewItem(name, count, unit) async {
+    final shoppingListRepository = ShoppingListRepository();
+
+    await shoppingListRepository.addShoppingListEntry(name, count, unit);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController countController = TextEditingController();
+    TextEditingController nameController = TextEditingController();
+    TextEditingController unitController = TextEditingController();
+
+    return Card.filled(
+        child: IconButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text("Neue Zutat hinzufügen"),
+                        icon: Icon(Icons.add),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: nameController,
+                              decoration: InputDecoration(
+                                  hintText: "Bitte gib einen Namen an",
+                                  labelText: "Name"),
+                            ),
+                            SizedBox(height: 20),
+                            TextField(
+                              controller: countController,
+                              decoration: InputDecoration(
+                                  hintText: "Bitte gib eine Menge an",
+                                  labelText: "Menge"),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            TextField(
+                              controller: unitController,
+                              decoration: InputDecoration(
+                                  hintText: "Bitte gib eine Einheit an",
+                                  labelText: "Einheit"),
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("Abbrechen")),
+                          TextButton(
+                              onPressed: () async {
+                                var count =
+                                    double.tryParse(countController.text);
+                                if (count == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text("Bitte gib eine Menge an")));
+                                  return;
+                                }
+                                var unit = unitController.text;
+                                if (unit == "") {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              "Bitte gib eine Einheit an")));
+                                  return;
+                                }
+                                var name = nameController.text;
+                                if (name == "") {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              "Bitte gib einen Namen an")));
+                                  return;
+                                }
+
+                                await addNewItem(name, count, unit);
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("Speichern"))
+                        ],
+                      ));
+            },
+            icon: Icon(Icons.add)));
+  }
 }

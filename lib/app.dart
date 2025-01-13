@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/features/shopping_list/controller/shopping_list_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'common/widgets/navigation_menu.dart';
 import 'features/home/presentation/controller/edit_mode_controller.dart';
 import 'features/home/presentation/home_screen.dart';
+import 'features/meal_plan/presentation/controller/meal_plan_provider.dart';
 import 'features/meal_plan/presentation/new_plan_screen.dart';
 import 'features/shopping_list/presentation/shopping_list_screen.dart';
 import 'features/splash_screen/splash_screen.dart';
@@ -20,6 +22,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<EditModeProvider>(
           create: (_) => EditModeProvider(),
         ),
+        ChangeNotifierProvider<MealPlanProvider>(
+          create: (_) => MealPlanProvider(),
+        ),
+        ChangeNotifierProvider<ShoppingListProvider>(
+            create: (_) => ShoppingListProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
