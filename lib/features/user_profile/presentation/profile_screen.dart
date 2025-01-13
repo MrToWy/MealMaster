@@ -62,12 +62,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     userRepo
-        .createUser(
+        .saveUserData(
             userNameController.text,
             userWeightController.text,
-            apiKey.text,
             allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>(),
-            _selectedDiet)
+            _selectedDiet,
+            apiKey: apiKey.text)
         .then((success) {
       if (success) {
         if (context.mounted) {
