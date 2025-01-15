@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mealmaster/common/widgets/custom_app_bar.dart';
-import 'package:mealmaster/db/db_test.dart';
 import 'package:mealmaster/features/user_profile/data/user_repository.dart';
 
 import '../../features/home/presentation/home_screen.dart';
@@ -42,14 +41,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
                 editAPIKeyDialog(context);
               },
               icon: Icon(Icons.vpn_key)),
-          TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DbTestScreen()),
-                );
-              },
-              child: Text('DB Test'))
         ]);
       default:
         return null;
