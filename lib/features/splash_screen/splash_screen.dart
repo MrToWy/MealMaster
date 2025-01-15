@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mealmaster/common/widgets/custom_app_bar.dart';
 import 'package:mealmaster/features/user_profile/data/user_repository.dart';
+
+import '../user_profile/presentation/profile_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,7 +23,13 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.popAndPushNamed(context, "/navigation");
         return;
       }
-      Navigator.popAndPushNamed(context, "/profile");
+      Navigator.pop(context);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Scaffold(
+                  appBar: CustomAppBar(title: "MealMe"),
+                  body: const ProfileScreen(firstTime: true))));
     });
   }
 
