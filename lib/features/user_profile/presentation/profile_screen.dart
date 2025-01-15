@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mealmaster/common/widgets/loading_button.dart';
 import 'package:mealmaster/features/user_profile/data/user_repository.dart';
 import 'package:mealmaster/features/user_profile/domain/allergies_enum.dart';
 import 'package:mealmaster/features/user_profile/domain/diet_enum.dart';
@@ -6,7 +8,8 @@ import 'package:mealmaster/features/user_profile/domain/macros_enum.dart';
 import 'package:mealmaster/features/user_profile/presentation/widgets/category_chip_list.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final bool firstTime;
+  const ProfileScreen({this.firstTime = false, super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -15,34 +18,109 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   UserRepository userRepo = UserRepository();
   final TextEditingController dietController = TextEditingController();
-  Set<AllergiesEnum> allergies = <AllergiesEnum>{};
   final GlobalKey<CategoryChipListState> macroChipWidgetKey = GlobalKey();
   final GlobalKey<CategoryChipListState> allergyChipWidgetKey = GlobalKey();
   TextEditingController userNameController = TextEditingController();
   TextEditingController userWeightController = TextEditingController();
+  TextEditingController apiKey = TextEditingController();
+  bool loading = true;
+  bool hasNoUser = true;
+  DietEnum _selectedDiet = DietEnum.noDiet;
 
   @override
   void initState() {
-    userRepo.getUserName().then((name) {
+    userRepo.getUserRepresentation().then((user) {
+      if (user == null) {
+        setState(() {
+          loading = false;
+        });
+        return;
+      }
+
       setState(() {
+        hasNoUser = false;
         userNameController.value =
-            userNameController.value.copyWith(text: name);
-      });
-    });
-    userRepo.getWeightString().then((weight) {
-      setState(() {
+            userNameController.value.copyWith(text: user.name);
         userWeightController.value =
-            userWeightController.value.copyWith(text: weight);
+            userWeightController.value.copyWith(text: user.weight);
+        loading = false;
+        _selectedDiet = user.diets;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          allergyChipWidgetKey.currentState?.set.addAll(user.allergies);
+        });
       });
     });
 
     super.initState();
   }
 
+  void createUserOnClick() {
+    if (!validateProfileInput()) {
+      return;
+    }
+
+    userRepo
+        .saveUserData(
+            userNameController.text,
+            userWeightController.text,
+            allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>(),
+            _selectedDiet,
+            apiKey: apiKey.text)
+        .then((success) {
+      if (success) {
+        if (context.mounted) {
+          Navigator.popAndPushNamed(context, "/navigation");
+        }
+      } else {
+        //error Message
+      }
+    });
+  }
+
+  void saveUserOnClick() {
+    if (!validateProfileInput()) {
+      return;
+    }
+
+    userRepo.saveUserData(
+        userNameController.text,
+        userWeightController.text,
+        allergyChipWidgetKey.currentState!.set.cast<AllergiesEnum>(),
+        _selectedDiet);
+  }
+
+  bool validateProfileInput() {
+    if (userNameController.value.text == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Das Namen-Feld darf nicht leer sein")));
+      return false;
+    }
+    if (userWeightController.value.text == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Das Gewichts-Feld darf nicht leer sein")));
+      return false;
+    }
+    if (hasNoUser && apiKey.text == "") {
+      //TODO: maybe check key validity
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Bitte gib einen api Key ein")));
+      return false;
+    }
+
+    return true;
+  }
+
   String testText = "";
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return Center(child: LoadingButton(text: "Loading User"));
+    }
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -50,15 +128,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             TextField(
               controller: userNameController,
-              decoration: InputDecoration(hintText: "Dein Name"),
+              decoration:
+                  InputDecoration(hintText: "Dein Name", label: Text("Name")),
             ),
             TextField(
               controller: userWeightController,
-              decoration: InputDecoration(hintText: "Gewicht"),
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: InputDecoration(
+                  hintText: "Gewicht",
+                  suffixText: "Kg",
+                  label: Text("Gewicht")),
             ),
             DropdownMenu(
-                initialSelection: DietEnum.noDiet,
+                initialSelection: _selectedDiet,
                 controller: dietController,
+                onSelected: (diet) {
+                  setState(() {
+                    _selectedDiet = diet ?? _selectedDiet;
+                  });
+                },
                 label: const Text("Ernährungsform"),
                 dropdownMenuEntries: DietEnum.values
                     .map<DropdownMenuEntry<DietEnum>>((DietEnum diet) {
@@ -73,14 +161,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 key: macroChipWidgetKey,
                 title: "Macros",
                 category: MacrosEnum.values),
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    testText =
-                        macroChipWidgetKey.currentState!.set.length.toString();
-                  });
-                },
-                child: Text("Speichern"))
+            if (hasNoUser)
+              Column(
+                children: [
+                  TextField(
+                    controller: apiKey,
+                    decoration: InputDecoration(hintText: "Dein API-Key"),
+                  ),
+                  TextButton(
+                      onPressed: createUserOnClick,
+                      child: Text("Nutzer erstellen"))
+                ],
+              )
+            else
+              TextButton(onPressed: saveUserOnClick, child: Text("Speichern"))
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mealmaster/common/widgets/custom_app_bar.dart';
 import 'package:mealmaster/db/db_test.dart';
+import 'package:mealmaster/features/user_profile/data/user_repository.dart';
 
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/shopping_list/presentation/shopping_list_screen.dart';
@@ -36,6 +37,11 @@ class _NavigationMenuState extends State<NavigationMenu> {
         return null;
       case 2:
         return CustomAppBar(title: 'MealMe', actions: [
+          IconButton(
+              onPressed: () {
+                editAPIKeyDialog(context);
+              },
+              icon: Icon(Icons.vpn_key)),
           TextButton(
               onPressed: () {
                 Navigator.push(
@@ -77,4 +83,36 @@ class _NavigationMenuState extends State<NavigationMenu> {
       ),
     );
   }
+}
+
+Future editAPIKeyDialog(context) async {
+  String apiKey = await UserRepository().getAPIKey();
+  TextEditingController controller = TextEditingController();
+  controller.text = apiKey;
+
+  return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text("API-Key ändern"),
+            content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [TextField(controller: controller)]),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Abbrechen")),
+              TextButton(
+                  onPressed: () async {
+                    if (!context.mounted) {
+                      //add error Message
+                      return;
+                    }
+                    await UserRepository().setAPIKey(controller.value.text);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Speichern"))
+            ],
+          ));
 }
