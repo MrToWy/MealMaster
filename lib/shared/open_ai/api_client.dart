@@ -138,9 +138,7 @@ class ApiClient {
         Message(
           role: 'user',
           content: [
-            Content(
-              type: 'text',
-              value: '''
+            Content(type: 'text', value: '''
 Erstelle einen abwechslungsreichen 5-Tage-Mahlzeitenplan basierend auf diesen Zutaten: ${ingredients.map((i) => "${i.ingredient.value?.name}: ${i.count} ${i.ingredient.value?.unit}").join(", ")}. Ergänze weitere Zutaten, um für jeden Tag unterschiedliche Mahlzeiten zu schaffen, achte jedoch darauf, die genannten Zutaten möglichst aufzubrauchen.
 
 Bitte vermeide Zutaten, die mit meinen Allergien (${user.allergies.map((allergy) => "${allergy.name}").join(", ")}) in Konflikt stehen. Berücksichtige außerdem meine Ernährungsform ${user.diets.map((diet) => "${diet.name}")} und stelle sicher, dass der Plan darauf abgestimmt ist.
