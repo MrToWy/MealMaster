@@ -120,62 +120,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            TextField(
-              controller: userNameController,
-              decoration:
-                  InputDecoration(hintText: "Dein Name", label: Text("Name")),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(), // Tastatur schließen
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextField(
+                  controller: userNameController,
+                  decoration: InputDecoration(
+                      hintText: "Dein Name", label: Text("Name")),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: userWeightController,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                      hintText: "Gewicht",
+                      suffixText: "Kg",
+                      label: Text("Gewicht")),
+                ),
+                SizedBox(height: 20),
+                DropdownMenu(
+                    width: double.infinity,
+                    initialSelection: _selectedDiet,
+                    controller: dietController,
+                    onSelected: (diet) {
+                      setState(() {
+                        _selectedDiet = diet ?? _selectedDiet;
+                      });
+                    },
+                    label: const Text("Ernährungsform"),
+                    dropdownMenuEntries: DietEnum.values
+                        .map<DropdownMenuEntry<DietEnum>>((DietEnum diet) {
+                      return DropdownMenuEntry<DietEnum>(
+                          value: diet, label: diet.label);
+                    }).toList()),
+                SizedBox(height: 20),
+                CategoryChipList(
+                    key: allergyChipWidgetKey,
+                    title: "Allergien/Unverträglichkeiten",
+                    category: AllergiesEnum.values),
+                SizedBox(height: 20),
+                CategoryChipList(
+                    key: macroChipWidgetKey,
+                    title: "Macros",
+                    category: MacrosEnum.values),
+                SizedBox(height: 20),
+                if (hasNoUser)
+                  Column(
+                    children: [
+                      TextField(
+                        controller: apiKey,
+                        decoration: InputDecoration(hintText: "Dein API-Key"),
+                      ),
+                      TextButton(
+                          onPressed: createUserOnClick,
+                          child: Text("Nutzer erstellen"))
+                    ],
+                  )
+                else
+                  FilledButton(
+                      onPressed: saveUserOnClick, child: Text("Speichern")),
+              ],
             ),
-            TextField(
-              controller: userWeightController,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: InputDecoration(
-                  hintText: "Gewicht",
-                  suffixText: "Kg",
-                  label: Text("Gewicht")),
-            ),
-            DropdownMenu(
-                initialSelection: _selectedDiet,
-                controller: dietController,
-                onSelected: (diet) {
-                  setState(() {
-                    _selectedDiet = diet ?? _selectedDiet;
-                  });
-                },
-                label: const Text("Ernährungsform"),
-                dropdownMenuEntries: DietEnum.values
-                    .map<DropdownMenuEntry<DietEnum>>((DietEnum diet) {
-                  return DropdownMenuEntry<DietEnum>(
-                      value: diet, label: diet.label);
-                }).toList()),
-            CategoryChipList(
-                key: allergyChipWidgetKey,
-                title: "Allergien/Unverträglichkeiten",
-                category: AllergiesEnum.values),
-            CategoryChipList(
-                key: macroChipWidgetKey,
-                title: "Macros",
-                category: MacrosEnum.values),
-            if (hasNoUser)
-              Column(
-                children: [
-                  TextField(
-                    controller: apiKey,
-                    decoration: InputDecoration(hintText: "Dein API-Key"),
-                  ),
-                  TextButton(
-                      onPressed: createUserOnClick,
-                      child: Text("Nutzer erstellen"))
-                ],
-              )
-            else
-              TextButton(onPressed: saveUserOnClick, child: Text("Speichern"))
-          ],
+          ),
         ),
       ),
     );
