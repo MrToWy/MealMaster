@@ -73,11 +73,11 @@ class _MealPlanListState extends State<MealPlanList> {
   }
 
   Future<List> orderRecipesByDay() async {
-    List<String> remainingDays = await getRemainingDays();
     List combinedList = [];
 
     final mealPlanRepository = MealPlanRepository();
     try {
+      List<String> remainingDays = await getRemainingDays();
       List<MealPlanEntry> mealPlanEntries =
           await mealPlanRepository.getMealPlanEntries();
       for (var dayString in remainingDays) {
