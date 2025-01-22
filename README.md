@@ -24,6 +24,18 @@ Additionally, the app requires your Android device to run on a minimum SDK versi
 - [Provider](https://pub.dev/packages/provider) - State Management
 - [Intl](https://pub.dev/packages/intl) - Internationalization and localization
 
+## Functionalities
+
+- Upload images of your ingredients
+    - Change recognized ingredients via voice
+- Generate meal plans based on your ingredients
+- Genereate recipes with the ingredients you have
+- Generate your shopping list with ingredients that you need to buy
+    - Update the Shopping List with the ingredients you have bought
+    - Add ingredients to you shopping list manually that you need to buy
+- Change order of the recipes in the meal plan
+- Set personal preferences for the meal plan (allergies, diet, etc.)
+
 ## Development
 
 ### How to create a new release
@@ -46,4 +58,3 @@ dart run build_runner build --delete-conflicting-outputs
 ## Demo
 
 <img src="assets/mealmaster.gif" alt="MealMaster" style="width:200px; height:auto;">
-
