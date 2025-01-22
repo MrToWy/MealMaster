@@ -1,5 +1,4 @@
 # MealMaster - AI-Powered Meal Planning App
-
 MealMaster is a student project developed as part of the Mobile Interaction Design course.
 
 The app is primarily designed for Android devices and leverages OpenAI API to help you create
@@ -22,6 +21,8 @@ Additionally, the app requires your Android device to run on a minimum SDK versi
 - [Image Picker](https://pub.dev/packages/image_picker) - Access to the device's camera and gallery
 - [Record](https://pub.dev/packages/record) - Audio recorder from microphone
 - [Path Provider](https://pub.dev/packages/path_provider) - Get the path of the device's storage
+- [Provider](https://pub.dev/packages/provider) - State Management
+- [Intl](https://pub.dev/packages/intl) - Internationalization and localization
 
 ## Development
 
@@ -41,3 +42,8 @@ Documentation: https://isar-community.dev/v3/de/
 ```shell
 dart run build_runner build --delete-conflicting-outputs
 ```
+
+## Demo
+
+<img src="assets/mealmaster.gif" alt="MealMaster" style="width:200px; height:auto;">
+
