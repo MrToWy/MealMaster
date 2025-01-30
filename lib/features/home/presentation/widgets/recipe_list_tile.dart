@@ -7,7 +7,7 @@ import '../../../recipes/presentation/recipe_screen.dart';
 import 'difficulty_indicator.dart';
 
 class RecipeListTile extends StatelessWidget {
-  final Recipe recipe;
+  final Recipe? recipe;
   final int index;
 
   const RecipeListTile({super.key, required this.recipe, required this.index});
@@ -28,9 +28,9 @@ class RecipeListTile extends StatelessWidget {
       ),
       child: Center(
         child: ListTile(
-          key: ValueKey(recipe.id),
+          key: ValueKey(recipe?.id),
           title: Text(
-            recipe.title ?? '',
+            recipe?.title ?? 'No Recipe for MealPlanEntry',
             style: TextStyle(
                 fontWeight: FontWeight.w400,
                 color: theme.colorScheme.onSurface,
@@ -39,10 +39,10 @@ class RecipeListTile extends StatelessWidget {
           subtitle: Row(
             children: [
               Text(
-                '${recipe.cookingDuration} min  -  ',
+                '${recipe?.cookingDuration} min  -  ',
                 style: TextStyle(color: theme.colorScheme.onSurface),
               ),
-              DifficultyIndicator(difficulty: recipe.difficulty ?? 1)
+              DifficultyIndicator(difficulty: recipe?.difficulty ?? 1)
             ],
           ),
           trailing: isEditMode
@@ -54,10 +54,18 @@ class RecipeListTile extends StatelessWidget {
               : IconButton(
                   icon: const Icon(Icons.assignment),
                   iconSize: 30,
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => RecipeScreen(id: recipe.id))),
+                  onPressed: () {
+                    if (recipe != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecipeScreen(id: recipe!.id),
+                        ),
+                      );
+                    } else {
+                      print('Recipe is null');
+                    }
+                  },
                 ),
         ),
       ),
