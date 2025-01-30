@@ -101,4 +101,15 @@ class MealPlanRepository {
       await entry.recipe.save();
     });
   }
+
+  Future<void> updateMealPlanEntryDay(
+      MealPlanEntry mealPlanEntry, DateTime newDay) async {
+    final isar = await isarInstance;
+
+    mealPlanEntry.day = newDay;
+
+    await isar.writeTxn(() async {
+      await isar.mealPlanEntrys.put(mealPlanEntry);
+    });
+  }
 }
